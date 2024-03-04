@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class Controller {
     private final KeycloakService keycloakService;
 
@@ -24,6 +25,6 @@ public class Controller {
         String realToken = token.substring(7);
         if (keycloakService.introspectToken(realToken))
             return ResponseEntity.status(HttpStatus.OK).body("True");
-        else return ResponseEntity.status(HttpStatus.OK).body("False");
+        else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
     }
 }
