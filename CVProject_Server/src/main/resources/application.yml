@@ -1,7 +1,11 @@
 server:
   port: 8088
+
+fe:
+base-url: http://localhost:3000
+
 keycloak:
-  base-url: http://localhost:8080/realms/v1/protocol/openid-connect/token/introspect
-  realm: v1
-  client-id: test
-  client-secret: 6AxzOF92ephN5G7P15QQGG4hCG8bfPNI
+  base-url: http://localhost:8080/realms/cvproject/protocol/openid-connect/token/introspect
+  realm: cvproject
+  client-id: react-auth
+  client-secret: oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo
