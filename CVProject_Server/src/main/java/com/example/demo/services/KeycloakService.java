@@ -1,7 +1,5 @@
 package com.example.demo.services;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,30 +13,17 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KeycloakService {
 
-    private String url;
-    private String clientSecret;
-    private String clientId;
-    private RestTemplate restTemplate;
-
     @Value("${keycloak.base-url}")
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    private String url;
 
     @Value("${keycloak.client-secret}")
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
-    }
+    private String clientSecret;
 
     @Value("${keycloak.client-id}")
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
+    private String clientId;
 
     @Autowired
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private RestTemplate restTemplate;
 
     public Boolean introspectToken(String token) throws Exception {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();

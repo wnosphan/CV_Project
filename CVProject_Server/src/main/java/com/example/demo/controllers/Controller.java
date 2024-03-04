@@ -15,8 +15,7 @@ public class Controller {
 //            @RequestParam("client_id") String clientId,
 //            @RequestParam("token") String token,
 //            @RequestParam("client_secret") String clientSecret
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
-    ) throws Exception {
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception {
         if (token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token missing");
         }else if (!token.startsWith("Bearer "))
