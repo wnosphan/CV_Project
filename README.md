@@ -253,7 +253,7 @@ Don't forget to give the project a star! Thanks again!
 [issues-url]: https://github.com/wnosphan/CV_Project/issues
 [license-shield]: https://img.shields.io/github/license/wnosphan/CV_Project.svg?style=for-the-badge
 [license-url]: https://github.com/wnosphan/CV_Project/blob/master/LICENSE.txt
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: images/OIG3.jfif
 [React.js]: https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://react.dev/
 [java.com]: https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white
