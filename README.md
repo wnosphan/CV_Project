@@ -84,6 +84,27 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
 
 <!-- GETTING STARTED -->
+## Install Keycloak && Set up CLient Keycloak
+   Download Keycloak and unzip
+  ```
+https://github.com/keycloak/keycloak/releases/download/23.0.7/keycloak-23.0.7.zip
+  ```
+  Run cmd in Folder Keycloak
+  ```
+ docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev
+  ```
+ Open Keycloak and Login wit username & password = admin
+  ```
+ http://localhost:8080
+  ```
+ Create new Client
+   ```
+   https://huongdanjava.com/vi/them-moi-client-ho-tro-grant-type-authorization-code-cua-oauth2-trong-keycloak.html
+   ```
+ Create new User
+   ```
+   https://huongdanjava.com/vi/tao-moi-user-trong-keycloak.html
+   ```
 ## Start Environment
 
 - In a terminal and inside `CV_Project` root folder run
@@ -100,15 +121,11 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
 - **Installation**
 
-  - Choose an folder and clone this repository
+  - Download folder and unzip
 
     ```
-    https://github.com/wnosphan/CV_Project.git
+    https://github.com/wnosphan/CV_Project
     ```
-
-- **cvproject-server**
-
-
 - **cvproject-ui**
   - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
    - Run the command below if you are running the application for the first time
@@ -122,7 +139,20 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       ```
       npm start
       ```
-
+- **cvproject-server**
+  - Open application.yml and set up enviroment
+       
+   - server:
+      - port: 8088
+   - fe:
+      - base-url: http://localhost:3000
+   -keycloak:
+   - base-url: http://localhost:8080/realms/{your-realms-keycloak}/protocol/openid-connect/token/introspect
+   - realm: your-realms-keycloak
+   - client-id: your-client-id
+   - client-secret: your-client-secret
+      
+    
   <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 
