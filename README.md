@@ -229,6 +229,8 @@ Don't forget to give the project a star! Thanks again!
     <td align="center"><a href="https://github.com/KuaDtrai"><img src="https://avatars.githubusercontent.com/u/143081364?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>Ho Thanh Kien</b></sub></a><br />💻</a></td>
     <td align="center"><a href="https://github.com/wnosphan"><img src="https://avatars.githubusercontent.com/u/158177389?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>wnosphan</b></sub></a><br />💻</a></td>
     <td align="center"><a href="https://github.com/dokkazy"><img src="https://avatars.githubusercontent.com/u/87236537?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>Võ Công Huy</b></sub></a><br />💻</a></td>
+    </td>
+    <td align="center"><a href="https://github.com/lock1723"><img src="https://avatars.githubusercontent.com/u/162103568?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>lock1723</b></sub></a><br />💻</a></td>
    
   </tr>
 </table>
