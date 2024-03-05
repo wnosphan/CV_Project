@@ -166,7 +166,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       ```
     CMD
      ```
-      docker build --tag spring-boot-docker
+      docker build --tag spring-boot-docker .
       ```
     then
      ```
