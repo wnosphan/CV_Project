@@ -96,7 +96,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   docker compose ps
   ```
 
-### Running CV_Project using Maven & Npm
+## Running CV_Project using Maven & Npm
 
 - **Installation**
 
@@ -126,7 +126,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 
-### Applications URLs
+## Applications URLs
 
 | Application       | URL                                   | Credentials                           |
 |-------------------|---------------------------------------|---------------------------------------|
