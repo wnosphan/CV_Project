@@ -84,16 +84,21 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
 
 <!-- GETTING STARTED -->
+## Install Docker 
+  ```
+ https://www.docker.com/products/docker-desktop
+  ```
+## Install JDK 17
+  ```
+ https://www.docker.com/products/docker-desktop
+  ```
 ## Install Keycloak && Set up CLient Keycloak
-   Download Keycloak and unzip
-  ```
-https://github.com/keycloak/keycloak/releases/download/23.0.7/keycloak-23.0.7.zip
-  ```
+ 
   Run cmd in Folder Keycloak
   ```
  docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev
   ```
- Open Keycloak and Login wit username & password = admin
+ Open Keycloak and Login with username & password = admin
   ```
  http://localhost:8080
   ```
@@ -142,6 +147,9 @@ https://github.com/keycloak/keycloak/releases/download/23.0.7/keycloak-23.0.7.zi
 - **cvproject-server**
   - Open application.yml and set up enviroment
        
+      ```
+      .\CV_Projectss\CVProject_Server
+      ```
    - server:
       - port: 8088
    - fe:
@@ -151,8 +159,19 @@ https://github.com/keycloak/keycloak/releases/download/23.0.7/keycloak-23.0.7.zi
    - realm: your-realms-keycloak
    - client-id: your-client-id
    - client-secret: your-client-secret
-      
-    
+
+  - Open CMD in folder 
+      ```
+      .\CV_Projectss\CVProject_Server
+      ```
+    CMD
+     ```
+      docker build --tag spring-boot-docker
+      ```
+    then
+     ```
+      docker run -dp 8085:8088 --name springboot-docker-container -v %cd%:/app spring-boot-docker
+      ```
   <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 
