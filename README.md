@@ -86,6 +86,16 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 <!-- GETTING STARTED -->
 ## Start Environment
 
+- In a terminal and inside `CV_Project` root folder run
+  ```
+  docker compose up -d
+  ```
+
+- Wait for all Docker containers to be up and running. To check it, run
+  ```
+  docker compose ps
+  ```
+
 ### Running CV_Project using Maven & Npm
 
 - **Installation**
