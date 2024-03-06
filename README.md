@@ -85,16 +85,16 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
 <!-- GETTING STARTED -->
 ## Install Docker 
+
   ```
  https://www.docker.com/products/docker-desktop
   ```
 ## Install JDK 17
+
   ```
   https://www.oracle.com/java/technologies/downloads/#java17
   ```
 ## Install Keycloak
- 
-  Run cmd in Folder Keycloak
   ```
  docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev
   ```
@@ -112,18 +112,23 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   ```
   Set up CLient Keycloak
   -->
- Open Keycloak and Login with username & password = admin
-  ```
- http://localhost:8080
-  ```
- Create new Client
+- Open Keycloak and Login with username & password = admin
+ 
    ```
+    http://localhost:8080
+   ```
+
+- Create new Client
+
+  ```
    https://huongdanjava.com/vi/them-moi-client-ho-tro-grant-type-authorization-code-cua-oauth2-trong-keycloak.html
-   ```
- Create new User
-   ```
+  ```
+
+- Create new User
+
+  ```
    https://huongdanjava.com/vi/tao-moi-user-trong-keycloak.html
-   ```
+  ```
 
 ## Running CV_Project using Maven & Npm
 
@@ -136,6 +141,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
     ```
 - **cvproject-ui**
   - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
+  
    - Run the command below if you are running the application for the first time
 
       ```
@@ -164,21 +170,22 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       
 - **cvproject-server**
   - Open application.yml and set up enviroment
+
       ```
       .\CV_Projectss\CVProject_Server
       ```
    - server:
-     
-    ```
-   port: 8088
-   fe:
-     base-url: http://localhost:3000
-   keycloak:
-     base-url: http://localhost:8080/realms/{your-realms-keycloak}/protocol/openid-connect/token/introspect
-     realm: your-realms-keycloak
-     client-id: your-client-id
-     client-secret: your-client-secret
-  ```
+
+      ```
+     port: 8088
+     fe:
+       base-url: http://localhost:3000
+     keycloak:
+       base-url: http://localhost:8080/realms/{your-realms-keycloak}/protocol/openid-connect/token/introspect
+       realm: your-realms-keycloak
+       client-id: your-client-id
+       client-secret: your-client-secret
+      ```
     
   - Open CMD in folder
   
