@@ -130,6 +130,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 - **Installation**
 
   - Download folder and unzip
+    
     ```
     https://github.com/wnosphan/CV_Project
     ```
@@ -139,6 +140,21 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
       ```
       npm install
+      ```
+   - Navigate to `cvproject-ui\src\configs` and open properties.js file
+
+     ```
+      oidc: {
+        authority: 'http://localhost:8080/realms/{your-ream}',
+        clientId: '{your-client-id}',
+        clientSecret: '{your-client-secret}'
+      },
+      api: {
+          baseUrl: 'http://localhost:8088'
+      },
+      project: {
+          url: 'http://localhost:3000'
+      }  
       ```
 
   - Run the `npm` command below to start the application
@@ -152,16 +168,20 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       .\CV_Projectss\CVProject_Server
       ```
    - server:
-      - port: 8088
-   - fe:
-      - base-url: http://localhost:3000
-   -keycloak:
-   - base-url: http://localhost:8080/realms/{your-realms-keycloak}/protocol/openid-connect/token/introspect
-   - realm: your-realms-keycloak
-   - client-id: your-client-id
-   - client-secret: your-client-secret
-
-  - Open CMD in folder 
+     
+    ```
+   port: 8088
+   fe:
+     base-url: http://localhost:3000
+   keycloak:
+     base-url: http://localhost:8080/realms/{your-realms-keycloak}/protocol/openid-connect/token/introspect
+     realm: your-realms-keycloak
+     client-id: your-client-id
+     client-secret: your-client-secret
+  ```
+    
+  - Open CMD in folder
+  
       ```
       .\CV_Projectss\CVProject_Server
       ```
@@ -243,7 +263,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## How to upgrade movies-ui dependencies to latest version
+## How to upgrade cvproject-ui dependencies to latest version
 
 - In a terminal, make sure you are in `CV_Project/cvproject-ui` folder
 
