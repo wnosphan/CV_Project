@@ -92,12 +92,26 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   ```
   https://www.oracle.com/java/technologies/downloads/#java17
   ```
-## Install Keycloak && Set up CLient Keycloak
+## Install Keycloak
  
   Run cmd in Folder Keycloak
   ```
  docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev
   ```
+
+## Start Environment
+<!--
+- In a terminal and inside `CV_Project` root folder run
+  ```
+  docker compose up -d
+  ```
+
+- Wait for all Docker containers to be up and running. To check it, run
+  ```
+  docker compose ps
+  ```
+  Set up CLient Keycloak
+  -->
  Open Keycloak and Login with username & password = admin
   ```
  http://localhost:8080
@@ -110,25 +124,12 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
    ```
    https://huongdanjava.com/vi/tao-moi-user-trong-keycloak.html
    ```
-## Start Environment
-<!--
-- In a terminal and inside `CV_Project` root folder run
-  ```
-  docker compose up -d
-  ```
-
-- Wait for all Docker containers to be up and running. To check it, run
-  ```
-  docker compose ps
-  ```
-  -->
 
 ## Running CV_Project using Maven & Npm
 
 - **Installation**
 
   - Download folder and unzip
-
     ```
     https://github.com/wnosphan/CV_Project
     ```
@@ -141,13 +142,12 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       ```
 
   - Run the `npm` command below to start the application
-
       ```
       npm start
       ```
+      
 - **cvproject-server**
   - Open application.yml and set up enviroment
-       
       ```
       .\CV_Projectss\CVProject_Server
       ```
