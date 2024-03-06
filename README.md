@@ -90,7 +90,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   ```
 ## Install JDK 17
   ```
- https://www.docker.com/products/docker-desktop
+  https://www.oracle.com/java/technologies/downloads/#java17
   ```
 ## Install Keycloak && Set up CLient Keycloak
  
@@ -111,7 +111,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
    https://huongdanjava.com/vi/tao-moi-user-trong-keycloak.html
    ```
 ## Start Environment
-
+<!--
 - In a terminal and inside `CV_Project` root folder run
   ```
   docker compose up -d
@@ -121,6 +121,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   ```
   docker compose ps
   ```
+  -->
 
 ## Running CV_Project using Maven & Npm
 
