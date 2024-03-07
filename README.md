@@ -197,7 +197,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
    - In terminal
 
      ```
-     docker build -t cvproject
+     docker build -t cvproject .
      ```
    - Run image to start the application
 
