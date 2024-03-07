@@ -141,13 +141,8 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
     ```
 - **cvproject-ui**
   - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
-  
-   - Run the command below if you are running the application for the first time
-
-      ```
-      npm install
-      ```
-   - Navigate to `cvproject-ui\src\configs` and open properties.js file
+    
+   - Navigate to `cvproject-ui\src\configs` and open `properties.js`
 
      ```
       oidc: {
@@ -162,11 +157,47 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
           url: 'http://localhost:3000'
       }  
       ```
+  
+   - Run the command below if you are running the application for the first time
 
-  - Run the `npm` command below to start the application
       ```
-      npm start
+      npm install
       ```
+
+      ```
+      npm run build
+      ```
+
+      ```
+      docker pull nginx
+      ```
+
+   - In `CV_Project/cvproject-ui` create a Dockerfile
+
+     ```
+     FROM node:18 as build-stage
+      WORKDIR /app
+      COPY . .
+      
+      
+      
+      FROM nginx:1.25.4
+      COPY --from=build-stage /app/build /usr/share/nginx/html
+      EXPOSE 80
+      CMD ["nginx", "-g", "daemon off;"]
+     ```
+
+   - In terminal
+
+     ```
+     docker build -t cvproject
+     ```
+   - Run image to start the application
+
+     ```
+     docker run -dp 3000:80 cvproject
+     ```
+   
       
 - **cvproject-server**
   - Open application.yml and set up enviroment
