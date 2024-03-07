@@ -224,7 +224,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 - Run the following commands to get the access token
   ```
   curl -X POST \
-    "http://localhost:8080/realms/(this-is-what-your-realms)/protocol/openid-connect/token" \
+    "http://localhost:8080/realms/(your-realm)/protocol/openid-connect/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=your-user" \
     -d "password=your-password" \
