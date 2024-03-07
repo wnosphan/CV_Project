@@ -139,6 +139,13 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
     ```
     https://github.com/wnosphan/CV_Project
     ```
+    or clone
+
+    ```
+    https://github.com/wnosphan/CV_Project.git
+    ```
+
+    
 - **cvproject-ui**
   - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
     
