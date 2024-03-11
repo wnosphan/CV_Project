@@ -55,7 +55,7 @@ function Home() {
     // }
 
     const isUser = async () => {
-        fetch(`${properties.api.baseUrl}/hello`, {
+        fetch(`${properties.api.baseUrl}/verify-token`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${access_token}`  // Ensure correct format
