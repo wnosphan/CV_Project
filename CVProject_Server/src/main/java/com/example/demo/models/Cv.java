@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "cv")
@@ -17,34 +18,32 @@ public class Cv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "full_name", length = 45)
+    @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "date_of_birth", length = 45)
+    @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
-    @Column(name = "skill", length = 45)
     private String skill;
 
-    @Column(name = "university", length = 45)
     private String university;
 
-    @Column(name = "training_system", length = 45)
+    @Column(name = "training_system")
     private String trainingSystem;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User createBy;
+    @JoinColumn(name = "create_by")
+    private User createdBy;
 
-    @Column(name = "gpa", length = 45)
-    private String GPA;
+    private String gpa;
 
-    @Column(name = "apply_position", length = 45)
+    @Column(name = "apply_position")
     private String applyPosition;
 
-    @Column(name = "link_cv", length = 45)
+    @Column(name = "link_cv")
     private String linkCV;
 
-    @Column(name = "status", length = 45)
     private String status;
+
+
 }

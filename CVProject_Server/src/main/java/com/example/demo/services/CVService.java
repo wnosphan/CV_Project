@@ -37,7 +37,9 @@ public class CVService {
                 .skill(cvDTO.getSkill())
                 .university(cvDTO.getUniversity())
                 .applyPosition(cvDTO.getApplyPosition())
-                .createBy(user)
+                .trainingSystem(cvDTO.getTrainingSystem())
+                .createdBy(user)
+                .gpa(cvDTO.getGPA())
                 .status("INPROGRESS")
                 .linkCV(cvDTO.getLinkCV())
                 .build();
