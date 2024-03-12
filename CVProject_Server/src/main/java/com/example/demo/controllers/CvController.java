@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.CvDTO;
 import com.example.demo.models.Cv;
+import com.example.demo.repositories.CvRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.CVService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +20,14 @@ import java.util.List;
 @RequestMapping("${api.prefix}/cv")
 @RequiredArgsConstructor
 public class CvController {
-
+    private final CvRepository cvRepository;
 
     private final CVService cvService;
 
     @PostMapping("")
     private ResponseEntity<?> postCV(
-            @RequestBody CvDTO cvDTO,
-            BindingResult result) {
+            @Valid @RequestBody CvDTO cvDTO,
+            BindingResult result) throws Exception {
         if (result.hasErrors()){
             List<String> errorMessages = result.getFieldErrors()
                     .stream()
@@ -42,6 +44,6 @@ public class CvController {
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {
-        return ResponseEntity.ok(cvService.getAllProducts());
+        return ResponseEntity.ok(cvService.getAllCv(page, limit));
     }
 }

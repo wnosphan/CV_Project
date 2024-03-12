@@ -8,6 +8,8 @@ import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +19,18 @@ import java.util.List;
 public class CVService {
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
-    public List<Cv> getAllProducts(){
-        List<Cv> cvPage = cvRepository.findAll();
+    public Page<Cv> getAllCv(){
+        Page<Cv> cvPage = (Page<Cv>) cvRepository.findAll();
         return cvPage;
     }
 
-    public Cv creatCv(CvDTO cvDTO){
-        User user = userRepository.getById(cvDTO.getCreateBy());
+    public Page<Cv> getAllCv(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cvRepository.findAll(pageable);
+    }
+
+    public Cv creatCv(CvDTO cvDTO) throws Exception {
+        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(()-> new Exception("User not found"));
         Cv newCv =Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
@@ -31,7 +38,7 @@ public class CVService {
                 .university(cvDTO.getUniversity())
                 .applyPosition(cvDTO.getApplyPosition())
                 .createBy(user)
-                .status(CvStatus.INPROGRESS)
+                .status("INPROGRESS")
                 .linkCV(cvDTO.getLinkCV())
                 .build();
         return cvRepository.save(newCv);
