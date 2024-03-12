@@ -17,10 +17,10 @@ public class Cv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "fullName", length = 45)
+    @Column(name = "full_name", length = 45)
     private String fullName;
 
-    @Column(name = "dateOfBirth", length = 45)
+    @Column(name = "date_of_birth", length = 45)
     private Date dateOfBirth;
 
     @Column(name = "skill", length = 45)
@@ -29,22 +29,22 @@ public class Cv {
     @Column(name = "university", length = 45)
     private String university;
 
-    @Column(name = "trainingSystem", length = 45)
+    @Column(name = "training_system", length = 45)
     private String trainingSystem;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User createBy;
 
-    @Column(name = "GPA", length = 45)
+    @Column(name = "gpa", length = 45)
     private String GPA;
 
-    @Column(name = "applyPosition", length = 45)
+    @Column(name = "apply_position", length = 45)
     private String applyPosition;
 
-    @Column(name = "linkCV", length = 45)
+    @Column(name = "link_cv", length = 45)
     private String linkCV;
 
     @Column(name = "status", length = 45)
-    private CvStatus status;
+    private String status;
 }

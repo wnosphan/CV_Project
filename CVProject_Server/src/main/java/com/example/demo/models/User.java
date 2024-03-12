@@ -13,11 +13,11 @@ import lombok.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
     @Column(name = "email", length = 45)
     private String email;
 
-    @Column(name = "userName", length = 45)
+    @Column(name = "user_name", length = 45)
     private String userName;
 }
