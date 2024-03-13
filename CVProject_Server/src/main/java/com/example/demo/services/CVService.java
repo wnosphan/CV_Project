@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class CVService implements ICvService{
     private final UserRepository userRepository;
 
     public Page<CvResponse> getAllCv(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Cv> cvPage = cvRepository.findAll(pageable);
         return cvPage.map(CvResponse::fromCv);
     }
@@ -43,7 +44,7 @@ public class CVService implements ICvService{
                 .trainingSystem(cvDTO.getTrainingSystem())
                 .createdBy(user)
                 .gpa(cvDTO.getGPA())
-                .status(CvStatus.INPROGRESS)
+                .status(CvStatus.NOTPASS)
                 .linkCV(cvDTO.getLinkCV())
                 .build();
         return cvRepository.save(newCv);

@@ -1,8 +1,8 @@
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
--- Host: localhost    Database: cvproject
+-- Host: localhost    Database: tetsdb
 -- ------------------------------------------------------
--- Server version	8.0.35
+-- Server version	8.3.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,19 +25,19 @@ DROP TABLE IF EXISTS `cv`;
 CREATE TABLE `cv` (
   `id` int NOT NULL AUTO_INCREMENT,
   `full_name` varchar(45) DEFAULT NULL,
-  `date_of_birth` datetime DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
   `skill` varchar(45) DEFAULT NULL,
   `university` varchar(45) DEFAULT NULL,
   `training_system` varchar(45) DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
+  `create_by` int DEFAULT NULL,
   `gpa` varchar(45) DEFAULT NULL,
   `apply_position` varchar(45) DEFAULT NULL,
   `link_cv` varchar(45) DEFAULT NULL,
-  `status` varchar(45) DEFAULT 'INPROGRESS',
+  `status` enum('INPROGRESS','PASS','NOTPASS') DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idUser_idx` (`user_id`),
-  CONSTRAINT `FKb98t5j2q1innj39yov3v9oga2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idUser_idx` (`create_by`),
+  CONSTRAINT `createby` FOREIGN KEY (`create_by`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `cv` (
 
 LOCK TABLES `cv` WRITE;
 /*!40000 ALTER TABLE `cv` DISABLE KEYS */;
-INSERT INTO `cv` VALUES (1,'Phan Mai Son','2003-01-15 00:00:00','Java, C#','FPT',NULL,1,'3.0','Intern Java','......','INPROGRESS'),(2,'Vo Cong Huy','2003-02-02 00:00:00','Java, Js','FPT',NULL,1,'3.1','Intern Reactjs','.....','INPROGRESS'),(3,'Ho Thanh Kien','2003-01-01 00:00:00','Java, Python','FPT',NULL,1,'3.4','Fresher Java','.....','INPROGRESS'),(4,'Nguyễn Tấn Lộc','2003-03-04 00:00:00','Java, Js','FPT',NULL,1,'3.2','Intern Java','...','INPROGRESS');
+INSERT INTO `cv` VALUES (1,'Phan Mai Son','2003-01-15','Java, C#','FPT','Uni',1,'3.0','Intern Java','......','PASS'),(2,'Vo Cong Huy','2003-02-02','Java, Js','FPT','Uni',1,'3.1','Intern Reactjs','.....','PASS'),(3,'Ho Thanh Kien','2003-01-01','Java, Python','FPT','Uni',1,'3.4','Fresher Java','.....','PASS'),(4,'Nguyễn Tấn Lộc','2003-03-04','Java, Js','FPT','Uni',1,'3.2','Intern Java','...','PASS'),(11,'Hồ Thanh Kua','2003-12-05','Software, Development','Đại học FPT','Regular',1,'3.5','Software Engineer','https://example.com/cv/nguyen-van-a','PASS'),(12,'Nguyễn Văn A','1990-05-20','Software Development','Đại học ABC','Regular',1,NULL,'Software Engineer','https://example.com/cv/nguyen-van-a','PASS'),(13,'Nguyễn Văn A','1990-05-20','Software Development','Đại học ABC','Regular',1,NULL,'Software Engineer','https://example.com/cv/nguyen-van-a','PASS'),(14,'Nguyễn Văn A','1990-05-20','Software, Development','Đại học ABC','Regular',1,NULL,'Software Engineer','https://example.com/cv/nguyen-van-a','PASS'),(15,'Nguyễn Văn A','1990-05-20','Software, Development','Đại học ABC','Regular',1,NULL,'Software Engineer','https://example.com/cv/nguyen-van-a','PASS'),(16,'Nguyễn Văn A','1990-05-20','Software, Development','Đại học ABC','Regular',1,'3.5','Software Engineer','https://example.com/cv/nguyen-van-a','PASS');
 /*!40000 ALTER TABLE `cv` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -77,8 +77,8 @@ DELIMITER ;;
         SET skill_item = SUBSTRING(NEW.`skill`, start_position, end_position - start_position);
 
         -- Sao chép kỹ năng từ bảng CV vào bảng Skill
-        INSERT INTO `Skill` (`idCV`, `skill`)
-        VALUES (NEW.`idCV`, skill_item);
+        INSERT INTO `skill` (`id`, `skill`)
+        VALUES (NEW.`id`, skill_item);
 
         SET start_position = end_position + 1;
     END WHILE;
@@ -100,7 +100,7 @@ CREATE TABLE `skill` (
   `id` int DEFAULT NULL,
   `skill` varchar(45) DEFAULT NULL,
   KEY `idCV_idx` (`id`),
-  CONSTRAINT `idCV` FOREIGN KEY (`id`) REFERENCES `cv` (`id`)
+  CONSTRAINT `id` FOREIGN KEY (`id`) REFERENCES `cv` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -110,7 +110,7 @@ CREATE TABLE `skill` (
 
 LOCK TABLES `skill` WRITE;
 /*!40000 ALTER TABLE `skill` DISABLE KEYS */;
-INSERT INTO `skill` VALUES (1,'Java'),(1,' C#'),(2,'Java'),(2,' Js'),(3,'Java'),(3,' Python'),(4,'Java'),(4,' Js');
+INSERT INTO `skill` VALUES (1,'Java'),(1,' C#'),(2,'Java'),(2,' Js'),(3,'Java'),(3,' Python'),(4,'Java'),(4,' Js'),(11,'Java'),(11,' Spring'),(11,' Hibernate'),(12,'Software Development'),(13,'Software Development'),(14,'Software'),(14,' Development'),(15,'Software'),(15,' Development'),(16,'Software'),(16,' Development');
 /*!40000 ALTER TABLE `skill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,8 +125,7 @@ CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(45) DEFAULT NULL,
   `user_name` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `userId` FOREIGN KEY (`id`) REFERENCES `cv` (`user_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -141,11 +140,11 @@ INSERT INTO `user` VALUES (1,'son@gmail.com','ssss');
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'cvproject'
+-- Dumping events for database 'tetsdb'
 --
 
 --
--- Dumping routines for database 'cvproject'
+-- Dumping routines for database 'tetsdb'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -157,4 +156,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-12 16:35:01
+-- Dump completed on 2024-03-13 16:50:34
