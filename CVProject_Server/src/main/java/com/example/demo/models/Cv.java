@@ -35,6 +35,7 @@ public class Cv {
     @JoinColumn(name = "create_by")
     private User createdBy;
 
+    @Column(name = "gpa")
     private String gpa;
 
     @Column(name = "apply_position")

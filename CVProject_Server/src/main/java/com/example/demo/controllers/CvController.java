@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("${api.prefix}/cv")
 @RequiredArgsConstructor
 public class CvController {
-    private final CvRepository cvRepository;
 
     private final CVService cvService;
 
@@ -28,7 +27,7 @@ public class CvController {
     private ResponseEntity<?> postCV(
             @Valid @RequestBody CvDTO cvDTO,
             BindingResult result) throws Exception {
-        if (result.hasErrors()){
+        if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
                     .stream()
                     .map(FieldError::getDefaultMessage)
@@ -36,14 +35,44 @@ public class CvController {
             return ResponseEntity.badRequest().body(errorMessages);
         }
         Cv cv = cvService.creatCv(cvDTO);
-            return ResponseEntity.ok(cv);
+        return ResponseEntity.ok(cv);
     }
 
     @GetMapping("")
     private ResponseEntity<?> getListCV(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "limit", defaultValue = "10") int limit
     ) {
-        return ResponseEntity.ok(cvService.getAllCv(page, limit));
+        try {
+            Page<Cv> cvList = cvService.getAllCv(page, limit);
+            return ResponseEntity.ok(cvList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @GetMapping("/{id}")
+    private ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
+        try {
+            Cv cv = cvService.getCvById(id);
+            return ResponseEntity.ok(cv);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    private ResponseEntity<?> updateCv(
+            @PathVariable long id,
+            @Valid @RequestBody CvDTO cvDTO
+    ){
+        try {
+            Cv updateCv = cvService.updateCv(id, cvDTO);
+            return ResponseEntity.ok(updateCv);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 }
