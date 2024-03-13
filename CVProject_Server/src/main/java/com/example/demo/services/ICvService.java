@@ -10,4 +10,5 @@ public interface ICvService {
     public Cv getCvById(Long id) throws Exception;
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
+    public void deleteCv(Long id) throws Exception;
 }

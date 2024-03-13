@@ -67,4 +67,9 @@ public class CVService implements ICvService{
         return null;
     }
 
+    @Override
+    public void deleteCv(Long id) throws Exception {
+
+    }
+
 }
