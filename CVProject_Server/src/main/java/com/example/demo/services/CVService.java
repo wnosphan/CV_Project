@@ -19,14 +19,15 @@ import java.util.List;
 public class CVService {
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
-    public Page<Cv> getAllCv(){
-        Page<Cv> cvPage = (Page<Cv>) cvRepository.findAll();
-        return cvPage;
-    }
 
     public Page<Cv> getAllCv(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return cvRepository.findAll(pageable);
+    }
+
+    public Cv getCvById(Long id) throws Exception {
+        Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception());
+        return cv;
     }
 
     public Cv creatCv(CvDTO cvDTO) throws Exception {
@@ -40,10 +41,28 @@ public class CVService {
                 .trainingSystem(cvDTO.getTrainingSystem())
                 .createdBy(user)
                 .gpa(cvDTO.getGPA())
-                .status("INPROGRESS")
+                .status(CvStatus.INPROGRESS)
                 .linkCV(cvDTO.getLinkCV())
                 .build();
         return cvRepository.save(newCv);
+    }
+
+    public Cv updateCv(Long id, CvDTO cvDTO) throws Exception {
+        Cv existingCv = getCvById(id);
+        if (existingCv != null){
+            User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(()-> new Exception("User not found"));
+            existingCv.setFullName(cvDTO.getFullName());
+            existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
+            existingCv.setSkill(cvDTO.getSkill());
+            existingCv.setUniversity(cvDTO.getUniversity());
+            existingCv.setTrainingSystem(cvDTO.getTrainingSystem());
+            existingCv.setCreatedBy(user);
+            existingCv.setGpa(cvDTO.getGPA());
+            existingCv.setApplyPosition(cvDTO.getApplyPosition());
+            existingCv.setLinkCV(cvDTO.getLinkCV());
+            return cvRepository.save(existingCv);
+        }
+        return null;
     }
 
 }
