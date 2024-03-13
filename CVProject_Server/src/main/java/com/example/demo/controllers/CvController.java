@@ -82,4 +82,40 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/search/name")
+    private ResponseEntity<?> searchCVByName(
+            @RequestParam("full_name") String fullName,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "limit", defaultValue = "10") int limit
+    ) {
+        try {
+            Page<CvResponse> cvList = cvService.searchCvByName(fullName, page, limit);
+            int totalPage = cvList.getTotalPages();
+            List<CvResponse> cvs = cvList.getContent();
+            return ResponseEntity.ok(CvListResponse.builder()
+                    .cvResponses(cvs)
+                    .totalPage(totalPage)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/search/create_by")
+    private ResponseEntity<?> searchCVByCreatedBy(
+            @RequestParam("create_by") String createdBy,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "limit", defaultValue = "10") int limit
+    ) {
+        try {
+            Page<CvResponse> cvList = cvService.searchCvByCreatedBy(createdBy, page, limit);
+            int totalPage = cvList.getTotalPages();
+            List<CvResponse> cvs = cvList.getContent();
+            return ResponseEntity.ok(CvListResponse.builder()
+                    .cvResponses(cvs)
+                    .totalPage(totalPage)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

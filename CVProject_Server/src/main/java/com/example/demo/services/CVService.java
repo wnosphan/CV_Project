@@ -72,5 +72,14 @@ public class CVService implements ICvService{
     public void deleteCv(Long id) throws Exception {
 
     }
-
+    @Override
+    public Page<CvResponse> searchCvByName(String fullName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return cvRepository.findByFullNameContaining(fullName, pageable).map(CvResponse::fromCv);
+    }
+    @Override
+    public Page<CvResponse> searchCvByCreatedBy(String createdBy, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return cvRepository.findByCreatedBy_UserNameContaining(createdBy, pageable).map(CvResponse::fromCv);
+    }
 }

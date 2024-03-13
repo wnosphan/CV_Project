@@ -11,4 +11,6 @@ public interface ICvService {
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
     public void deleteCv(Long id) throws Exception;
+    public Page<CvResponse> searchCvByName(String fullName, int page, int size);
+    public Page<CvResponse> searchCvByCreatedBy(String createdBy, int page, int size);
 }
