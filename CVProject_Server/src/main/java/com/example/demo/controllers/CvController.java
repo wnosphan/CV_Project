@@ -4,7 +4,10 @@ import com.example.demo.dtos.CvDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.responses.CvListResponse;
+import com.example.demo.responses.CvResponse;
 import com.example.demo.services.CVService;
+import com.example.demo.services.ICvService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CvController {
 
-    private final CVService cvService;
+    private final ICvService cvService;
 
     @PostMapping("")
     private ResponseEntity<?> postCV(
@@ -44,8 +47,13 @@ public class CvController {
             @RequestParam(name = "limit", defaultValue = "10") int limit
     ) {
         try {
-            Page<Cv> cvList = cvService.getAllCv(page, limit);
-            return ResponseEntity.ok(cvList);
+            Page<CvResponse> cvList = cvService.getAllCv(page, limit);
+            int totalPage = cvList.getTotalPages();
+            List<CvResponse> cvs = cvList.getContent();
+            return ResponseEntity.ok(CvListResponse.builder()
+                    .cvResponses(cvs)
+                    .totalPage(totalPage)
+                    .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -65,14 +73,12 @@ public class CvController {
     private ResponseEntity<?> updateCv(
             @PathVariable long id,
             @Valid @RequestBody CvDTO cvDTO
-    ){
+    ) {
         try {
             Cv updateCv = cvService.updateCv(id, cvDTO);
             return ResponseEntity.ok(updateCv);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 }

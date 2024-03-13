@@ -15,7 +15,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class CvDTO {
-    @NotBlank(message = "Fullname is required")
+    @NotBlank(message = "Full_name is required")
     @Size(min = 3, max = 200, message = "Name must be between 3 and 200 characters")
     @JsonProperty("full_name")
     private String fullName;
