@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dtos.CvDTO;
+import com.example.demo.dtos.IdDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
