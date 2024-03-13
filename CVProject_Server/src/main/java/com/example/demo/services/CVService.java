@@ -6,6 +6,7 @@ import com.example.demo.models.CvStatus;
 import com.example.demo.models.User;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.responses.CvResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,17 +17,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CVService {
+public class CVService implements ICvService{
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
 
-    public Page<Cv> getAllCv(int page, int size) {
+    public Page<CvResponse> getAllCv(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return cvRepository.findAll(pageable);
+        Page<Cv> cvPage = cvRepository.findAll(pageable);
+        return cvPage.map(CvResponse::fromCv);
     }
 
     public Cv getCvById(Long id) throws Exception {
-        Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception());
+        Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id ="+id));
         return cv;
     }
 
