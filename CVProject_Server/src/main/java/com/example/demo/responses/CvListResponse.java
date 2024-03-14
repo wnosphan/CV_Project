@@ -17,4 +17,6 @@ public class CvListResponse {
     public List<CvResponse> cvResponses;
     @JsonProperty("total_page")
     public int totalPage;
+    @JsonProperty("total_emelent")
+    public int totalEmelent;
 }

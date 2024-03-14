@@ -2,7 +2,9 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.CvDTO;
 import com.example.demo.dtos.IdDTO;
+import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
+import com.example.demo.models.CvStatus;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.CvListResponse;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/cv")
+@CrossOrigin(origins = "${fe.base-url}")
 @RequiredArgsConstructor
 public class CvController {
 
@@ -50,10 +53,12 @@ public class CvController {
         try {
             Page<CvResponse> cvList = cvService.getAllCv(page, limit);
             int totalPage = cvList.getTotalPages();
+            int totalElement = cvList.getNumberOfElements();
             List<CvResponse> cvs = cvList.getContent();
             return ResponseEntity.ok(CvListResponse.builder()
                     .cvResponses(cvs)
                     .totalPage(totalPage)
+                    .totalEmelent(totalElement)
                     .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -82,38 +87,39 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/search/name")
-    private ResponseEntity<?> searchCVByName(
-            @RequestParam("full_name") String fullName,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "limit", defaultValue = "10") int limit
+
+    @PatchMapping("/{id}")
+    private ResponseEntity<?> updateCvStatus(
+            @PathVariable long id,
+            @Valid @RequestParam("status") String status
     ) {
         try {
-            Page<CvResponse> cvList = cvService.searchCvByName(fullName, page, limit);
-            int totalPage = cvList.getTotalPages();
-            List<CvResponse> cvs = cvList.getContent();
-            return ResponseEntity.ok(CvListResponse.builder()
-                    .cvResponses(cvs)
-                    .totalPage(totalPage)
-                    .build());
+            Cv cv = cvService.updateCvStatus(id, status);
+            return ResponseEntity.ok(cv);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/search/create_by")
-    private ResponseEntity<?> searchCVByCreatedBy(
-            @RequestParam("create_by") String createdBy,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "limit", defaultValue = "10") int limit
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<?> deleteCv(
+            @PathVariable long id
     ) {
         try {
-            Page<CvResponse> cvList = cvService.searchCvByCreatedBy(createdBy, page, limit);
-            int totalPage = cvList.getTotalPages();
-            List<CvResponse> cvs = cvList.getContent();
-            return ResponseEntity.ok(CvListResponse.builder()
-                    .cvResponses(cvs)
-                    .totalPage(totalPage)
-                    .build());
+            cvService.deleteCv(id);
+            return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("")
+    private ResponseEntity<?> deleteCvs(
+            @Valid @RequestBody ListCvIdDTO ids
+    ) {
+        try {
+            cvService.deleteCvs(ids);
+            return ResponseEntity.ok("List CV deleted successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
