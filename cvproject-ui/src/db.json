@@ -1,0 +1,124 @@
+{
+  "cvs": [
+    {
+      "id": 1,
+      "name": "John Brown",
+      "dob": "12/12/1990",
+      "university": "HCM University of Technology",
+      "trainingSystem": "Regular",
+      "gpa": 3.5,
+      "position": "Backend Developer",
+      "skills": ["java", "c#"]
+    },
+    {
+      "id": 2,
+      "name": "Jim Green",
+      "dob": "12/12/1990",
+      "university": "HCM University of Technology",
+      "trainingSystem": "Regular",
+      "gpa": 3.5,
+      "position": "Frontend Developer",
+      "skills": ["react", "figma"]
+    },
+    {
+      "id": 3,
+      "name": "Joe Black",
+      "dob": "12/12/1990",
+      "university": "HCM University of Technology",
+      "trainingSystem": "Regular",
+      "gpa": 3.5,
+      "position": "Fullstack Developer",
+      "skills": ["java", "react"]
+    },
+    {
+      "id": 4,
+      "name": "John Doe 1",
+      "dob": "01/01/1991",
+      "university": "Hanoi University of Science and Technology",
+      "trainingSystem": "Regular",
+      "gpa": 3.8,
+      "position": "Backend Developer",
+      "skills": ["java", "c#", "python"]
+    },
+    {
+      "id": 5,
+      "name": "Jane Doe 2",
+      "dob": "02/02/1992",
+      "university": "FPT University",
+      "trainingSystem": "Regular",
+      "gpa": 3.7,
+      "position": "Frontend Developer",
+      "skills": ["react", "figma", "javascript"]
+    },
+    {
+      "id": 6,
+      "name": "Joe Black 3",
+      "dob": "03/03/1993",
+      "university": "National University of Ho Chi Minh City",
+      "trainingSystem": "Distance Learning",
+      "gpa": 3.6,
+      "position": "Fullstack Developer",
+      "skills": ["java", "react", "nodejs"]
+    },
+    {
+      "id": 7,
+      "name": "Alice Green 4",
+      "dob": "04/04/1994",
+      "university": "University of Economics Ho Chi Minh City",
+      "trainingSystem": "Regular",
+      "gpa": 3.9,
+      "position": "Data Scientist",
+      "skills": ["python", "r", "sql"]
+    },
+    {
+      "id": 8,
+      "name": "Bob Brown 5",
+      "dob": "05/05/1995",
+      "university": "Ton Duc Thang University",
+      "trainingSystem": "Distance Learning",
+      "gpa": 3.5,
+      "position": "DevOps Engineer",
+      "skills": ["jenkins", "docker", "kubernetes"]
+    },
+    {
+      "id": 9,
+      "name": "Mary Johnson 6",
+      "dob": "06/06/1996",
+      "university": "Van Lang University",
+      "trainingSystem": "Regular",
+      "gpa": 3.4,
+      "position": "UI/UX Designer",
+      "skills": ["adobe xd", "figma", "sketch"]
+    },
+    {
+      "id": 10,
+      "name": "Tom Hanks 7",
+      "dob": "07/07/1997",
+      "university": "Deakin University",
+      "trainingSystem": "Regular",
+      "gpa": 3.3,
+      "position": "Android Developer",
+      "skills": ["java", "kotlin", "android studio"]
+    },
+    {
+      "id": 11,
+      "name": "Emma Watson 8",
+      "dob": "08/08/1998",
+      "university": "University of Melbourne",
+      "trainingSystem": "Distance Learning",
+      "gpa": 3.2,
+      "position": "iOS Developer",
+      "skills": ["swift", "xcode", "objective-c"]
+    },
+    {
+      "id": 12,
+      "name": "Michael Jackson 9",
+      "dob": "09/09/1999",
+      "university": "RMIT University",
+      "trainingSystem": "Regular",
+      "gpa": 3.1,
+      "position": "Game Developer",
+      "skills": ["unity", "unreal engine", "c++"]
+    }
+  ]
+}
