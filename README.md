@@ -33,7 +33,11 @@
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
-	@@ -41,285 +48,96 @@
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
@@ -109,7 +113,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   Set up CLient Keycloak
   -->
 - Open Keycloak and Login with username & password = admin
-
+ 
    ```
     http://localhost:8080
    ```
@@ -131,21 +135,19 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 - **Installation**
 
   - Download folder and unzip
-
+    
     ```
     https://github.com/wnosphan/CV_Project
     ```
-    or clone
-
-    ```
-    https://github.com/wnosphan/CV_Project.git
-    ```
-
-
 - **cvproject-ui**
   - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
+  
+   - Run the command below if you are running the application for the first time
 
-   - Navigate to `cvproject-ui\src\configs` and open `properties.js`
+      ```
+      npm install
+      ```
+   - Navigate to `cvproject-ui\src\configs` and open properties.js file
 
      ```
       oidc: {
@@ -161,46 +163,10 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       }  
       ```
 
-   - Run the command below if you are running the application for the first time
-
+  - Run the `npm` command below to start the application
       ```
-      npm install
+      npm start
       ```
-
-      ```
-      npm run build
-      ```
-
-      ```
-      docker pull nginx
-      ```
-
-   - In `CV_Project/cvproject-ui` create a Dockerfile
-
-     ```
-     FROM node:18 as build-stage
-      WORKDIR /app
-      COPY . .
-      
-      
-      
-      FROM nginx:1.25.4
-      COPY --from=build-stage /app/build /usr/share/nginx/html
-      EXPOSE 80
-      CMD ["nginx", "-g", "daemon off;"]
-     ```
-
-   - In terminal
-
-     ```
-     docker build -t cvproject .
-     ```
-   - Run image to start the application
-
-     ```
-     docker run -dp 3000:80 cvproject
-     ```
-
       
 - **cvproject-server**
   - Open application.yml and set up enviroment
@@ -220,9 +186,9 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
        client-id: your-client-id
        client-secret: your-client-secret
       ```
-
+    
   - Open CMD in folder
-
+  
       ```
       .\CV_Projectss\CVProject_Server
       ```
@@ -235,7 +201,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       docker run -dp 8085:8088 --name springboot-docker-container -v %cd%:/app spring-boot-docker
       ```
   <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+  
 
 ## Applications URLs
 
@@ -319,20 +285,48 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
 <!-- CONTRIBUTING -->
 ## Contributing
-	@@ -344,12 +162,37 @@ Don't forget to give the project a star! Thanks again!
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contributor
+
+<table>
+  <tr align="center">
     <td align="center"><a href="https://github.com/KuaDtrai"><img src="https://avatars.githubusercontent.com/u/143081364?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>Ho Thanh Kien</b></sub></a><br />💻</a></td>
     <td align="center"><a href="https://github.com/wnosphan"><img src="https://avatars.githubusercontent.com/u/158177389?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>wnosphan</b></sub></a><br />💻</a></td>
     <td align="center"><a href="https://github.com/dokkazy"><img src="https://avatars.githubusercontent.com/u/87236537?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>Võ Công Huy</b></sub></a><br />💻</a></td>
     </td>
     <td align="center"><a href="https://github.com/lock1723"><img src="https://avatars.githubusercontent.com/u/162103568?v=4" width="100px;" alt="Donavon West"/><br /><sub><b>lock1723</b></sub></a><br />💻</a></td>
-
+   
   </tr>
 </table>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-	@@ -368,15 +211,14 @@ Don't forget to give the project a star! Thanks again!
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/wnosphan/CV_Project.svg?style=for-the-badge
+[contributors-url]: https://github.com/wnosphan/CV_Project/graphs/contributors
+[commits-shield]: https://img.shields.io/github/commit-activity/w/wnosphan/CV_Project?style=for-the-badge&labelColor=000000
+[commits-url]: https://github.com/wnosphan/CV_Project/graphs/commit-activity
+[forks-shield]: https://img.shields.io/github/forks/wnosphan/CV_Project.svg?style=for-the-badge
+[forks-url]: https://github.com/wnosphan/CV_Project/network/members
+[stars-shield]: https://img.shields.io/github/stars/wnosphan/CV_Project.svg?style=for-the-badge
+[stars-url]: https://github.com/wnosphan/CV_Project/stargazers
+[issues-shield]: https://img.shields.io/github/issues/wnosphan/CV_Project.svg?style=for-the-badge
 [issues-url]: https://github.com/wnosphan/CV_Project/issues
 [license-shield]: https://img.shields.io/github/license/wnosphan/CV_Project.svg?style=for-the-badge
 [license-url]: https://github.com/wnosphan/CV_Project/blob/master/LICENSE.txt
@@ -347,3 +341,4 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 [keycloak-url]: https://www.keycloak.org/
 [npm.com]: https://img.shields.io/badge/npm-ccc?style=for-the-badge&logo=npm&logoColor=#fff
 [npm-url]: https://www.npmjs.com
+
