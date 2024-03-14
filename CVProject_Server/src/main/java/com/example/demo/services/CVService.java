@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.CvDTO;
+import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.models.CvStatus;
 import com.example.demo.models.User;
@@ -15,10 +16,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CVService implements ICvService{
+public class CVService implements ICvService {
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
 
@@ -29,13 +31,13 @@ public class CVService implements ICvService{
     }
 
     public Cv getCvById(Long id) throws Exception {
-        Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id ="+id));
+        Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id =" + id));
         return cv;
     }
 
     public Cv creatCv(CvDTO cvDTO) throws Exception {
-        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(()-> new Exception("User not found"));
-        Cv newCv =Cv.builder()
+        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
+        Cv newCv = Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
                 .skill(cvDTO.getSkill())
@@ -52,8 +54,8 @@ public class CVService implements ICvService{
 
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception {
         Cv existingCv = getCvById(id);
-        if (existingCv != null){
-            User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(()-> new Exception("User not found"));
+        if (existingCv != null) {
+            User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
             existingCv.setFullName(cvDTO.getFullName());
             existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
             existingCv.setSkill(cvDTO.getSkill());
@@ -69,17 +71,29 @@ public class CVService implements ICvService{
     }
 
     @Override
-    public void deleteCv(Long id) throws Exception {
+    public Cv updateCvStatus(Long id, String status) throws Exception {
+        Cv existingCv = getCvById(id);
+        if (existingCv != null) {
+            if (status.equals("pass")) {
+                existingCv.setStatus(CvStatus.PASS);
+            } else if (status.equals("not_pass")) {
+                existingCv.setStatus(CvStatus.NOTPASS);
+            } else
+                throw new Exception("Status not found");
+            return cvRepository.save(existingCv);
+        }
+        return null;
+    }
 
+    @Override
+    public void deleteCv(Long id) throws Exception {
+        Cv cv = getCvById(id);
+        if (cv != null)
+            cvRepository.delete(cv);
     }
     @Override
-    public Page<CvResponse> searchCvByName(String fullName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return cvRepository.findByFullNameContaining(fullName, pageable).map(CvResponse::fromCv);
-    }
-    @Override
-    public Page<CvResponse> searchCvByCreatedBy(String createdBy, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return cvRepository.findByCreatedBy_UserNameContaining(createdBy, pageable).map(CvResponse::fromCv);
+    public void deleteCvs(ListCvIdDTO ids) throws Exception {
+        List<Long> idList = ids.ids;
+        cvRepository.deleteAllById(idList);
     }
 }

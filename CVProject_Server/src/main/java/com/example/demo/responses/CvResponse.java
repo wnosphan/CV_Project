@@ -1,11 +1,13 @@
 package com.example.demo.responses;
 
 import com.example.demo.models.Cv;
-import com.example.demo.models.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +18,7 @@ public class CvResponse {
     @JsonProperty("full_name")
     private String fullName;
     @JsonProperty("date_of_birth")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String skill;
     private String university;
     @JsonProperty("training_system")
