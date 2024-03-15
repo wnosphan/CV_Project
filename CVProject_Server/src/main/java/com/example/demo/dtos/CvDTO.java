@@ -22,7 +22,7 @@ public class CvDTO {
     private String fullName;
 
     @JsonProperty("date_of_birth")
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
 
     private String skill;
 

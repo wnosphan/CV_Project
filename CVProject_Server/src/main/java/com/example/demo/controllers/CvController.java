@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -123,5 +124,10 @@ public class CvController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file) throws IllegalAccessException {
+        cvService.saveCv(file);
+        return ResponseEntity.ok().build();
     }
 }

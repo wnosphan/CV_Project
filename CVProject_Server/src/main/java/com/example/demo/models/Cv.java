@@ -23,7 +23,7 @@ public class Cv {
     private String fullName;
 
     @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
 
     private String skill;
 
