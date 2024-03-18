@@ -17,28 +17,28 @@ function Home() {
     // const [hasTriedSignin, setHasTriedSignin] = React.useState(false);
     const access_token = auth.user?.access_token;
 
-    const isUser = async () => {
-        fetch(`${properties.api.baseUrl}/hello`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${access_token}`  // Ensure correct format
-            }
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    const { profile } = auth.user;
-                    console.log(profile);
-                    return profile;
-                } else if (response.status === 401) {
-                    console.log('Access token invalid, redirecting to login');
-                } else {
+    // const isUser = async () => {
+    //     fetch(`${properties.api.baseUrl}/hello`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': `Bearer ${access_token}`  // Ensure correct format
+    //         }
+    //     })
+    //         .then(response => {
+    //             if (response.status === 200) {
+    //                 const { profile } = auth.user;
+    //                 console.log(profile);
+    //                 return profile;
+    //             } else if (response.status === 401) {
+    //                 console.log('Access token invalid, redirecting to login');
+    //             } else {
 
-                }
-            })
-            .catch(error => {
-                handleLogError(error);
-            });
-    }
+    //             }
+    //         })
+    //         .catch(error => {
+    //             handleLogError(error);
+    //         });
+    // }
     // async function checkAccessToken(token) {
     //     try {
     //         const response = await Api.hello(token);
@@ -106,7 +106,7 @@ function Home() {
                 <Header className='header'>
                     <CustomHeader />
                 </Header>
-                {isUser() ? (
+                {true ? (
                     <Content className='content'>
                         <Row justify="space-evenly">
                             <MainContent />

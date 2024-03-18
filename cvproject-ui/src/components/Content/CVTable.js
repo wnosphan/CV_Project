@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react'
-import { Table, Tag, Space, Button, Input } from 'antd'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import React, { useState, useRef, memo } from 'react'
+import { Table, Tag, Space, Button, Input, Flex, Popconfirm,Form } from 'antd'
+import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
+import EditableCell from './EditableCell';
 
-
-function CVTable({ dataSource, onDelete, onChange, loading }) {
+function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loading, editProps }) {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
@@ -115,125 +115,194 @@ function CVTable({ dataSource, onDelete, onChange, loading }) {
             ),
     });
 
-    const cvs = dataSource.map((cv) => {
-        return {
-            id: cv.id,
-            name: cv.name,
-            dob: cv.dob,
-            university: cv.university,
-            trainingSystem: cv.trainingSystem,
-            gpa: cv.gpa,
-            position: cv.position,
-            tags: cv.skills
-        }
-
-    });
-
-
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const onSelectChange = (newSelectedRowKeys) => {
-        console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-    };
     // Columns and data
     const columns = [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            title: 'Id',
+            dataIndex: 'key',
+            key: 'key',
             fixed: 'left',
-            width: 120,
-            ...getColumnSearchProps('name'),
+            width: 60,
+        },
+        {
+            title: 'Full Name',
+            dataIndex: 'full_name',
+            key: 'full_name',
+            fixed: 'left',
+            width: 150,
+            ...getColumnSearchProps('full_name'),
+            editable: true,
         },
         {
             title: 'DOB',
-            dataIndex: 'dob',
-            key: 'dob',
-            width: 120
+            dataIndex: 'date_of_birth',
+            key: 'date_of_birth',
+            width: 120,
+            editable: true,
         },
         {
             title: 'University',
             dataIndex: 'university',
             key: 'university',
-            ...getColumnSearchProps('university')
+            ...getColumnSearchProps('university'),
+            editable: true,
         },
         {
-            title: 'TrainingSystem',
-            dataIndex: 'trainingSystem',
-            key: 'trainingSystem',
-            width: 150,
-            ...getColumnSearchProps('trainingSystem'),
+            title: 'Training System',
+            dataIndex: 'training_system',
+            key: 'training_system',
+            width: 180,
+            ...getColumnSearchProps('training_system'),
+            editable: true,
+            sorter: (a, b) => a.training_system.length - b.training_system.length,
         },
         {
             title: 'GPA',
             dataIndex: 'gpa',
             key: 'gpa',
-            width: 80,
+            width: 100,
             ...getColumnSearchProps('gpa'),
             sorter: (a, b) => a.gpa - b.gpa,
+            editable: true,
         },
         {
-            title: 'ApplyPosition',
-            dataIndex: 'position',
-            key: 'position',
-            width: 150,
-            ...getColumnSearchProps('position'),
-            sorter: (a, b) => a.position.length - b.position.length,
+            title: 'Apply Position',
+            dataIndex: 'apply_position',
+            key: 'apply_position',
+            width: 200,
+            ...getColumnSearchProps('apply_position'),
+            sorter: (a, b) => a.apply_position.length - b.apply_position.length,
+            editable: true,
         },
         {
             title: 'Skills',
-            dataIndex: 'tags',
-            key: 'tags',
-            render: (tags) => {
-                <span>
-                    {tags.map(tag => {
-                        let color = tag.length > 5 ? 'geekblue' : 'green';
-                        return (
-                            <Tag color={color} key={tag}>
-                                {tag}
-                            </Tag>
-                        )
-                    })}
-                </span>
+            dataIndex: 'skill',
+            key: 'skill',
+            editable: true,
+            render: (text) => {
+                const split = text.split(',');
+                const result = split.map((item) => item = item.trim());
+                return (
+                    <>
+                        <Flex gap={'4px'} wrap='wrap'>
+                            {result.map((item, index) => {
+                                return (
+                                    <Tag key={index} color={'purple'}>
+                                        {item.toUpperCase()}
+                                    </Tag>
+                                )
+                            })}
+                        </Flex>
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            width: 100,
+            render(status) {
+                return (
+                    <Tag color={status === 'PASS' ? 'green' : 'red'}>
+                        {status}
+                    </Tag>
+                )
             }
         },
         {
             title: 'Action',
             key: 'action',
-            render: (text, record) => (
-                <Space size="middle">
-                    <Button icon={<EditOutlined />} type='primary' shape='circle'></Button>
-                    <Button icon={<DeleteOutlined />} type='default' shape='circle' danger onClick={(e) => onDelete(record.id, e)}></Button>
-                </Space>
-            ),
             fixed: 'right',
-            width: 150
+            width: 150,
+            render: (_, record) => {
+                const editable = editProps.isEditing(record);
+                return (
+
+                    <Space size="middle">
+                        {editable ? (
+                            <>
+                                <Button icon={<SaveOutlined />} type="primary" onClick={() => editProps.save(record.key)}>
+                                </Button>
+                                <Popconfirm title="Chắc chưa?" onConfirm={editProps.cancel}>
+                                    <Button danger icon={<CloseCircleOutlined />}></Button>
+                                </Popconfirm>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    icon={<EditOutlined />}
+                                    disabled={editable === ''}
+                                    onClick={() => editProps.edit(record)}
+                                    type='primary' shape='circle'></Button>
+                                <Button
+                                    icon={<DeleteOutlined />}
+                                    type='default' shape='circle'
+                                    danger onClick={() => onDelete(record.key)}></Button>
+                            </>
+                        )}
+                    </Space>
+                );
+            },
+
         },
     ];
+    const mergedColumns = columns.map((col) => {
+        if (!col.editable) {
+            return col;
+        }
+        return {
+            ...col,
+            onCell: (record) => ({
+                record,
+                inputType: col.dataIndex === 'gpa' ? 'number' : 'text',
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: editProps.isEditing(record),
+            }),
+        };
+    });
+    const cvs = dataSource.map((cv) => {
+        return {
+            key: cv.id,
+            full_name: cv.full_name,
+            date_of_birth: cv.date_of_birth,
+            university: cv.university,
+            training_system: cv.training_system,
+            gpa: cv.gpa,
+            apply_position: cv.apply_position,
+            skill: cv.skill,
+            create_by: cv.create_by,
+            status: cv.status,
+            link_cv: cv.link_cv
+        }
 
+    });
     return (
         <>
-            <Table
-                rowSelection={rowSelection}
-                dataSource={cvs}
-                columns={columns}
-                scroll={{
-                    x: 1600,
-                }}
-                pagination={{
-                    pageSize: 5,
-                    // simple: true,
-                    showQuickJumper: true,
-                    position: ['bottomCenter']
-                }}
+            <Form form={editProps.form} component={false}>
+                <Table
+                    rowSelection={rowSelection}
+                    dataSource={cvs}
+                    columns={mergedColumns}
+                    rowClassName="editable-row"
+                    components={{
+                        body: {
+                            cell: EditableCell,
+                        },
+                    }}
+                    scroll={{
+                        x: 1600,
+                    }}
+                    pagination={pagination}
+                    loading={loading}
+                    onChange={onChange}
 
-            />
+                />
+            </Form>
+
         </>
     )
 }
 
-export default CVTable
+export default memo(CVTable)
