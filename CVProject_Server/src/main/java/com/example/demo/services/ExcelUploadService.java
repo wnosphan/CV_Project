@@ -39,7 +39,7 @@ public class ExcelUploadService {
                             cv.setFullName(cell.getStringCellValue());
                             break;
                         case 1:
-                            cv.setDateOfBirth(cell.getDateCellValue());
+                            cv.setDateOfBirth(cell.getLocalDateTimeCellValue().toLocalDate());
                             break;
                         case 2:
                             cv.setTrainingSystem(cell.getStringCellValue());
