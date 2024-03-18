@@ -5,7 +5,7 @@ export const properties = {
         clientSecret: 'oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo'
     },
     api: {
-        baseUrl: 'http://localhost:3000'
+        baseUrl: 'http://localhost:8088'
     },
     project: {
         url: 'http://localhost:3001'
