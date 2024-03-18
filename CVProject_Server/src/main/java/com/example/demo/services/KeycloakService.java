@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -11,17 +12,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class KeycloakService {
-
+    @Value("${keycloak.realm}")
+    private String realm;
     @Value("${keycloak.base-url}")
     private String url;
-
     @Value("${keycloak.client-secret}")
     private String clientSecret;
-
     @Value("${keycloak.client-id}")
     private String clientId;
-
     @Autowired
     private RestTemplate restTemplate;
 

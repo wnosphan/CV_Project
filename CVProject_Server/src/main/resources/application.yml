@@ -6,9 +6,9 @@ fe:
 
 keycloak:
   base-url: http://localhost:8080/realms/cvproject/protocol/openid-connect/token/introspect
-  realm: cvproject
-  client-id: react-auth
-  client-secret: oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo
+  realm: SpringBootDemoKeyCloak
+  client-id: demo
+  client-secret: kWPgCKJeyvg3rVQjBxbWWeHw16VXAjlY
 api:
   prefix: api
 spring:

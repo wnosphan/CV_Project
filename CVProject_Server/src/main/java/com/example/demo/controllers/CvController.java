@@ -52,13 +52,22 @@ public class CvController {
     ) {
         try {
             Page<CvResponse> cvList = cvService.getAllCv(page, limit);
-            int totalPage = cvList.getTotalPages();
-            int totalElement = cvList.getNumberOfElements();
             List<CvResponse> cvs = cvList.getContent();
             return ResponseEntity.ok(CvListResponse.builder()
                     .cvResponses(cvs)
-                    .totalPage(totalPage)
-                    .totalEmelent(totalElement)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{create_by}")
+    private ResponseEntity<?> getListCV(
+            @Valid @PathVariable("create_by") Long createById
+    ) {
+        try {
+            return ResponseEntity.ok(CvListResponse.builder()
+                    .cvResponses(cvService.getAllCv(createById))
                     .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -69,7 +78,7 @@ public class CvController {
     private ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
         try {
             Cv cv = cvService.getCvById(id);
-            return ResponseEntity.ok(cv);
+            return ResponseEntity.ok(CvResponse.fromCv(cv));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

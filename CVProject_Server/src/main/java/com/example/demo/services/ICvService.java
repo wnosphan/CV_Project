@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface ICvService {
     public Page<CvResponse> getAllCv(int page, int size);
+    public List<CvResponse> getAllCv(long createBy) throws Exception;
     public Cv getCvById(Long id) throws Exception;
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;

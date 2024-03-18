@@ -15,8 +15,5 @@ import java.util.List;
 public class CvListResponse {
     @JsonProperty("cvs_list")
     public List<CvResponse> cvResponses;
-    @JsonProperty("total_page")
-    public int totalPage;
-    @JsonProperty("total_emelent")
-    public int totalEmelent;
+
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-public class Controller {
+public class KeycloakController {
     private final KeycloakService keycloakService;
 
     @PostMapping("/hello")
