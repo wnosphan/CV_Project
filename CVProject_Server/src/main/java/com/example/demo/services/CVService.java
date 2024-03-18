@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,18 @@ public class CVService implements ICvService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Cv> cvPage = cvRepository.findAll(pageable);
         return cvPage.map(CvResponse::fromCv);
+    }
+
+    @Override
+    public List<CvResponse> getAllCv(Long id) {
+        if (userRepository.findById(id).isPresent()) {
+            List<Cv> cvs = cvRepository.findAllByCreatedById(id);
+            return cvs.stream()
+                    .map(CvResponse::fromCv)
+                    .collect(Collectors.toList());
+        }
+
+        return null;
     }
 
     public Cv getCvById(Long id) throws Exception {
@@ -91,6 +104,7 @@ public class CVService implements ICvService {
         if (cv != null)
             cvRepository.delete(cv);
     }
+
     @Override
     public void deleteCvs(ListCvIdDTO ids) throws Exception {
         List<Long> idList = ids.ids;
