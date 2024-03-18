@@ -14,10 +14,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -109,5 +110,18 @@ public class CVService implements ICvService {
     public void deleteCvs(ListCvIdDTO ids) throws Exception {
         List<Long> idList = ids.ids;
         cvRepository.deleteAllById(idList);
+    }
+    @Override
+    public void saveCv(MultipartFile file) throws IllegalAccessException {
+        if(ExcelUploadService.isValidExcelFile(file)){
+            List<Cv> cvList = null;
+            try {
+                cvList = ExcelUploadService.getCvsFromExcel(file.getInputStream());
+                cvRepository.saveAll(cvList);
+            } catch (IOException e) {
+                throw new IllegalAccessException("The file is not valid!");
+            }
+
+        }
     }
 }
