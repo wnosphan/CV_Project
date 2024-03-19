@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.CvDTO;
+import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.models.CvStatus;
@@ -8,6 +9,7 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.CvResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -101,6 +106,30 @@ public class CVService implements ICvService {
     }
 
     @Override
+    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception {
+        for (CvStatusDTO cvStatusDTO : list) {
+            Long cvId = cvStatusDTO.getId();
+            String newStatus = cvStatusDTO.getStatus();
+
+            Optional<Cv> cvOptional = cvRepository.findById(cvId);
+            if (cvOptional.isPresent()) {
+                Cv cv = cvOptional.get();
+                if (newStatus.equals("pass") ){
+                    cv.setStatus(CvStatus.PASS);
+                    cvRepository.save(cv);
+                } else if (newStatus.equals("not_pass") ){
+                    cv.setStatus(CvStatus.NOTPASS);
+                    cvRepository.save(cv);
+                } else {
+                    System.err.println("Invalid status: " + newStatus + " for CV ID: " + cvId);
+                }
+            } else {
+                System.err.println("CV not found with ID: " + cvId);
+            }
+        }
+    }
+
+    @Override
     public void deleteCv(Long id) throws Exception {
         Cv cv = getCvById(id);
         if (cv != null)
@@ -108,13 +137,14 @@ public class CVService implements ICvService {
     }
 
     @Override
-    public void deleteCvs(ListCvIdDTO ids) throws Exception {
+    public void deleteCvs(ListCvIdDTO ids) {
         List<Long> idList = ids.ids;
         cvRepository.deleteAllById(idList);
     }
+
     @Override
     public void saveCv(MultipartFile file) throws IllegalAccessException {
-        if(ExcelUploadService.isValidExcelFile(file)){
+        if (ExcelUploadService.isValidExcelFile(file)) {
             List<Cv> cvList = null;
             try {
                 cvList = ExcelUploadService.getCvsFromExcel(file.getInputStream());
