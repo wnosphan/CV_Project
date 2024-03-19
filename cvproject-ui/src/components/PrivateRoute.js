@@ -3,7 +3,7 @@ import { Spin, Typography } from 'antd'
 const { Title } = Typography
 
 function PrivateRoute({ children }) {
-    const auth = useAuth()
+    const auth = useAuth();
 
     const textAlignStyle = { textAlign: "center" }
     const subTitleStyle = { color: 'grey' }

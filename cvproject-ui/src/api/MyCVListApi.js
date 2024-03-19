@@ -8,8 +8,8 @@ export const myCVListApi = {
     fileUpload
 }
 
-function getCV() {
-    return instance.get(`/api/cv`);
+function getCV(created_id) {
+    return instance.get(`/api/cv/user/${created_id}`);
 }
 
 function deleteCV(id) {
@@ -30,9 +30,13 @@ function deleteCVs(ids) {
 }
 
 function fileUpload(file) {
-    return axios.post('https://api.escuelajs.co/api/v1/files/upload', file, {
+    return instance.post('/upload', file, {
         headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data",
+            // 'Access-Control-Allow-Origin': '*',
+            // 'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+            // 'Accees-Control-Allow-Credentials': 'false',
         }
     });
 }
