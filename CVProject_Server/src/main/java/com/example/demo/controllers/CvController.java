@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dtos.CvDTO;
+import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.IdDTO;
 import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
@@ -32,14 +33,9 @@ public class CvController {
     private final ICvService cvService;
 
     @PostMapping("")
-    private ResponseEntity<?> postCV(
-            @Valid @RequestBody CvDTO cvDTO,
-            BindingResult result) throws Exception {
+    private ResponseEntity<?> postCV(@Valid @RequestBody CvDTO cvDTO, BindingResult result) throws Exception {
         if (result.hasErrors()) {
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
+            List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
             return ResponseEntity.badRequest().body(errorMessages);
         }
         Cv cv = cvService.creatCv(cvDTO);
@@ -47,18 +43,13 @@ public class CvController {
     }
 
     @GetMapping("")
-    private ResponseEntity<?> getListCV(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "limit", defaultValue = "10") int limit
-    ) {
+    private ResponseEntity<?> getListCV(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "limit", defaultValue = "10") int limit) {
         try {
             Page<CvResponse> cvList = cvService.getAllCv(page, limit);
             int totalPage = cvList.getTotalPages();
             int totalElement = cvList.getNumberOfElements();
             List<CvResponse> cvs = cvList.getContent();
-            return ResponseEntity.ok(CvListResponse.builder()
-                    .cvResponses(cvs)
-                    .build());
+            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -68,9 +59,7 @@ public class CvController {
     private ResponseEntity<?> getAll(@Valid @PathVariable("created_id") Long id) {
         try {
             List<CvResponse> cv = cvService.getAllCv(id);
-            return ResponseEntity.ok(CvListResponse.builder()
-                    .cvResponses(cv)
-                    .build());
+            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cv).build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -87,10 +76,7 @@ public class CvController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<?> updateCv(
-            @PathVariable long id,
-            @Valid @RequestBody CvDTO cvDTO
-    ) {
+    private ResponseEntity<?> updateCv(@PathVariable long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
             Cv updateCv = cvService.updateCv(id, cvDTO);
             return ResponseEntity.ok(updateCv);
@@ -100,10 +86,7 @@ public class CvController {
     }
 
     @PatchMapping("/{id}")
-    private ResponseEntity<?> updateCvStatus(
-            @PathVariable long id,
-            @Valid @RequestParam("status") String status
-    ) {
+    private ResponseEntity<?> updateCvStatus(@PathVariable long id, @Valid @RequestParam("status") String status) {
         try {
             Cv cv = cvService.updateCvStatus(id, status);
             return ResponseEntity.ok(cv);
@@ -112,10 +95,18 @@ public class CvController {
         }
     }
 
+    @PatchMapping("")
+    private ResponseEntity<?> updateListCvStatus(@Valid @RequestBody List<CvStatusDTO> ids) {
+        try {
+            cvService.updateListCvStatus(ids);
+            return ResponseEntity.ok("CV status list has been updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
-    private ResponseEntity<?> deleteCv(
-            @PathVariable long id
-    ) {
+    private ResponseEntity<?> deleteCv(@PathVariable long id) {
         try {
             cvService.deleteCv(id);
             return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
@@ -125,9 +116,7 @@ public class CvController {
     }
 
     @DeleteMapping("")
-    private ResponseEntity<?> deleteCvs(
-            @Valid @RequestBody ListCvIdDTO ids
-    ) {
+    private ResponseEntity<?> deleteCvs(@Valid @RequestBody ListCvIdDTO ids) {
         try {
             cvService.deleteCvs(ids);
             return ResponseEntity.ok("List CV deleted successfully!");
@@ -135,6 +124,7 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file) throws IllegalAccessException {
         cvService.saveCv(file);

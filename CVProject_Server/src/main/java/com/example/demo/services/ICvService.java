@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.CvDTO;
+import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.responses.CvResponse;
@@ -16,6 +17,7 @@ public interface ICvService {
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
     public Cv updateCvStatus(Long id, String status) throws Exception;
+    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception;
     public void deleteCv(Long id) throws Exception;
     public void deleteCvs(ListCvIdDTO id) throws Exception;
     public void saveCv(MultipartFile file) throws IllegalAccessException;
