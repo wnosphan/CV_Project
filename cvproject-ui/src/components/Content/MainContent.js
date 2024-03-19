@@ -1,22 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, Upload } from 'antd';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification,Upload } from 'antd';
 import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
 import useMounted from '../../hooks/useMounted'
-import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { paginationProps, modalProps, uploadProps } from './CommonProps';
-
+import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
+import { paginationProps, modalDeleteProps, modalUploadProps } from './CommonProps';
+const { Dragger } = Upload;
 
 
 const MainContent = () => {
     // const [dataSource, setDataSource] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [excelFile, setExcelFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [tableData, setTableData] = useState({
         data: [],
-        pagination: {...paginationProps},
+        pagination: { ...paginationProps },
         loading: false,
         currentPage: 1
     });
@@ -34,12 +38,12 @@ const MainContent = () => {
             Table.SELECTION_INVERT,
             Table.SELECTION_NONE,
         ],
-
     };
 
+    /**Get all */
     const handleCV = useCallback(async () => {
         setTableData((tableData) => ({ ...tableData, loading: true }));
-        await myCVListApi.getCV().then((response) => {
+        await myCVListApi.getCV(1).then((response) => {
             console.log(response.data);
             if (isMounted.current) {
                 setTableData({
@@ -115,9 +119,10 @@ const MainContent = () => {
         form
     }
 
+    /*Delete*/
     const onDelete = (key) => {
         Modal.confirm({
-            ...modalProps,
+            ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCV(key)
                     .catch((error) => {
@@ -125,8 +130,12 @@ const MainContent = () => {
                     });
                 await onChangeSelectRow(key);
                 await handleCV();
-
+                api.success({
+                    message: 'Xóa thành công',
+                    duration: 2,
+                })
             },
+
         })
     }
 
@@ -135,33 +144,88 @@ const MainContent = () => {
     }
 
     /** Delete multiple row */
-    const handleDelete = async () => {
+    const onMultipleDelete = async () => {
         Modal.confirm({
-            ...modalProps,
+            ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCVs(selectedRowKeys).catch((error) => {
                     handleLogError(error);
                 });
                 await handleCV();
                 setSelectedRowKeys([]);
+                api.success({
+                    message: 'Xóa thành công',
+                    duration: 2,
+                })
             },
         })
     }
+    const onUpload = (file) => {
+        if(excelFile === null){
+            setVisible(false);
+            return;
+        }
+        const formData = new FormData();
+        formData.append('excel', file);
+        setUploading(true);
+        myCVListApi.fileUpload(formData).then((response) => {
+            console.log(response.data);
+            setExcelFile(null);
+            api.success({
+                message: 'Tải lên thành công',
+                duration: 2,
+            })
+        }).catch((error) => {
+            handleLogError(error);
+        }).finally(() => {
+            setUploading(false);
+        });
 
+    }
+    const uploadProps = {
+        maxCount: 1,
+        listType: 'picture',
+        accept: '.xlsx, .xls, .csv',
+        // customRequest: ({ file }) => {
+        //     onUpload(file);
+        // }
+        beforeUpload: ({file}) => {
+            setExcelFile(file);
+            console.log(excelFile);
+            return false;
+        },
+        excelFile
+    }
 
 
     return (
         <Col span={23}>
+            {contextHolder}
             <Flex vertical gap={'1rem'}>
                 <Card style={{ height: 80 }}>
                     <Flex vertical>
                         <Flex gap="1rem" justify='flex-end' align='center'>
-                            <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={handleDelete}>Delete</Button>
+                            <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
                             <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large'>Apply</Button>
                             <Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button>
-                            <Upload {...uploadProps}>
-                                <Button icon={<FolderAddOutlined />} size='large'>Import</Button>
-                            </Upload>
+                            <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
+                            <Modal open={visible}
+                                {...modalUploadProps}
+                                onOk={onUpload}
+                                confirmLoading={uploading}
+                                onCancel={() => setVisible(false)}
+                            >
+                                <Dragger {...uploadProps}>
+                                    <p className="ant-upload-drag-icon">
+                                        <InboxOutlined />
+                                    </p>
+                                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                    <p className="ant-upload-hint">
+                                        Support for a single or bulk upload. Strictly prohibited from uploading company data or other
+                                        banned files.
+                                    </p>
+                                </Dragger>
+                            </Modal>
                         </Flex>
                     </Flex>
                 </Card>

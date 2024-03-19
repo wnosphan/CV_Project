@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "react-oidc-context";
 import { properties } from './configs/properties';
+import { BrowserRouter } from 'react-router-dom';
 
 const oidcConfig = {
   // authority: "http://localhost:8080/realms/cvproject",
