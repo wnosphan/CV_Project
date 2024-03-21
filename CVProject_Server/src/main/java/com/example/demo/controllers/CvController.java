@@ -27,8 +27,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/cv")
-@CrossOrigin(origins = "${fe.base-url}")
-
+@CrossOrigin(origins = "${fe.base-url}",
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH}
+)
 @RequiredArgsConstructor
 public class CvController {
 
@@ -95,6 +98,7 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @PatchMapping("")
     private ResponseEntity<?> updateListCvStatus(@Valid @RequestBody List<CvStatusDTO> ids) {
