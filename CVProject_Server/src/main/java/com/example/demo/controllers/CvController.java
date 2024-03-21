@@ -47,9 +47,8 @@ public class CvController {
         try {
             Page<CvResponse> cvList = cvService.getAllCv(page, limit);
             int totalPage = cvList.getTotalPages();
-            int totalElement = cvList.getNumberOfElements();
             List<CvResponse> cvs = cvList.getContent();
-            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).build());
+            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
