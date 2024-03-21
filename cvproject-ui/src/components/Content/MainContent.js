@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, notification,Upload } from 'antd';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification, Upload } from 'antd';
+import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
 import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
 import useMounted from '../../hooks/useMounted'
-import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
-import { paginationProps, modalDeleteProps, modalUploadProps } from './CommonProps';
+import { paginationProps, modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
+import { NOTIFICATION, STATUS } from '../../configs'
 const { Dragger } = Upload;
 
 
@@ -17,6 +18,7 @@ const MainContent = () => {
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [tableData, setTableData] = useState({
         data: [],
@@ -27,8 +29,36 @@ const MainContent = () => {
     const { isMounted } = useMounted();
 
     const onSelectChange = (newSelectedRowKeys) => {
+        const status = [];
+        newSelectedRowKeys.forEach((item) => {
+            tableData.data.forEach((data) => {
+                if (data.id === item) {
+                    switch (data.status) {
+                        case "PASS":
+                            status.push({
+                                id: item,
+                                status: STATUS.NOT_PASS
+                            });
+                            break;
+                        case "NOTPASS":
+                            status.push({
+                                id: item,
+                                status: STATUS.PASS
+                            });
+                            break;
+                        default:
+                            throw new Error('Invalid status');
+
+                    }
+
+                }
+            });
+        })
+
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+        console.log('selectedStatus changed:', status);
         setSelectedRowKeys(newSelectedRowKeys);
+        setSelectedStatus(status);
     };
     const rowSelection = {
         selectedRowKeys,
@@ -44,7 +74,7 @@ const MainContent = () => {
     const handleCV = useCallback(async () => {
         setTableData((tableData) => ({ ...tableData, loading: true }));
         await myCVListApi.getCV(1).then((response) => {
-            console.log(response.data);
+            console.log(response.data.cvs_list);
             if (isMounted.current) {
                 setTableData({
                     data: response.data.cvs_list,
@@ -52,7 +82,6 @@ const MainContent = () => {
                     loading: false,
                 });
             }
-            // setDataSource(response.data.cvs_list);
         }).catch((error) => {
             handleLogError(error);
         });
@@ -107,7 +136,7 @@ const MainContent = () => {
             setTableData({ ...tableData, data: newData });
             setEditingKey('');
         } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
+            handleLogError(errInfo);
         }
     };
     const editProps = {
@@ -125,15 +154,23 @@ const MainContent = () => {
             ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCV(key)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            onChangeSelectRow(key);
+                            handleCV();
+                            api.success({
+                                message: NOTIFICATION.DELETE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
                     .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.DELETE.ERROR,
+                            duration: 2,
+                        })
                         handleLogError(error);
                     });
-                await onChangeSelectRow(key);
-                await handleCV();
-                api.success({
-                    message: 'Xóa thành công',
-                    duration: 2,
-                })
             },
 
         })
@@ -148,20 +185,57 @@ const MainContent = () => {
         Modal.confirm({
             ...modalDeleteProps,
             onOk: async () => {
-                await myCVListApi.deleteCVs(selectedRowKeys).catch((error) => {
-                    handleLogError(error);
-                });
-                await handleCV();
-                setSelectedRowKeys([]);
-                api.success({
-                    message: 'Xóa thành công',
-                    duration: 2,
-                })
+                await myCVListApi.deleteCVs(selectedRowKeys)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            handleCV();
+                            setSelectedRowKeys([]);
+                            api.success({
+                                message: NOTIFICATION.DELETE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
+                    .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.DELETE.ERROR,
+                            duration: 2,
+                        });
+                        handleLogError(error);
+                    });
+
             },
         })
     }
+
+    const onUpdateMultipleStatus = async () => {
+        Modal.confirm({
+            ...modalUpdateStatusProps,
+            onOk: async () => {
+                await myCVListApi.updateMultipleStatus(selectedStatus)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            handleCV();
+                            setSelectedStatus([]);
+                            api.success({
+                                message: NOTIFICATION.UPDATE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
+                    .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.UPDATE.ERROR,
+                            duration: 2,
+                        });
+                        handleLogError(error);
+                    });
+            },
+        })
+    }
+
     const onUpload = (file) => {
-        if(excelFile === null){
+        if (excelFile === null) {
             setVisible(false);
             return;
         }
@@ -172,7 +246,7 @@ const MainContent = () => {
             console.log(response.data);
             setExcelFile(null);
             api.success({
-                message: 'Tải lên thành công',
+                message: NOTIFICATION.UPLOAD.SUCCESS,
                 duration: 2,
             })
         }).catch((error) => {
@@ -186,17 +260,16 @@ const MainContent = () => {
         maxCount: 1,
         listType: 'picture',
         accept: '.xlsx, .xls, .csv',
-        // customRequest: ({ file }) => {
-        //     onUpload(file);
-        // }
-        beforeUpload: ({file}) => {
+        onRemove: () => {
+            setExcelFile(null);
+        },
+        beforeUpload: (file) => {
             setExcelFile(file);
-            console.log(excelFile);
             return false;
         },
         excelFile
     }
-
+    console.log('excelFile', excelFile);
 
     return (
         <Col span={23}>
@@ -206,12 +279,12 @@ const MainContent = () => {
                     <Flex vertical>
                         <Flex gap="1rem" justify='flex-end' align='center'>
                             <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
-                            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large'>Apply</Button>
+                            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
                             <Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button>
                             <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
                             <Modal open={visible}
                                 {...modalUploadProps}
-                                onOk={onUpload}
+                                onOk={() => onUpload(excelFile)}
                                 confirmLoading={uploading}
                                 onCancel={() => setVisible(false)}
                             >

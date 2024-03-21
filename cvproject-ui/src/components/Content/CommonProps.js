@@ -5,7 +5,7 @@ export const paginationProps = {
     // simple: true,
     showQuickJumper: true,
     position: ['bottomCenter'],
-    pageSize: 5
+    pageSize: 10
 }
 
 export const modalDeleteProps = {
@@ -24,6 +24,19 @@ export const modalDeleteProps = {
 
 export const modalUploadProps = {
     title: 'Tải lên CV',
+    okText: 'Ok',
+    cancelText: 'Cancel',
+    okType: 'primary',
+    maskClosable: true,
+    mask: true,
+    keyboard: true,
+    closable: true,
+    centered: true,
+    keyboard: true,
+}
+
+export const modalUpdateStatusProps = {
+    title: 'Mày có chắc là muốn update?',
     okText: 'Ok',
     cancelText: 'Cancel',
     okType: 'primary',

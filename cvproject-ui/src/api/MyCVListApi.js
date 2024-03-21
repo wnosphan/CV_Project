@@ -5,7 +5,8 @@ export const myCVListApi = {
     getCV,
     deleteCV,
     deleteCVs,
-    fileUpload
+    fileUpload,
+    updateMultipleStatus
 }
 
 function getCV(created_id) {
@@ -33,12 +34,18 @@ function fileUpload(file) {
     return instance.post('/upload', file, {
         headers: {
             "Content-Type": "multipart/form-data",
-            // 'Access-Control-Allow-Origin': '*',
-            // 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-            // 'Accees-Control-Allow-Credentials': 'false',
         }
     });
+}
+
+function updateMultipleStatus(ids) {
+    return instance.patch(`/api/cv/`, {
+        data: ids
+    }, {
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
 }
 
 // -- Axios

@@ -5,13 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "react-oidc-context";
 import { properties } from './configs/properties';
-import { BrowserRouter } from 'react-router-dom';
 
 const oidcConfig = {
-  // authority: "http://localhost:8080/realms/cvproject",
-  // client_id: "react-auth",
-  // redirect_uri: "http://localhost:3000",
-  // client_secret: "oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo",
   authority: properties.oidc.authority,
   client_id: properties.oidc.clientId,
   redirect_uri: properties.project.url,
@@ -24,6 +19,8 @@ const oidcConfig = {
     )
   }
 }
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider {...oidcConfig}>
