@@ -1,30 +1,64 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, Upload } from 'antd';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification, Upload } from 'antd';
+import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
 import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
 import useMounted from '../../hooks/useMounted'
-import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { paginationProps, modalProps, uploadProps } from './CommonProps';
-
+import { paginationProps, modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
+import { NOTIFICATION, STATUS } from '../../configs'
+const { Dragger } = Upload;
 
 
 const MainContent = () => {
     // const [dataSource, setDataSource] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [excelFile, setExcelFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [tableData, setTableData] = useState({
         data: [],
-        pagination: {...paginationProps},
+        pagination: { ...paginationProps },
         loading: false,
         currentPage: 1
     });
     const { isMounted } = useMounted();
 
     const onSelectChange = (newSelectedRowKeys) => {
+        const status = [];
+        newSelectedRowKeys.forEach((item) => {
+            tableData.data.forEach((data) => {
+                if (data.id === item) {
+                    switch (data.status) {
+                        case "PASS":
+                            status.push({
+                                id: item,
+                                status: STATUS.NOT_PASS
+                            });
+                            break;
+                        case "NOTPASS":
+                            status.push({
+                                id: item,
+                                status: STATUS.PASS
+                            });
+                            break;
+                        default:
+                            throw new Error('Invalid status');
+
+                    }
+
+                }
+            });
+        })
+
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+        console.log('selectedStatus changed:', status);
         setSelectedRowKeys(newSelectedRowKeys);
+        setSelectedStatus(status);
     };
     const rowSelection = {
         selectedRowKeys,
@@ -34,13 +68,13 @@ const MainContent = () => {
             Table.SELECTION_INVERT,
             Table.SELECTION_NONE,
         ],
-
     };
 
+    /**Get all */
     const handleCV = useCallback(async () => {
         setTableData((tableData) => ({ ...tableData, loading: true }));
-        await myCVListApi.getCV().then((response) => {
-            console.log(response.data);
+        await myCVListApi.getCV(1).then((response) => {
+            console.log(response.data.cvs_list);
             if (isMounted.current) {
                 setTableData({
                     data: response.data.cvs_list,
@@ -48,7 +82,6 @@ const MainContent = () => {
                     loading: false,
                 });
             }
-            // setDataSource(response.data.cvs_list);
         }).catch((error) => {
             handleLogError(error);
         });
@@ -103,7 +136,7 @@ const MainContent = () => {
             setTableData({ ...tableData, data: newData });
             setEditingKey('');
         } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
+            handleLogError(errInfo);
         }
     };
     const editProps = {
@@ -115,18 +148,31 @@ const MainContent = () => {
         form
     }
 
+    /*Delete*/
     const onDelete = (key) => {
         Modal.confirm({
-            ...modalProps,
+            ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCV(key)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            onChangeSelectRow(key);
+                            handleCV();
+                            api.success({
+                                message: NOTIFICATION.DELETE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
                     .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.DELETE.ERROR,
+                            duration: 2,
+                        })
                         handleLogError(error);
                     });
-                await onChangeSelectRow(key);
-                await handleCV();
-
             },
+
         })
     }
 
@@ -135,33 +181,124 @@ const MainContent = () => {
     }
 
     /** Delete multiple row */
-    const handleDelete = async () => {
+    const onMultipleDelete = async () => {
         Modal.confirm({
-            ...modalProps,
+            ...modalDeleteProps,
             onOk: async () => {
-                await myCVListApi.deleteCVs(selectedRowKeys).catch((error) => {
-                    handleLogError(error);
-                });
-                await handleCV();
-                setSelectedRowKeys([]);
+                await myCVListApi.deleteCVs(selectedRowKeys)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            handleCV();
+                            setSelectedRowKeys([]);
+                            api.success({
+                                message: NOTIFICATION.DELETE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
+                    .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.DELETE.ERROR,
+                            duration: 2,
+                        });
+                        handleLogError(error);
+                    });
+
             },
         })
     }
 
+    const onUpdateMultipleStatus = async () => {
+        Modal.confirm({
+            ...modalUpdateStatusProps,
+            onOk: async () => {
+                await myCVListApi.updateMultipleStatus(selectedStatus)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            handleCV();
+                            setSelectedStatus([]);
+                            api.success({
+                                message: NOTIFICATION.UPDATE.SUCCESS,
+                                duration: 2,
+                            })
+                        }
+                    })
+                    .catch((error) => {
+                        api.error({
+                            message: NOTIFICATION.UPDATE.ERROR,
+                            duration: 2,
+                        });
+                        handleLogError(error);
+                    });
+            },
+        })
+    }
 
+    const onUpload = (file) => {
+        if (excelFile === null) {
+            setVisible(false);
+            return;
+        }
+        const formData = new FormData();
+        formData.append('excel', file);
+        setUploading(true);
+        myCVListApi.fileUpload(formData).then((response) => {
+            console.log(response.data);
+            setExcelFile(null);
+            api.success({
+                message: NOTIFICATION.UPLOAD.SUCCESS,
+                duration: 2,
+            })
+        }).catch((error) => {
+            handleLogError(error);
+        }).finally(() => {
+            setUploading(false);
+        });
+
+    }
+    const uploadProps = {
+        maxCount: 1,
+        listType: 'picture',
+        accept: '.xlsx, .xls, .csv',
+        onRemove: () => {
+            setExcelFile(null);
+        },
+        beforeUpload: (file) => {
+            setExcelFile(file);
+            return false;
+        },
+        excelFile
+    }
+    console.log('excelFile', excelFile);
 
     return (
         <Col span={23}>
+            {contextHolder}
             <Flex vertical gap={'1rem'}>
                 <Card style={{ height: 80 }}>
                     <Flex vertical>
                         <Flex gap="1rem" justify='flex-end' align='center'>
-                            <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={handleDelete}>Delete</Button>
-                            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large'>Apply</Button>
+                            <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
+                            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
                             <Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button>
-                            <Upload {...uploadProps}>
-                                <Button icon={<FolderAddOutlined />} size='large'>Import</Button>
-                            </Upload>
+                            <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
+                            <Modal open={visible}
+                                {...modalUploadProps}
+                                onOk={() => onUpload(excelFile)}
+                                confirmLoading={uploading}
+                                onCancel={() => setVisible(false)}
+                            >
+                                <Dragger {...uploadProps}>
+                                    <p className="ant-upload-drag-icon">
+                                        <InboxOutlined />
+                                    </p>
+                                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                    <p className="ant-upload-hint">
+                                        Support for a single or bulk upload. Strictly prohibited from uploading company data or other
+                                        banned files.
+                                    </p>
+                                </Dragger>
+                            </Modal>
                         </Flex>
                     </Flex>
                 </Card>

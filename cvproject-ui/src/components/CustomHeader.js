@@ -1,8 +1,8 @@
 import React, { memo } from 'react'
 import { useAuth } from "react-oidc-context"
-import { properties } from '../configs/properties'
 import { Flex, Typography, Button } from 'antd';
 import { PoweroffOutlined, UserOutlined } from '@ant-design/icons';
+import { properties } from '../configs/properties'
 
 //Navigation Menu Options
 

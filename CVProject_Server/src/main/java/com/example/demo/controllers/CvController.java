@@ -12,6 +12,7 @@ import com.example.demo.responses.CvListResponse;
 import com.example.demo.responses.CvResponse;
 import com.example.demo.services.CVService;
 import com.example.demo.services.ICvService;
+import jakarta.persistence.Access;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/cv")
 @CrossOrigin(origins = "${fe.base-url}")
+
 @RequiredArgsConstructor
 public class CvController {
 

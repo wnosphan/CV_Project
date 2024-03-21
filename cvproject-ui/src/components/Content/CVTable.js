@@ -1,5 +1,5 @@
 import React, { useState, useRef, memo } from 'react'
-import { Table, Tag, Space, Button, Input, Flex, Popconfirm,Form } from 'antd'
+import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form } from 'antd'
 import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
 import EditableCell from './EditableCell';
@@ -262,28 +262,29 @@ function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loa
             }),
         };
     });
-    const cvs = dataSource.map((cv) => {
-        return {
+    const cvs = () => {
+        return dataSource.map((cv) => ({
             key: cv.id,
+            skill: cv.skill,
+            university: cv.university,
+            gpa: cv.gpa,
+            status: cv.status,
             full_name: cv.full_name,
             date_of_birth: cv.date_of_birth,
-            university: cv.university,
             training_system: cv.training_system,
-            gpa: cv.gpa,
-            apply_position: cv.apply_position,
-            skill: cv.skill,
             create_by: cv.create_by,
-            status: cv.status,
+            apply_position: cv.apply_position,
             link_cv: cv.link_cv
-        }
+        }));
+    }
 
-    });
+    const datas = cvs();
     return (
         <>
             <Form form={editProps.form} component={false}>
                 <Table
                     rowSelection={rowSelection}
-                    dataSource={cvs}
+                    dataSource={datas}
                     columns={mergedColumns}
                     rowClassName="editable-row"
                     components={{
@@ -293,6 +294,7 @@ function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loa
                     }}
                     scroll={{
                         x: 1600,
+                        y: 420
                     }}
                     pagination={pagination}
                     loading={loading}

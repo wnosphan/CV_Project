@@ -5,11 +5,12 @@ export const myCVListApi = {
     getCV,
     deleteCV,
     deleteCVs,
-    fileUpload
+    fileUpload,
+    updateMultipleStatus
 }
 
-function getCV() {
-    return instance.get(`/api/cv`);
+function getCV(created_id) {
+    return instance.get(`/api/cv/user/${created_id}`);
 }
 
 function deleteCV(id) {
@@ -30,11 +31,21 @@ function deleteCVs(ids) {
 }
 
 function fileUpload(file) {
-    return axios.post('https://api.escuelajs.co/api/v1/files/upload', file, {
+    return instance.post('/upload', file, {
         headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data",
         }
     });
+}
+
+function updateMultipleStatus(ids) {
+    return instance.patch(`/api/cv/`, {
+        data: ids
+    }, {
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
 }
 
 // -- Axios
