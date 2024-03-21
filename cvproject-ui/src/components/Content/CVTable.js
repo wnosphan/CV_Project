@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo, useEffect, useMemo } from 'react'
+import React, { useState, useRef, memo } from 'react'
 import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form } from 'antd'
 import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
@@ -294,6 +294,7 @@ function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loa
                     }}
                     scroll={{
                         x: 1600,
+                        y: 420
                     }}
                     pagination={pagination}
                     loading={loading}

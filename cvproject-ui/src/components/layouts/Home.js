@@ -92,39 +92,40 @@ function Home() {
 
     return (
 
-        <Layout>
-            <Sider theme="light" trigger={null} collapsed={collapsed} className="sider">
-                <Button
-                    type="text"
-                    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                    onClick={() => setCollapsed(!collapsed)}
-                    className="trigger-btn"
-                />
-                <Sidebar />
-            </Sider>
             <Layout>
-                <Header className='header'>
-                    <CustomHeader />
-                </Header>
-                {true ? (
-                    <Content className='content'>
-                        <Row justify="space-evenly">
-                            <MainContent />
-                        </Row>
-                    </Content>
-                ) : (
-                    <div style={{ textAlign: "center" }}>
-                        <Title>Oops ...</Title>
-                        <Title level={2} style={{ color: 'grey' }}>Sai rồi má ơi!</Title>
-                    </div>
-                )}
-                <Footer className='footer' style={{
-                    textAlign: 'center',
-                }}>
-                    Team 2 ©{new Date().getFullYear()} Created by Team 2
-                </Footer>
+                <Sider theme="light" trigger={null} collapsed={collapsed} className="sider">
+                    <Button
+                        type="text"
+                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        onClick={() => setCollapsed(!collapsed)}
+                        className="trigger-btn"
+                    />
+                    <Sidebar />
+                </Sider>
+                <Layout>
+                    <Header className='header'>
+                        <CustomHeader />
+                    </Header>
+                    {true ? (
+                        <Content className='content'>
+                            <Row justify="space-evenly">
+                                <MainContent />
+                            </Row>
+                        </Content>
+                    ) : (
+                        <div style={{ textAlign: "center" }}>
+                            <Title>Oops ...</Title>
+                            <Title level={2} style={{ color: 'grey' }}>Sai rồi má ơi!</Title>
+                        </div>
+                    )}
+                    <Footer className='footer' style={{
+                        textAlign: 'center',
+                    }}>
+                        Team 2 ©{new Date().getFullYear()} Created by Team 2
+                    </Footer>
+                </Layout>
             </Layout>
-        </Layout>
+    
     )
 }
 
