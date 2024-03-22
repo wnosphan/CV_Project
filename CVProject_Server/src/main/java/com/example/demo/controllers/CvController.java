@@ -26,8 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/cv")
-@CrossOrigin(origins = "${fe.base-url}")
+@RequestMapping(value="${api.prefix}/cv")
+@CrossOrigin(origins = "${fe.base-url}",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
 
 @RequiredArgsConstructor
 public class CvController {
@@ -131,4 +133,5 @@ public class CvController {
         cvService.saveCv(file);
         return ResponseEntity.ok().build();
     }
+
 }
