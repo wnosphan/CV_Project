@@ -47,5 +47,20 @@ public class Cv {
 
     private String status;
 
-
+    @Override
+    public String toString() {
+        return "Cv{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", skill='" + skill + '\'' +
+                ", university='" + university + '\'' +
+                ", trainingSystem='" + trainingSystem + '\'' +
+                ", createdBy=" + createdBy +
+                ", gpa='" + gpa + '\'' +
+                ", applyPosition='" + applyPosition + '\'' +
+                ", linkCV='" + linkCV + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
