@@ -31,7 +31,7 @@ function deleteCVs(ids) {
 }
 
 function fileUpload(file) {
-    return instance.post('/upload', file, {
+    return instance.post('api/cv/upload', file, {
         headers: {
             "Content-Type": "multipart/form-data",
         }
@@ -39,9 +39,7 @@ function fileUpload(file) {
 }
 
 function updateMultipleStatus(ids) {
-    return instance.patch(`/api/cv/`, {
-        data: ids
-    }, {
+    return instance.patch(`/api/cv`, ids, {
         headers: {
             "Content-Type": "application/json",
         }
