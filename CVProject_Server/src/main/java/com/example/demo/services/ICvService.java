@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ICvService {
     public Page<CvResponse> getAllCv(int page, int size);
-    public List<CvResponse> getAllCv(Long id);
+    public Page<CvResponse> getAllCv(Long id, int page, int size) throws Exception;
     public Cv getCvById(Long id) throws Exception;
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
@@ -21,6 +21,5 @@ public interface ICvService {
     public void deleteCv(Long id) throws Exception;
     public void deleteCvs(ListCvIdDTO id) throws Exception;
     public void saveCv(MultipartFile file) throws IllegalAccessException;
-
-
+    public Page<CvResponse> searchCv(int page, int size, String content, Long userId) throws Exception;
 }

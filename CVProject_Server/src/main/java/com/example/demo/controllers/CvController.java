@@ -42,23 +42,36 @@ public class CvController {
         return ResponseEntity.ok(cv);
     }
 
-    @GetMapping("")
-    private ResponseEntity<?> getListCV(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "limit", defaultValue = "10") int limit) {
-        try {
-            Page<CvResponse> cvList = cvService.getAllCv(page, limit);
-            int totalPage = cvList.getTotalPages();
-            List<CvResponse> cvs = cvList.getContent();
-            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @GetMapping("")
+//    private ResponseEntity<?> getListCV(
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "limit", defaultValue = "5") int limit) {
+//        try {
+//            Page<CvResponse> cvList = cvService.getAllCv(page, limit);
+//            int totalPage = cvList.getTotalPages();
+//            List<CvResponse> cvs = cvList.getContent();
+//            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
 
     @GetMapping("/user/{created_id}")
-    private ResponseEntity<?> getAll(@Valid @PathVariable("created_id") Long id) {
+    private ResponseEntity<?> getAll(
+            @Valid @PathVariable("created_id") Long id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "limit", defaultValue = "5") int limit,
+            @RequestParam(name = "search", defaultValue = "") String context
+    ) {
         try {
-            List<CvResponse> cv = cvService.getAllCv(id);
-            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cv).build());
+            Page<CvResponse> cv = cvService.searchCv(page, limit, context, id);
+            int totalPage = cv.getTotalPages();
+            List<CvResponse> cvs = cv.getContent();
+            return ResponseEntity.ok(CvListResponse.builder()
+                    .cvResponses(cvs)
+                    .totalPages(totalPage)
+                    .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -73,6 +86,21 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+//    @GetMapping("/search")
+//    private ResponseEntity<?> searchForCv(
+//            @RequestParam(name = "page") String context,
+//            @Valid @PathVariable("created_id") Long userId,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "limit", defaultValue = "5") int limit
+//    ){
+//        try {
+//            Page<CvResponse> cv = cvService.searchCv(page, limit, context, userId);
+//            return ResponseEntity.ok("");
+//        }catch (Exception e){
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     @PutMapping("/{id}")
     private ResponseEntity<?> updateCv(@PathVariable long id, @Valid @RequestBody CvDTO cvDTO) {

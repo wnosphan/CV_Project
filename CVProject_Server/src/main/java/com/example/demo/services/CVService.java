@@ -39,15 +39,11 @@ public class CVService implements ICvService {
     }
 
     @Override
-    public List<CvResponse> getAllCv(Long id) {
-        if (userRepository.findById(id).isPresent()) {
-            List<Cv> cvs = cvRepository.findAllByCreatedById(id);
-            return cvs.stream()
-                    .map(CvResponse::fromCv)
-                    .collect(Collectors.toList());
-        }
-
-        return null;
+    public Page<CvResponse> getAllCv(Long id, int page, int size) throws Exception {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new Exception("User with ID: " +id+" not found!!!"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<Cv> cvPage = cvRepository.findAllByCreatedById(pageable, id);
+        return cvPage.map(CvResponse::fromCv);
     }
 
     public Cv getCvById(Long id) throws Exception {
@@ -56,7 +52,7 @@ public class CVService implements ICvService {
     }
 
     public Cv creatCv(CvDTO cvDTO) throws Exception {
-        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
+        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User " +cvDTO.getCreateBy()+" not found!!!"));
         Cv newCv = Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
@@ -114,10 +110,10 @@ public class CVService implements ICvService {
             Optional<Cv> cvOptional = cvRepository.findById(cvId);
             if (cvOptional.isPresent()) {
                 Cv cv = cvOptional.get();
-                if (newStatus.equals("pass") ){
+                if (newStatus.equals("pass")) {
                     cv.setStatus(CvStatus.PASS);
                     cvRepository.save(cv);
-                } else if (newStatus.equals("not_pass") ){
+                } else if (newStatus.equals("not_pass")) {
                     cv.setStatus(CvStatus.NOTPASS);
                     cvRepository.save(cv);
                 } else {
@@ -155,4 +151,13 @@ public class CVService implements ICvService {
 
         }
     }
+
+    @Override
+    public Page<CvResponse> searchCv(int page, int size, String content, Long userId) throws Exception {
+        User existingUser = userRepository.findById(userId).orElseThrow(() -> new Exception("User with ID: " +userId+" not found!!!"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<Cv> cvPage = cvRepository.searchCv(content, pageable, userId);
+        return cvPage.map(CvResponse::fromCv);
+    }
+
 }
