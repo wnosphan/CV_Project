@@ -216,7 +216,6 @@ const MainContent = () => {
                     .then((response) => {
                         if (response.status === 200) {
                             handleCV();
-                            setSelectedStatus([]);
                             api.success({
                                 message: NOTIFICATION.UPDATE.SUCCESS,
                                 duration: 2,
@@ -229,10 +228,14 @@ const MainContent = () => {
                             duration: 2,
                         });
                         handleLogError(error);
+                    }).finally(() => {
+                        setSelectedRowKeys([]);
+                        setSelectedStatus([]);
                     });
             },
         })
     }
+
 
     const onUpload = (file) => {
         if (excelFile === null) {
@@ -240,7 +243,7 @@ const MainContent = () => {
             return;
         }
         const formData = new FormData();
-        formData.append('excel', file);
+        formData.append('file', file);
         setUploading(true);
         myCVListApi.fileUpload(formData).then((response) => {
             console.log(response.data);
