@@ -1,12 +1,7 @@
 
 
 
-export const paginationProps = {
-    // simple: true,
-    showQuickJumper: true,
-    position: ['bottomCenter'],
-    pageSize: 10
-}
+
 
 export const modalDeleteProps = {
     title: 'Mày có chắc là muốn xóa?',

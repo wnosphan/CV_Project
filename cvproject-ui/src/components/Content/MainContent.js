@@ -5,10 +5,16 @@ import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
 import useMounted from '../../hooks/useMounted'
-import { paginationProps, modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
+import { modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
 import { NOTIFICATION, STATUS } from '../../configs'
 const { Dragger } = Upload;
 
+const paginationProps = {
+    // simple: true,
+    showQuickJumper: true,
+    position: ['bottomCenter'],
+    pageSize: 1,
+}
 
 const MainContent = () => {
     // const [dataSource, setDataSource] = useState([]);
@@ -22,11 +28,11 @@ const MainContent = () => {
     const [editingKey, setEditingKey] = useState('');
     const [tableData, setTableData] = useState({
         data: [],
-        pagination: { ...paginationProps },
+        totalPage: 1,
         loading: false,
-        currentPage: 1
     });
-    const { isMounted } = useMounted();
+    const [currentPage, setCurrentPage] = useState(1);
+    // const { isMounted } = useMounted();
 
     const onSelectChange = (newSelectedRowKeys) => {
         const status = [];
@@ -41,6 +47,12 @@ const MainContent = () => {
                             });
                             break;
                         case "NOTPASS":
+                            status.push({
+                                id: item,
+                                status: STATUS.PASS
+                            });
+                            break;
+                        case "INPROGRESS":
                             status.push({
                                 id: item,
                                 status: STATUS.PASS
@@ -71,33 +83,30 @@ const MainContent = () => {
     };
 
     /**Get all */
-    const handleCV = useCallback(async () => {
+    const handleCV = useCallback(async (page) => {
         setTableData((tableData) => ({ ...tableData, loading: true }));
-        await myCVListApi.getCV(1).then((response) => {
-            console.log(response.data.cvs_list);
-            if (isMounted.current) {
-                setTableData({
-                    data: response.data.cvs_list,
-                    pagination: { ...paginationProps, current: tableData.currentPage },
-                    loading: false,
-                });
-            }
+        setCurrentPage(page);
+        const antdPage = page - 1;
+        await myCVListApi.getCV(1, antdPage, paginationProps.pageSize).then((response) => {
+            setTableData({
+                data: response.data.cvs_list,
+                totalPage: response.data.total_page,
+                loading: false,
+            });
+
         }).catch((error) => {
             handleLogError(error);
         });
-    }, [isMounted, tableData.currentPage]);
+    }, []);
+
+    console.log('tableData', tableData);
 
     useEffect(() => {
-        handleCV();
-    }, [handleCV]);
+        handleCV(currentPage);
+    }, [currentPage]);
 
-    const handleTableChange = (pagination) => {
-        setTableData(prevData => ({
-            ...prevData,
-            currentPage: pagination.current,
-            loading: true
-        }))
-
+    const handleTableChange = (page) => {
+        setCurrentPage(page);
     };
 
 
@@ -188,7 +197,7 @@ const MainContent = () => {
                 await myCVListApi.deleteCVs(selectedRowKeys)
                     .then((response) => {
                         if (response.status === 200) {
-                            handleCV();
+                            handleCV(currentPage);
                             setSelectedRowKeys([]);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
@@ -215,7 +224,7 @@ const MainContent = () => {
                 await myCVListApi.updateMultipleStatus(selectedStatus)
                     .then((response) => {
                         if (response.status === 200) {
-                            handleCV();
+                            handleCV(currentPage);
                             api.success({
                                 message: NOTIFICATION.UPDATE.SUCCESS,
                                 duration: 2,
@@ -272,7 +281,6 @@ const MainContent = () => {
         },
         excelFile
     }
-    console.log('excelFile', excelFile);
 
     return (
         <Col span={23}>
@@ -309,8 +317,12 @@ const MainContent = () => {
                     dataSource={tableData.data}
                     rowSelection={rowSelection}
                     onDelete={onDelete}
-                    onChange={handleTableChange}
-                    pagination={tableData.pagination}
+                    pagination={{
+                        ...paginationProps,
+                        total: tableData.totalPage,
+                        current: currentPage,
+                        onChange: handleTableChange
+                    }}
                     loading={tableData.loading}
                     editProps={editProps}
                 />

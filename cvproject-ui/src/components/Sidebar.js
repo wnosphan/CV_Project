@@ -24,7 +24,7 @@ const Sidebar = () => {
     return (
         <>
             <Flex align='center' justify='center'>
-                <div className="logo">
+                <div className="text-[var(--primary-color)] my-6 text-[1.5rem]">
                     <FaDashcube />
                     {/* <Image 
                     src='/fpt.png' 
@@ -32,7 +32,7 @@ const Sidebar = () => {
                     /> */}
                 </div>
             </Flex>
-            <Menu mode='vertical' defaultSelectedKeys={['1']} className='menu-bar' items={items} />
+            <Menu mode='vertical' defaultSelectedKeys={['1']} className='flex flex-col gap-2.5 font-medium' items={items} />
         </>
     )
 }
