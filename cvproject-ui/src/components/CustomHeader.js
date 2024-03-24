@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { useAuth } from "react-oidc-context"
-import { Flex, Typography, Button } from 'antd';
-import { PoweroffOutlined, UserOutlined } from '@ant-design/icons';
+import { Flex, Typography, Button, Dropdown } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { properties } from '../configs/properties'
 
 //Navigation Menu Options
@@ -9,13 +9,6 @@ import { properties } from '../configs/properties'
 function CustomHeader() {
     const auth = useAuth();
 
-    // const navItems = [
-    //     {
-    //         label: "Logout",
-    //         key: "1",
-    //         icon: <PoweroffOutlined />,
-    //     },
-    // ];
     const handleLogout = () => {
         try {
             auth.removeUser();
@@ -24,36 +17,33 @@ function CustomHeader() {
             console.log(error)
         }
     };
-    // const menuProps = {
-    //     navItems,
-    //     onClick: handleLogout,
-    // };
 
-
+    const items = [
+        {
+            key: 'logout',
+            label: 'Logout',
+            icon: <LogoutOutlined />,
+            onClick: () => handleLogout()
+        }
+    ]
 
     return (
         <Flex align='center' justify='flex-end'>
-            {/* <Dropdown.Button
-                menu={menuProps}
-                icon={<UserOutlined />}
-                className="flex justify-end m-4"
-            >
-                Hello, User!
-            </Dropdown.Button> */}
-            <Flex align='center' gap='10px'>
-                <Typography.Text>{auth.user?.profile.preferred_username}</Typography.Text>
-                <Button
-                    type="primary"
-                    size="small"
-                    onClick={handleLogout}
-                    danger
-                >
-                    Logout
-                </Button>
-            </Flex>
 
+            <Dropdown
+                menu={{
+                    items
+                }}
+            >
+                <div className='hover:bg-black/[.03] cursor-auto p-2 rounded-md'>
+                    <Flex align='center' gap='5px'>
+                        <UserOutlined />
+                        <Typography.Text>{auth.user?.profile.preferred_username}</Typography.Text>
+                    </Flex>
+                </div>
+            </Dropdown>
         </Flex>
-    )
+    );
 }
 
 export default memo(CustomHeader)

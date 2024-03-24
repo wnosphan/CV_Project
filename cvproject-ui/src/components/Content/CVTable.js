@@ -4,7 +4,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircle
 import Highlighter from 'react-highlight-words';
 import EditableCell from './EditableCell';
 
-function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loading, editProps }) {
+function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
@@ -203,8 +203,21 @@ function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loa
             key: 'status',
             width: 100,
             render(status) {
+                let color;
+                switch (status) {
+                    case "PASS":
+                        color = 'green';
+                        break;
+                    case 'NOTPASS':
+                        color = 'red';
+                        break;
+                    default:
+                        color = 'purple';
+                        break;
+                }
+
                 return (
-                    <Tag color={status === 'PASS' ? 'green' : 'red'}>
+                    <Tag color={color}>
                         {status}
                     </Tag>
                 )
@@ -294,12 +307,10 @@ function CVTable({ dataSource, rowSelection, onDelete, onChange, pagination, loa
                     }}
                     scroll={{
                         x: 1600,
-                        y: 420
+                        // y: 420
                     }}
                     pagination={pagination}
                     loading={loading}
-                    onChange={onChange}
-
                 />
             </Form>
 

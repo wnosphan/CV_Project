@@ -4,16 +4,16 @@ import { Home, ErrorPage } from '../components/layouts';
 import PrivateRoute from './PrivateRoute';
 
 const AppRouter = () => {
-    // const protectLayout = (
-    //     <PrivateRoute>
-    //         <Home />
-    //     </PrivateRoute>
-    // )
+    const protectLayout = (
+        <PrivateRoute>
+            <Home />
+        </PrivateRoute>
+    )
     return (
         <Router>
             <Routes>
                 <Route
-                    path="/" element={<Home />}
+                    path="/" element={protectLayout}
                     errorElement={<ErrorPage />}>
                     <Route path="/create" />
                 </Route>

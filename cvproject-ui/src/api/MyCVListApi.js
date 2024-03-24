@@ -9,8 +9,13 @@ export const myCVListApi = {
     updateMultipleStatus
 }
 
-function getCV(created_id) {
-    return instance.get(`/api/cv/user/${created_id}`);
+function getCV(created_id, page, limit) {
+    return instance.get(`/api/cv/user/${created_id}`, {
+        params: {
+            page: page,
+            limit: limit
+        }
+    });
 }
 
 function deleteCV(id) {
