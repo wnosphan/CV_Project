@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Col, Card, Flex, Button, Modal, Table, Form, notification, Upload } from 'antd';
 import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
-import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom'
 import moment from 'moment';
+import { useAuth } from 'react-oidc-context';
 
 import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
@@ -20,6 +20,7 @@ const paginationProps = {
 }
 
 const MainContent = () => {
+    const auth = useAuth();
     const [visible, setVisible] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -93,7 +94,7 @@ const MainContent = () => {
         setCurrentPage(page);
         const antdPage = page - 1;
         setTimeout(() => {
-            myCVListApi.getCV(1, antdPage, paginationProps.pageSize).then((response) => {
+            myCVListApi.getCV(auth.user?.profile.preferred_username, antdPage, paginationProps.pageSize).then((response) => {
                 setTableData({
                     data: response.data.cvs_list,
                     totalPage: response.data.total,
@@ -272,7 +273,7 @@ const MainContent = () => {
         const formData = new FormData();
         formData.append('file', file);
         setUploading(true);
-        myCVListApi.fileUpload(formData).then((response) => {
+        myCVListApi.fileUpload(auth.user?.profile.preferred_username, formData).then((response) => {
             console.log(response.data);
             setExcelFile(null);
             api.success({

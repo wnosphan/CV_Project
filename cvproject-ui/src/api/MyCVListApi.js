@@ -6,14 +6,18 @@ export const myCVListApi = {
     deleteCV,
     deleteCVs,
     fileUpload,
-    updateMultipleStatus
+    updateMultipleStatus,
+    saveUser
 }
 
-function getCV(created_id, page, limit) {
-    return instance.get(`/api/cv/user/${created_id}`, {
+function getCV(username, page, limit) {
+    return instance.get(`/api/cv/user`, {
         params: {
             page: page,
             limit: limit
+        },
+        headers: {
+            'username': username
         }
     });
 }
@@ -35,10 +39,11 @@ function deleteCVs(ids) {
     })
 }
 
-function fileUpload(file) {
+function fileUpload(username, file) {
     return instance.post('api/cv/upload', file, {
         headers: {
             "Content-Type": "multipart/form-data",
+            'username': username
         }
     });
 }
@@ -47,6 +52,15 @@ function updateMultipleStatus(ids) {
     return instance.patch(`/api/cv`, ids, {
         headers: {
             "Content-Type": "application/json",
+        }
+    })
+}
+
+function saveUser(username, email) {
+    return instance.post(`/api/cv/save-user`, {
+        headers: {
+            'username': username,
+            'email': email
         }
     })
 }

@@ -1,5 +1,7 @@
 import { useAuth } from "react-oidc-context"
 import { Spin, Typography } from 'antd'
+import { myCVListApi } from "../api/MyCVListApi";
+import handleLogError from "../utils/HandleError";
 const { Title } = Typography
 
 function PrivateRoute({ children }) {
@@ -27,9 +29,11 @@ function PrivateRoute({ children }) {
     if (!auth.isAuthenticated) {
         auth.signinRedirect()
         return null
+    } else {
+        myCVListApi.saveUser(auth.user.profile.preferred_username, auth.user.profile.email)
+            .catch(error => handleLogError(error))
     }
 
     return children
 }
-
 export default PrivateRoute
