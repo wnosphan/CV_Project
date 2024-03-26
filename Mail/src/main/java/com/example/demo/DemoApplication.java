@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.services.MailService;
 import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,6 +15,9 @@ import java.io.IOException;
 public class DemoApplication {
 	private final MailService mailService;
 
+	@Value("${scheduled.email.cron}")
+	private String scheduledEmailCron;
+
 	public DemoApplication(MailService mailService) {
 		this.mailService = mailService;
 	}
@@ -23,7 +27,7 @@ public class DemoApplication {
 	}
 
 	// Schedule sending email every hour
-	@Scheduled(cron = "0 35 * * * *")
+	@Scheduled(cron = "${scheduled.email.cron}")
 	public void sendScheduledEmail() {
 		try {
 			mailService.sendHtmlEmail();

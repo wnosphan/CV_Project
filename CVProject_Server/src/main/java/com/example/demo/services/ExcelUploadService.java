@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.models.Cv;
+import com.example.demo.models.CvStatus;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -59,6 +60,8 @@ public class ExcelUploadService {
                         case 7:
                             cv.setLinkCV(cell.getStringCellValue());
                             break;
+                        case 8:
+                            cv.setStatus(CvStatus.INPROGRESS);
                         default:
                             break;
                     }

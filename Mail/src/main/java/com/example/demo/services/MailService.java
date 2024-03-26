@@ -1,11 +1,8 @@
 package com.example.demo.services;
 
 
-import com.example.demo.models.Cv;
-import com.example.demo.models.EmailConfig;
-import com.example.demo.models.Mail;
+
 import com.example.demo.repositories.CvRepository;
-import com.example.demo.repositories.MailRepository;
 import com.example.demo.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
