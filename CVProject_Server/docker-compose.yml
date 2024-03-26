@@ -25,3 +25,7 @@ services:
       MYSQL_ROOT_PASSWORD: 123
       MYSQL_DATABASE: cvproject
     restart: always
+  mail:
+    build: D:\Spring\CV_Project\Mail
+    ports:
+      - "8089:8089"
