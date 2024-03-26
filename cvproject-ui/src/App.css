@@ -1,6 +1,10 @@
 /* Common */
-html{
+html {
   --primary-color: #4f6f52;
+}
+body {
+  margin: 0;
+  padding: 0;
 }
 .primary--color {
   color: #4f6f52 !important;
@@ -24,6 +28,11 @@ html{
 
 .black--color {
   color: #000 !important;
+}
+
+.h-screen {
+  min-height: 100vh;
+  height: auto;
 }
 
 .ant-menu-item-selected {

@@ -5,14 +5,11 @@ const { Title } = Typography
 function PrivateRoute({ children }) {
     const auth = useAuth();
 
-    const textAlignStyle = { textAlign: "center" }
-    const subTitleStyle = { color: 'grey' }
-
     if (auth.isLoading) {
         return (
-            <div style={textAlignStyle}>
+            <div className="text-center">
                 <Title>Keycloak is loading</Title>
-                <Title level={2} style={subTitleStyle}>or running authorization code flow with PKCE</Title>
+                <Title className="text-gray-500" level={2}>or running authorization code flow with PKCE</Title>
                 <Spin size="large"></Spin>
             </div>
         )
@@ -20,9 +17,9 @@ function PrivateRoute({ children }) {
 
     if (auth.error) {
         return (
-            <div style={textAlignStyle}>
+            <div className="text-center">
                 <Title>Oops ...</Title>
-                <Title level={2} style={subTitleStyle}>{auth.error.message}</Title>
+                <Title className="text-gray-500" level={2}>{auth.error.message}</Title>
             </div>
         )
     }

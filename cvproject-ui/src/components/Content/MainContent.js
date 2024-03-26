@@ -1,10 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Col, Card, Flex, Button, Modal, Table, Form, notification, Upload } from 'antd';
 import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
+import { useInView } from 'react-intersection-observer';
+import { Link } from 'react-router-dom'
+import moment from 'moment';
+
 import CVTable from './CVTable';
 import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
-import useMounted from '../../hooks/useMounted'
 import { modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
 import { NOTIFICATION, STATUS } from '../../configs'
 const { Dragger } = Upload;
@@ -13,11 +16,10 @@ const paginationProps = {
     // simple: true,
     showQuickJumper: true,
     position: ['bottomCenter'],
-    pageSize: 1,
+    pageSize: 8
 }
 
 const MainContent = () => {
-    // const [dataSource, setDataSource] = useState([]);
     const [visible, setVisible] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -31,8 +33,10 @@ const MainContent = () => {
         totalPage: 1,
         loading: false,
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    // const { isMounted } = useMounted();
+    const [currentPage, setCurrentPage] = useState(() => {
+        const storedPage = localStorage.getItem('currentPage');
+        return storedPage ? JSON.parse(storedPage) : 1;
+    });
 
     const onSelectChange = (newSelectedRowKeys) => {
         const status = [];
@@ -83,38 +87,42 @@ const MainContent = () => {
     };
 
     /**Get all */
-    const handleCV = useCallback(async (page) => {
+    const handleCV = useCallback((page) => {
+
         setTableData((tableData) => ({ ...tableData, loading: true }));
         setCurrentPage(page);
         const antdPage = page - 1;
-        await myCVListApi.getCV(1, antdPage, paginationProps.pageSize).then((response) => {
-            setTableData({
-                data: response.data.cvs_list,
-                totalPage: response.data.total_page,
-                loading: false,
-            });
+        setTimeout(() => {
+            myCVListApi.getCV(1, antdPage, paginationProps.pageSize).then((response) => {
+                setTableData({
+                    data: response.data.cvs_list,
+                    totalPage: response.data.total,
+                    loading: false,
+                });
 
-        }).catch((error) => {
-            handleLogError(error);
-        });
+            }).catch((error) => {
+                handleLogError(error);
+            });
+        }, 1000);
     }, []);
 
     console.log('tableData', tableData);
-
     useEffect(() => {
         handleCV(currentPage);
     }, [currentPage]);
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
-    };
+        localStorage.setItem('currentPage', page);
+        cancel();
 
+    };
 
     const isEditing = (record) => record.key === editingKey;
     const edit = (record) => {
         form.setFieldsValue({
             full_name: '',
-            date_of_birth: '',
+            dob: moment(record.dob),
             university: '',
             training_system: '',
             gpa: '',
@@ -138,6 +146,7 @@ const MainContent = () => {
                 newData.splice(index, 1, {
                     ...item,
                     ...row,
+                    dob: moment(row.dob).format('YYYY-MM-DD')
                 });
             } else {
                 newData.push(row);
@@ -163,10 +172,11 @@ const MainContent = () => {
             ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCV(key)
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 200) {
-                            onChangeSelectRow(key);
-                            handleCV();
+                            await onChangeSelectRow(key);
+                            await onChangePage();
+                            await handleCV(currentPage);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
                                 duration: 2,
@@ -184,7 +194,11 @@ const MainContent = () => {
 
         })
     }
-
+    const onChangePage = () => {
+        if (tableData.data.length === 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
     const onChangeSelectRow = (key) => {
         setSelectedRowKeys(prev => prev.filter((item) => item !== key));
     }
@@ -195,9 +209,13 @@ const MainContent = () => {
             ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCVs(selectedRowKeys)
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 200) {
-                            handleCV(currentPage);
+                            if (tableData.data.length === 0) {
+                                let i = setCurrentPage(currentPage - 1);
+                                console.log('currentPage', i);
+                            }
+                            await handleCV(currentPage);
                             setSelectedRowKeys([]);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
@@ -282,16 +300,17 @@ const MainContent = () => {
         excelFile
     }
 
+
     return (
         <Col span={23}>
             {contextHolder}
             <Flex vertical gap={'1rem'}>
-                <Card style={{ height: 80 }}>
+                <Card className='h-20'>
                     <Flex vertical>
                         <Flex gap="1rem" justify='flex-end' align='center'>
                             <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
                             <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
-                            <Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button>
+                            <Link to='/create'><Button icon={<PlusCircleOutlined />} onClick={() => localStorage.setItem('currentPage', currentPage)} type='primary' size='large'>Create</Button></Link>
                             <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
                             <Modal open={visible}
                                 {...modalUploadProps}
@@ -305,7 +324,7 @@ const MainContent = () => {
                                     </p>
                                     <p className="ant-upload-text">Click or drag file to this area to upload</p>
                                     <p className="ant-upload-hint">
-                                        Support for a single or bulk upload. Strictly prohibited from uploading company data or other
+                                        Support for a single upload. Strictly prohibited from uploading company data or other
                                         banned files.
                                     </p>
                                 </Dragger>
@@ -319,7 +338,7 @@ const MainContent = () => {
                     onDelete={onDelete}
                     pagination={{
                         ...paginationProps,
-                        total: tableData.totalPage,
+                        total: tableData.totalPage * paginationProps.pageSize,
                         current: currentPage,
                         onChange: handleTableChange
                     }}

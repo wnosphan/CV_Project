@@ -19,7 +19,6 @@ public class Controller {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token missing");
         }else if (!token.startsWith("Bearer "))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Format error");
-
         String realToken = token.substring(7);
         if (keycloakService.introspectToken(realToken))
             return ResponseEntity.status(HttpStatus.OK).body("True");

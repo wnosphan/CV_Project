@@ -1,24 +1,23 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import { Home, ErrorPage } from '../components/layouts';
 import PrivateRoute from './PrivateRoute';
+import Create from '../components/layouts/Create';
 
 const AppRouter = () => {
-    const protectLayout = (
-        <PrivateRoute>
-            <Home />
-        </PrivateRoute>
-    )
     return (
+        // <PrivateRoute>
         <Router>
             <Routes>
                 <Route
-                    path="/" element={protectLayout}
+                    path="/" element={<Home />}
                     errorElement={<ErrorPage />}>
-                    <Route path="/create" />
                 </Route>
+                <Route path="/create" element={<Create />} />
             </Routes>
         </Router>
+        // </PrivateRoute>
     );
 }
 

@@ -1,8 +1,3 @@
-
-
-
-
-
 export const modalDeleteProps = {
     title: 'Mày có chắc là muốn xóa?',
     okText: 'Xóa',
