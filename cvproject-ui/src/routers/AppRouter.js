@@ -7,17 +7,17 @@ import Create from '../components/layouts/Create';
 
 const AppRouter = () => {
     return (
-        // <PrivateRoute>
-        <Router>
-            <Routes>
-                <Route
-                    path="/" element={<Home />}
-                    errorElement={<ErrorPage />}>
-                </Route>
-                <Route path="/create" element={<Create />} />
-            </Routes>
-        </Router>
-        // </PrivateRoute>
+        <PrivateRoute>
+            <Router>
+                <Routes>
+                    <Route
+                        path="/" element={<Home />}
+                        errorElement={<ErrorPage />}>
+                    </Route>
+                    <Route path="/create" element={<Create />} />
+                </Routes>
+            </Router>
+        </PrivateRoute>
     );
 }
 
