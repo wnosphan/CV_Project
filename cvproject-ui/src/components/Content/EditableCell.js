@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form, Input, InputNumber } from 'antd';
+import { Form, Input, InputNumber,DatePicker } from 'antd';
+// import moment from 'moment';
 
 const EditableCell = ({
     editing,
@@ -11,7 +12,7 @@ const EditableCell = ({
     children,
     ...restProps
 }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    const inputNode = inputType === 'number' ? <InputNumber /> : inputType === 'date' ? <DatePicker format="DD-MM-YYYY" /> : <Input />;
 
     return (
         <td {...restProps}>

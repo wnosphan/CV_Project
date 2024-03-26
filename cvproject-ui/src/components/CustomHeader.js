@@ -2,8 +2,8 @@ import React, { memo } from 'react'
 import { useAuth } from "react-oidc-context"
 import { Flex, Typography, Button, Dropdown } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { properties } from '../configs/properties'
 
+import { properties } from '../configs/properties'
 //Navigation Menu Options
 
 function CustomHeader() {

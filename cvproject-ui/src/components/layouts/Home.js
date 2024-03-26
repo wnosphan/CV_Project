@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Layout, Col, Row } from 'antd'
+import { Layout, Row, Typography, Button } from 'antd'
 import { useAuth } from "react-oidc-context"
-import { Typography, Button, Flex } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+
 import MainContent from '../Content/MainContent'
 import { properties } from '../../configs/properties'
 import Sidebar from '../Sidebar'
@@ -106,14 +106,12 @@ function Home() {
                         </Content>
                     </>
                 ) : (
-                    <div style={{ textAlign: "center" }}>
+                    <div className='text-center'>
                         <Title>Oops ...</Title>
                         <Title level={2} style={{ color: 'grey' }}>Sai rồi má ơi!</Title>
                     </div>
                 )}
-                <Footer className='footer' style={{
-                    textAlign: 'center',
-                }}>
+                <Footer className='text-center'>
                     Team 2 ©{new Date().getFullYear()} Created by Team 2
                 </Footer>
             </Layout>

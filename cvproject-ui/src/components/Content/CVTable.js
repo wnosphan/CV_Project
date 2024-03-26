@@ -2,6 +2,7 @@ import React, { useState, useRef, memo } from 'react'
 import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form } from 'antd'
 import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
+import moment from 'moment';
 import EditableCell from './EditableCell';
 
 function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
@@ -114,31 +115,24 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                 text
             ),
     });
-
     // Columns and data
     const columns = [
-        {
-            title: 'Id',
-            dataIndex: 'key',
-            key: 'key',
-            fixed: 'left',
-            width: 60,
-        },
         {
             title: 'Full Name',
             dataIndex: 'full_name',
             key: 'full_name',
             fixed: 'left',
-            width: 150,
+            width: '10%',
             ...getColumnSearchProps('full_name'),
             editable: true,
         },
         {
             title: 'DOB',
-            dataIndex: 'date_of_birth',
-            key: 'date_of_birth',
-            width: 120,
+            dataIndex: 'dob',
+            key: 'dob',
+            width: '10%',
             editable: true,
+            render: (text) => moment(text).format('DD-MM-YYYY')
         },
         {
             title: 'University',
@@ -151,7 +145,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'Training System',
             dataIndex: 'training_system',
             key: 'training_system',
-            width: 180,
+            width: '12%',
             ...getColumnSearchProps('training_system'),
             editable: true,
             sorter: (a, b) => a.training_system.length - b.training_system.length,
@@ -160,7 +154,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'GPA',
             dataIndex: 'gpa',
             key: 'gpa',
-            width: 100,
+            width: '8%',
             ...getColumnSearchProps('gpa'),
             sorter: (a, b) => a.gpa - b.gpa,
             editable: true,
@@ -169,7 +163,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'Apply Position',
             dataIndex: 'apply_position',
             key: 'apply_position',
-            width: 200,
+            width: '12%',
             ...getColumnSearchProps('apply_position'),
             sorter: (a, b) => a.apply_position.length - b.apply_position.length,
             editable: true,
@@ -178,6 +172,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'Skills',
             dataIndex: 'skill',
             key: 'skill',
+            width: '14%',
             editable: true,
             render: (text) => {
                 const split = text.split(',');
@@ -201,7 +196,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 100,
+            width: '10%',
             render(status) {
                 let color;
                 switch (status) {
@@ -268,7 +263,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             ...col,
             onCell: (record) => ({
                 record,
-                inputType: col.dataIndex === 'gpa' ? 'number' : 'text',
+                inputType: col.dataIndex === 'gpa' ? 'number' : col.dataIndex === 'dob' ? 'date' : 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: editProps.isEditing(record),
@@ -283,7 +278,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             gpa: cv.gpa,
             status: cv.status,
             full_name: cv.full_name,
-            date_of_birth: cv.date_of_birth,
+            dob: moment(cv.date_of_birth),
             training_system: cv.training_system,
             create_by: cv.create_by,
             apply_position: cv.apply_position,
@@ -295,7 +290,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     return (
         <>
             <Form form={editProps.form} component={false}>
+
                 <Table
+                    rootClassName='cv-table'
                     rowSelection={rowSelection}
                     dataSource={datas}
                     columns={mergedColumns}
@@ -306,8 +303,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         },
                     }}
                     scroll={{
+                        scrollToFirstRowOnChange: false,
                         x: 1600,
-                        // y: 420
+                        y: 420
                     }}
                     pagination={pagination}
                     loading={loading}
