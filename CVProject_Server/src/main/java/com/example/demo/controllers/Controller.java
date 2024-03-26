@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.*;
 public class Controller {
     private final KeycloakService keycloakService;
 
-    @PostMapping("/hello")
-    private ResponseEntity<?> abc(
-//            @RequestParam("client_id") String clientId,
-//            @RequestParam("token") String token,
-//            @RequestParam("client_secret") String clientSecret
+    @PostMapping("/verify-token")
+    private ResponseEntity<?> verifyToken(
+
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception {
         if (token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token missing");
@@ -27,4 +25,5 @@ public class Controller {
             return ResponseEntity.status(HttpStatus.OK).body("True");
         else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
     }
+
 }

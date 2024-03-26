@@ -14,9 +14,9 @@ services:
     ports:
       - "8088:8088"
   nodejs:
-    build: D:\Spring\CV_Projectss\cvproject-ui
+    build: D:\Spring\CV_Project\cvproject-ui
     ports:
-      - "3000:3000"
+      - "3000:80"
   db:
     image: mysql:8.3.0
     ports:

@@ -20,6 +20,11 @@ public interface ICvService {
     public void updateListCvStatus(List<CvStatusDTO> list) throws Exception;
     public void deleteCv(Long id) throws Exception;
     public void deleteCvs(ListCvIdDTO id) throws Exception;
-    public void saveCv(MultipartFile file) throws IllegalAccessException;
-    public Page<CvResponse> searchCv(int page, int size, String content, Long userId) throws Exception;
+//    public void saveCv(MultipartFile file) throws IllegalAccessException;
+
+    void saveCv(MultipartFile file, String username) throws IllegalAccessException;
+
+    public Page<CvResponse> searchCv(int page, int size, String username) throws Exception;
+
+
 }

@@ -62,15 +62,15 @@ public class CvController {
 //    }
 
 
-    @GetMapping("/user/{created_id}")
+    @GetMapping("/user")
     private ResponseEntity<?> getAll(
-            @Valid @PathVariable("created_id") Long id,
+            @RequestHeader("username") String username,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "limit", defaultValue = "5") int limit,
-            @RequestParam(name = "search", defaultValue = "") String context
+            @RequestParam(name = "limit", defaultValue = "5") int limit
+
     ) {
         try {
-            Page<CvResponse> cv = cvService.searchCv(page, limit, context, id);
+            Page<CvResponse> cv = cvService.searchCv(page,limit, username);
             int totalPage = cv.getTotalPages();
             List<CvResponse> cvs = cv.getContent();
             return ResponseEntity.ok(CvListResponse.builder()
@@ -159,8 +159,9 @@ public class CvController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file) throws IllegalAccessException {
-        cvService.saveCv(file);
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file,
+                                      @RequestHeader("username") String username) throws IllegalAccessException {
+        cvService.saveCv(file, username);
         return ResponseEntity.ok().build();
     }
 }
