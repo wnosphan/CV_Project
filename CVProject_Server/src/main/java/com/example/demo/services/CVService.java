@@ -9,10 +9,8 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.CvResponse;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,8 +40,8 @@ public class CVService implements ICvService {
     @Override
     public Page<CvResponse> getAllCv(Long id, int page, int size) throws Exception {
         User existingUser = userRepository.findById(id).orElseThrow(() -> new Exception("User with ID: " + id + " not found!!!"));
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Cv> cvPage = cvRepository.findAllByCreatedById(pageable, id);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("full_name").ascending());
+        Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
         log.info("Lấy thành công danh sách Cv");
         return cvPage.map(CvResponse::fromCv);
     }
@@ -162,11 +157,26 @@ public class CVService implements ICvService {
     }
 
     @Override
-    public void saveCv(MultipartFile file) throws IllegalAccessException {
+    public void saveCv(MultipartFile file, String username) throws IllegalAccessException {
         if (ExcelUploadService.isValidExcelFile(file)) {
             List<Cv> cvList = null;
             try {
                 cvList = ExcelUploadService.getCvsFromExcel(file.getInputStream());
+
+                // Get the user by username
+                User user = userRepository.findByUserName(username);
+
+                if (user == null) {
+                    throw new IllegalAccessException("User with username " + username + " not found!");
+                }
+
+                long id = user.getId();
+
+                // Set createdBy field for each Cv
+                for (Cv cv : cvList) {
+                    cv.setCreatedBy(user);
+                }
+
                 cvRepository.saveAll(cvList);
                 log.info("Import CV successfully!");
             } catch (IOException e) {
@@ -176,11 +186,11 @@ public class CVService implements ICvService {
         }
     }
 
+
     @Override
-    public Page<CvResponse> searchCv(int page, int size, String content, Long userId) throws Exception {
-        User existingUser = userRepository.findById(userId).orElseThrow(() -> new Exception("User with ID: " + userId + " not found!!!"));
+    public Page<CvResponse> searchCv(int page, int size, String username) throws Exception {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Cv> cvPage = cvRepository.searchCv(content, pageable, userId);
+        Page<Cv> cvPage = cvRepository.searchCv( pageable, username);
         log.info("Get list CV successfully!");
         return cvPage.map(CvResponse::fromCv);
     }

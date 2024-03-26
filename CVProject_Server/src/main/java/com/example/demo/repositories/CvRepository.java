@@ -12,11 +12,7 @@ import java.util.Optional;
 
 public interface CvRepository extends JpaRepository<Cv, Long> {
     Page<Cv> findAll(Pageable pageable);
-    Page<Cv> findAllByCreatedById(Pageable pageable ,Long id);
-    @Query("SELECT cv FROM Cv cv " +
-            "WHERE (cv.fullName LIKE %:searchContent% OR cv.trainingSystem LIKE %:searchContent% OR " +
-            "cv.university LIKE %:searchContent% OR cv.gpa LIKE %:searchContent% OR cv.skill LIKE %:searchContent% OR " +
-            "cv.applyPosition LIKE %:searchContent%) " +
-            "AND cv.createdBy.id = :userId")
-    Page<Cv> searchCv(@Param("searchContent") String searchContent, Pageable pageable, @Param("userId") Long userId);
+
+    @Query("SELECT c FROM Cv c WHERE c.createdBy.userName = :userName")
+    Page<Cv> searchCv(Pageable pageable, @Param("userName") String userName);
 }
