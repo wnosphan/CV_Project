@@ -1,14 +1,31 @@
-import React, { useState, useRef, memo } from 'react'
-import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form } from 'antd'
+import React, { useState, useRef, memo, useEffect } from 'react'
+import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form, Card } from 'antd'
 import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
 import EditableCell from './EditableCell';
 
+
+
 function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
+    const [filteredInfo, setFilteredInfo] = useState({});
+    const [sortedInfo, setSortedInfo] = useState({});
+    const statusFilter = ['PASS', 'NOTPASS', 'INPROGRESS'];
+    
+
+    const handleChange = (filters, sorter) => {
+        setFilteredInfo(filters);
+        setSortedInfo(sorter);
+    };
+
+    const clearAll = () => {
+        setFilteredInfo({});
+        setSortedInfo({});
+    };
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -132,7 +149,8 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'dob',
             width: '10%',
             editable: true,
-            render: (text) => moment(text).format('DD-MM-YYYY')
+            render: (text) => moment(text).format('DD-MM-YYYY'),
+
         },
         {
             title: 'University',
@@ -140,6 +158,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'university',
             ...getColumnSearchProps('university'),
             editable: true,
+
         },
         {
             title: 'Training System',
@@ -148,7 +167,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             width: '12%',
             ...getColumnSearchProps('training_system'),
             editable: true,
-            sorter: (a, b) => a.training_system.length - b.training_system.length,
         },
         {
             title: 'GPA',
@@ -158,6 +176,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             ...getColumnSearchProps('gpa'),
             sorter: (a, b) => a.gpa - b.gpa,
             editable: true,
+
         },
         {
             title: 'Apply Position',
@@ -165,7 +184,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'apply_position',
             width: '12%',
             ...getColumnSearchProps('apply_position'),
-            sorter: (a, b) => a.apply_position.length - b.apply_position.length,
             editable: true,
         },
         {
@@ -190,7 +208,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         </Flex>
                     </>
                 )
-            }
+            },
         },
         {
             title: 'Status',
@@ -216,13 +234,22 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         {status}
                     </Tag>
                 )
-            }
+            },
+            filters: statusFilter.map((item) => {
+                return {
+                    text: item,
+                    value: item
+                }
+            }),
+            onFilter: (value, record) => record.status.indexOf(value) === 0,
+            ellipsis: true,
         },
         {
             title: 'Action',
             key: 'action',
             fixed: 'right',
             width: 150,
+            align: 'center',
             render: (_, record) => {
                 const editable = editProps.isEditing(record);
                 return (
@@ -288,9 +315,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
 
     const datas = cvs();
     return (
-        <>
+        <Card>
+            <div className='mb-4'>
+                <Button onClick={clearAll}>Clear filters and sorters</Button>
+            </div>
             <Form form={editProps.form} component={false}>
-
                 <Table
                     rootClassName='cv-table'
                     rowSelection={rowSelection}
@@ -309,10 +338,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                     }}
                     pagination={pagination}
                     loading={loading}
+                    onChange={handleChange}
                 />
             </Form>
 
-        </>
+        </Card>
     )
 }
 

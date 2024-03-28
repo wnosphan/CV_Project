@@ -8,7 +8,8 @@ export const myCVListApi = {
     deleteCVs,
     fileUpload,
     updateMultipleStatus,
-    saveUser
+    saveUser,
+    UpdateCV
 }
 
 function getCV(username, page, limit) {
@@ -19,6 +20,18 @@ function getCV(username, page, limit) {
         },
         headers: {
             'username': username
+        },
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+
+function UpdateCV(id, data) {
+    return instance.get(`/api/cv/${id}`, {
+        request: data,
+        validateStatus: (status) => {
+            return status < 500
         }
     });
 }
@@ -43,6 +56,9 @@ function deleteCVs(ids) {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'DELETE',
             'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     })
 }
@@ -52,6 +68,9 @@ function fileUpload(username, file) {
         headers: {
             "Content-Type": "multipart/form-data",
             'username': username
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     });
 }
@@ -60,15 +79,22 @@ function updateMultipleStatus(ids) {
     return instance.patch(`/api/cv`, ids, {
         headers: {
             "Content-Type": "application/json",
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     })
 }
 
 function saveUser(username, email) {
-    return instance.post(`/api/cv/save-user`, {
+    return instance.post('/api/cv/save-user', {
         headers: {
+            'Content-Type': 'application/json',
             'username': username,
             'email': email
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     })
 }

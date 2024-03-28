@@ -1,7 +1,9 @@
 import { useAuth } from "react-oidc-context"
-import { Spin, Typography } from 'antd'
+import { Button, Spin, Typography } from 'antd'
+
 import { myCVListApi } from "../api/MyCVListApi";
 import handleLogError from "../utils/HandleError";
+import { properties } from "../configs";
 const { Title } = Typography
 
 function PrivateRoute({ children }) {
@@ -22,18 +24,24 @@ function PrivateRoute({ children }) {
             <div className="text-center">
                 <Title>Oops ...</Title>
                 <Title className="text-gray-500" level={2}>{auth.error.message}</Title>
+                <Button onClick={() => {
+                    auth.removeUser();
+                    auth.signinRedirect({redirect_uri : properties.project.url});
+                }
+                }>Login</Button>
             </div>
         )
     }
 
     if (!auth.isAuthenticated) {
-        auth.signinRedirect()
+        auth.signinRedirect({redirect_uri : properties.project.url})
         return null
-    } else {
-        myCVListApi.saveUser(auth.user.profile.preferred_username, auth.user.profile.email)
-            .catch(error => handleLogError(error))
     }
+    // else {
+    //     myCVListApi.saveUser(auth.user.profile.preferred_username, auth.user?.profile.email)
+    //         .catch(error => handleLogError(error))
+    // }
 
     return children
 }
-export default PrivateRoute
+export default PrivateRoute;
