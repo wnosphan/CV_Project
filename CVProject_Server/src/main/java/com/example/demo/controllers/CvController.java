@@ -106,7 +106,7 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @Operation(summary = "Update CV", description = "Require Cv ID, cvDTO")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update Cv successfully"),
@@ -158,6 +158,7 @@ public class CvController {
             cvService.updateListCvStatus(ids);
             return ResponseEntity.ok("CV status list has been updated successfully");
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
