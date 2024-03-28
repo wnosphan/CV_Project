@@ -3,6 +3,7 @@ import { properties } from '../configs/properties';
 
 export const myCVListApi = {
     getCV,
+    createCV,
     deleteCV,
     deleteCVs,
     fileUpload,
@@ -20,6 +21,13 @@ function getCV(username, page, limit) {
             'username': username
         }
     });
+}
+function createCV(post) {
+    return instance.post(`/api/cv`, post, {
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
 }
 
 function deleteCV(id) {
