@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { useAuth } from "react-oidc-context"
-import { Flex, Typography, Button, Dropdown } from 'antd';
+import { Flex, Typography, Dropdown, Image } from 'antd';
+import { FaDashcube } from "react-icons/fa6";
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import { properties } from '../configs/properties'
@@ -28,21 +29,32 @@ function CustomHeader() {
     ]
 
     return (
-        <Flex align='center' justify='flex-end'>
-
-            <Dropdown
-                menu={{
-                    items
-                }}
-            >
-                <div className='hover:bg-black/[.03] cursor-auto p-2 rounded-md'>
-                    <Flex align='center' gap='5px'>
-                        <UserOutlined />
-                        <Typography.Text>{auth.user?.profile.preferred_username}</Typography.Text>
-                    </Flex>
+        <>
+            <Flex align='center'>
+                {/* <Image
+                    src='/fpt.png'
+                    preview={false}
+                    style={{width: '7rem'}}
+                /> */}
+                <div className="text-[var(--primary-color)] my-6 text-[1.5rem]">
+                    <FaDashcube />
                 </div>
-            </Dropdown>
-        </Flex>
+            </Flex>
+            <Flex align='center' justify='flex-end'>
+                <Dropdown
+                    menu={{items}}
+                >
+                    <div className='hover:bg-black/[.03] cursor-auto p-2 rounded-md'>
+                        <Flex align='center' gap='5px'>
+                            <UserOutlined />
+                            <Typography.Text>{auth.user?.profile.preferred_username}</Typography.Text>
+                        </Flex>
+                    </div>
+                </Dropdown>
+            </Flex>
+        </>
+
+
     );
 }
 

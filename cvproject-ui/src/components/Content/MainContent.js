@@ -89,7 +89,6 @@ const MainContent = () => {
 
     /**Get all */
     const handleCV = useCallback((page) => {
-
         setTableData((tableData) => ({ ...tableData, loading: true }));
         setCurrentPage(page);
         const antdPage = page - 1;
@@ -108,9 +107,10 @@ const MainContent = () => {
     }, []);
 
     console.log('tableData', tableData);
+
     useEffect(() => {
         handleCV(currentPage);
-    }, [currentPage]);
+    }, [handleCV, currentPage]);
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
@@ -137,26 +137,29 @@ const MainContent = () => {
         setEditingKey('');
     };
     const save = async (key) => {
-        try {
-            const row = await form.validateFields();
+        const row = await form.validateFields();
+        handleUpdateCV(key, row);
+        // try {
 
-            const newData = [...tableData.data];
-            const index = newData.findIndex((item) => key === item.key);
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, {
-                    ...item,
-                    ...row,
-                    dob: moment(row.dob).format('YYYY-MM-DD')
-                });
-            } else {
-                newData.push(row);
-            }
-            setTableData({ ...tableData, data: newData });
-            setEditingKey('');
-        } catch (errInfo) {
-            handleLogError(errInfo);
-        }
+        //     // const row = await form.validateFields();
+
+        //     // const newData = [...tableData.data];
+        //     // const index = newData.findIndex((item) => key === item.key);
+        //     // if (index > -1) {
+        //     //     const item = newData[index];
+        //     //     newData.splice(index, 1, {
+        //     //         ...item,    
+        //     //         ...row,
+        //     //         dob: moment(row.dob).format('YYYY-MM-DD')
+        //     //     });
+        //     // } else {
+        //     //     newData.push(row);
+        //     // }
+        //     // setTableData({ ...tableData, data: newData });
+        //     // setEditingKey('');
+        // } catch (errInfo) {
+        //     handleLogError(errInfo);
+        // }
     };
     const editProps = {
         isEditing,
@@ -166,6 +169,29 @@ const MainContent = () => {
         editingKey,
         form
     }
+
+    const handleUpdateCV = async (key, record) => {
+        const data = JSON.stringify(record);
+        console.log('data', data);
+        await myCVListApi.updateCV(key, data)
+            .then((response) => {
+                if (response.status === 200) {
+                    setEditingKey('');
+                    handleCV(currentPage);
+                    api.success({
+                        message: NOTIFICATION.UPDATE.SUCCESS,
+                        duration: 2,
+                    });
+                }
+            })
+            .catch((error) => {
+                api.error({
+                    message: NOTIFICATION.UPDATE.ERROR,
+                    duration: 2,
+                });
+                handleLogError(error);
+            });
+    };
 
     /*Delete*/
     const onDelete = (key) => {
@@ -284,6 +310,8 @@ const MainContent = () => {
             handleLogError(error);
         }).finally(() => {
             setUploading(false);
+            setVisible(false);
+            handleCV(currentPage);
         });
 
     }
