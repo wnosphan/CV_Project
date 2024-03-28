@@ -38,9 +38,9 @@ public class CVService implements ICvService {
     }
 
     @Override
-    public Page<CvResponse> getAllCv(Long id, int page, int size) throws Exception {
+    public Page<CvResponse> getListCv(Long id, int page, int size) throws Exception {
         User existingUser = userRepository.findById(id).orElseThrow(() -> new Exception("User with ID: " + id + " not found!!!"));
-        Pageable pageable = PageRequest.of(page, size, Sort.by("full_name").ascending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
         log.info("Lấy thành công danh sách Cv");
         return cvPage.map(CvResponse::fromCv);
@@ -53,7 +53,7 @@ public class CVService implements ICvService {
     }
 
     public Cv creatCv(CvDTO cvDTO) throws Exception {
-        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User " + cvDTO.getCreateBy() + " not found!!!"));
+        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User with ID: " + cvDTO.getCreateBy() + " not found!!!"));
         Cv newCv = Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
@@ -63,7 +63,7 @@ public class CVService implements ICvService {
                 .trainingSystem(cvDTO.getTrainingSystem())
                 .createdBy(user)
                 .gpa(cvDTO.getGPA())
-                .status(CvStatus.NOTPASS)
+                .status(CvStatus.INPROGRESS)
                 .linkCV(cvDTO.getLinkCV())
                 .build();
         cvRepository.save(newCv);
@@ -153,7 +153,7 @@ public class CVService implements ICvService {
     public void deleteCvs(ListCvIdDTO ids) {
         List<Long> idList = ids.ids;
         cvRepository.deleteAllById(idList);
-        log.info("Xoá thành công danh sách CV");
+        log.info("Xoá thành công "+idList.size()+" Cv");
     }
 
     @Override
@@ -184,15 +184,6 @@ public class CVService implements ICvService {
             }
 
         }
-    }
-
-
-    @Override
-    public Page<CvResponse> searchCv(int page, int size, String username) throws Exception {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Cv> cvPage = cvRepository.searchCv( pageable, username);
-        log.info("Get list CV successfully!");
-        return cvPage.map(CvResponse::fromCv);
     }
 
 }
