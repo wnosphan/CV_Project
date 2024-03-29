@@ -90,10 +90,10 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @GetMapping("")
-    private ResponseEntity<?> getAll(@RequestParam(name = "page", defaultValue = "0") int page,
+    @GetMapping("user/{username}")
+    private ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
+                                     @RequestParam(name = "page", defaultValue = "0") int page,
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
-                                     @RequestParam(name = "username", required = false) String username,
                                      @RequestParam(name = "sortby", defaultValue = "id") String sortby,
                                      @RequestParam(name = "sorttype", defaultValue = "ASC") String sorttype,
                                      @RequestParam(name = "fullname", required = false) String fullname,
@@ -113,6 +113,7 @@ public class CvController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @Operation(summary = "Get Cv by ID", description = "Cv ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Create new Cv successfully"),
