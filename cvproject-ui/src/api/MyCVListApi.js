@@ -29,7 +29,7 @@ function getCV(username, page, limit) {
 
 function UpdateCV(id, data) {
     return instance.get(`/api/cv/${id}`, {
-        request: data,
+        data: data,
         validateStatus: (status) => {
             return status < 500
         }
