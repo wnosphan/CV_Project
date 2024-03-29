@@ -45,16 +45,16 @@ public class CvController {
     @PostMapping("")
     private ResponseEntity<?> postCV(@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
         try {
-            log.info("Request data: "+cvDTO);
+            log.info("Request data: " + cvDTO);
             if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
                 log.error(errorMessages.toString());
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Cv cv = cvService.creatCv(cvDTO);
-            log.info("Response data: " +cv);
+            log.info("Response data: " + cv);
             return ResponseEntity.ok(cv);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -66,18 +66,18 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @GetMapping("/user/{created_by}")
+    @GetMapping("/user/{user_name}")
     private ResponseEntity<?> getAll(
-            @PathVariable("created_by") Long createdBy,
+            @PathVariable("user_name") String createdBy,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "limit", defaultValue = "5") int limit
     ) {
         try {
-            log.info("Request data: createdBy: "+createdBy+"; Page: "+page+"; Limit: "+limit);
-            Page<CvResponse> cv = cvService.getListCv(createdBy,page,limit);
+            log.info("Request data: createdBy: " + createdBy + "; Page: " + page + "; Limit: " + limit);
+            Page<CvResponse> cv = cvService.getListCv(page, limit, createdBy);
             int totalPage = cv.getTotalPages();
             List<CvResponse> cvs = cv.getContent();
-            log.info("Response data: "+cv);
+            log.info("Response data: " + cv);
             return ResponseEntity.ok(CvListResponse.builder()
                     .cvResponses(cvs)
                     .totalPages(totalPage)
@@ -97,9 +97,9 @@ public class CvController {
     @GetMapping("/{id}")
     private ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
         try {
-            log.info("Request data: Cv ID: " +id);
+            log.info("Request data: Cv ID: " + id);
             Cv cv = cvService.getCvById(id);
-            log.info("Response data: "+cv);
+            log.info("Response data: " + cv);
             return ResponseEntity.ok(cv);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -116,9 +116,9 @@ public class CvController {
     @PutMapping("/{id}")
     private ResponseEntity<?> updateCv(@PathVariable long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
-            log.info("Request data: Cv ID: "+id+";\nCvDTO: "+cvDTO);
+            log.info("Request data: Cv ID: " + id + ";\nCvDTO: " + cvDTO);
             Cv updateCv = cvService.updateCv(id, cvDTO);
-            log.info("Response data: "+updateCv);
+            log.info("Response data: " + updateCv);
             return ResponseEntity.ok(updateCv);
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -135,9 +135,9 @@ public class CvController {
     @PatchMapping("/{id}")
     private ResponseEntity<?> updateCvStatus(@PathVariable long id, @Valid @RequestParam("status") String status) {
         try {
-            log.info("Request data: Cv ID: "+id+"; status: "+status);
+            log.info("Request data: Cv ID: " + id + "; status: " + status);
             Cv cv = cvService.updateCvStatus(id, status);
-            log.info("Response data: "+cv);
+            log.info("Response data: " + cv);
             return ResponseEntity.ok(cv);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -172,7 +172,7 @@ public class CvController {
     @DeleteMapping("/{id}")
     private ResponseEntity<?> deleteCv(@PathVariable long id) {
         try {
-            log.info("Request data: Id: "+id);
+            log.info("Request data: Id: " + id);
             cvService.deleteCv(id);
             log.info("CV with id: " + id + " deleted successfully!");
             return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
@@ -191,7 +191,7 @@ public class CvController {
     @DeleteMapping("")
     private ResponseEntity<?> deleteCvs(@Valid @RequestBody ListCvIdDTO ids) {
         try {
-            log.info("Request data: Cv ID list"+ids);
+            log.info("Request data: Cv ID list" + ids);
             cvService.deleteCvs(ids);
             return ResponseEntity.ok("List CV deleted successfully!");
         } catch (Exception e) {
@@ -202,7 +202,7 @@ public class CvController {
 
     @PostMapping("/upload")
     private ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file,
-                                      @RequestHeader("username") String username) throws IllegalAccessException {
+                                       @RequestHeader("username") String username) throws IllegalAccessException {
         cvService.saveCv(file, username);
         return ResponseEntity.ok().build();
     }

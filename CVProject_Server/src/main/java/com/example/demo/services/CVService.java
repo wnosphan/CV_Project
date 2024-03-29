@@ -38,12 +38,16 @@ public class CVService implements ICvService {
     }
 
     @Override
-    public Page<CvResponse> getListCv(Long id, int page, int size) throws Exception {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new Exception("User with ID: " + id + " not found!!!"));
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
-        log.info("Lấy thành công danh sách Cv");
-        return cvPage.map(CvResponse::fromCv);
+    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
+        User existingUser = userRepository.findByUserName(userName);
+        if(existingUser != null){
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+            Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
+            log.info("Lấy thành công danh sách Cv");
+            return cvPage.map(CvResponse::fromCv);
+        }
+        log.error("User "+userName+" not found!!!");
+        return null;
     }
 
     public Cv getCvById(Long id) throws Exception {
