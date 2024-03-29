@@ -9,8 +9,10 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.CvRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.CvResponse;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,13 +58,25 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
     if (existingUser == null) {
         throw new Exception("User with username: " + username + " not found!!!");
     }
-    Sort.Direction direction = Sort.Direction.fromString(sorttype);
 
+    // Kiểm tra và set giá trị cho các trường
+    if (StringUtils.isBlank(fullname)) fullname = null;
+    if (CollectionUtils.isEmpty(skill)) skill = null;
+    if (CollectionUtils.isEmpty(status)) status = null;
+    if (dateOfBirth != null && dateOfBirth.isEqual(LocalDate.MIN)) dateOfBirth = null; // hoặc kiểm tra giá trị mặc định khác
+    if (CollectionUtils.isEmpty(university)) university = null;
+    if (StringUtils.isBlank(trainingSystem)) trainingSystem = null;
+    if (StringUtils.isBlank(gpa)) gpa = null;
+    if (CollectionUtils.isEmpty(applyPosition)) applyPosition = null;
+
+    Sort.Direction direction = Sort.Direction.fromString(sorttype);
     Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortby));
+
     Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName(), fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
     log.info("Tìm kiếm thành công danh sách Cv");
     return cvPage.map(CvResponse::fromCv);
 }
+
 
     public Cv getCvById(Long id) throws Exception {
         Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id =" + id));
