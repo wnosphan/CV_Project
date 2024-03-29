@@ -14,7 +14,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     const [filteredInfo, setFilteredInfo] = useState({});
     const [sortedInfo, setSortedInfo] = useState({});
     const statusFilter = ['PASS', 'NOTPASS', 'INPROGRESS'];
-    
+
 
     const handleChange = (filters, sorter) => {
         setFilteredInfo(filters);
@@ -298,6 +298,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
         };
     });
     const cvs = () => {
+        if (dataSource === undefined || dataSource === null) return [];
         return dataSource.map((cv) => ({
             key: cv.id,
             skill: cv.skill,
