@@ -6,6 +6,7 @@ import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.responses.CvListResponse;
 import com.example.demo.responses.CvResponse;
+import com.example.demo.services.GetListService;
 import com.example.demo.services.ICvService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +37,7 @@ import java.util.List;
 public class CvController {
 
     private final ICvService cvService;
-
+    private final GetListService getListService;
     @Operation(summary = "Create new CV", description = "Require cvDTO")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Create new Cv successfully"),
@@ -60,34 +62,57 @@ public class CvController {
         }
     }
 
+
+
+//    private ResponseEntity<?> getAll(
+//            @PathVariable("user_name") String createdBy,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "limit", defaultValue = "5") int limit
+//    ) {
+//        try {
+//            log.info("Request data: createdBy: " + createdBy + "; Page: " + page + "; Limit: " + limit);
+//            Page<CvResponse> cv = cvService.getListCv(page, limit, createdBy);
+//            int totalPage = cv.getTotalPages();
+//            List<CvResponse> cvs = cv.getContent();
+//            log.info("Response data: " + cv);
+//            return ResponseEntity.ok(CvListResponse.builder()
+//                    .cvResponses(cvs)
+//                    .totalPages(totalPage)
+//                    .build());
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
     @Operation(summary = "Get all Cv by User", description = "Require userName, page, limit")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get all Cv successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @GetMapping("/user/{user_name}")
-    private ResponseEntity<?> getAll(
-            @PathVariable("user_name") String createdBy,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "limit", defaultValue = "5") int limit
-    ) {
+    @GetMapping("")
+    private ResponseEntity<?> getAll(@RequestParam(name = "page", defaultValue = "0") int page,
+                                     @RequestParam(name = "limit", defaultValue = "5") int limit,
+                                     @RequestParam(name = "username", required = false) String username,
+                                     @RequestParam(name = "sortby", defaultValue = "id") String sortby,
+                                     @RequestParam(name = "sorttype", defaultValue = "ASC") String sorttype,
+                                     @RequestParam(name = "fullname", required = false) String fullname,
+                                     @RequestParam(name = "skill", required = false) List<String> skill,
+                                     @RequestParam(name = "status", required = false) List<String> status,
+                                     @RequestParam(name = "dateOfBirth", required = false) LocalDate dateOfBirth,
+                                     @RequestParam(name = "university", required = false) List<String> university,
+                                     @RequestParam(name = "trainingSystem", required = false) String trainingSystem,
+                                     @RequestParam(name = "gpa", required = false) String gpa,
+                                     @RequestParam(name = "applyPosition", required = false) List<String> applyPosition) {
         try {
-            log.info("Request data: createdBy: " + createdBy + "; Page: " + page + "; Limit: " + limit);
-            Page<CvResponse> cv = cvService.getListCv(page, limit, createdBy);
-            int totalPage = cv.getTotalPages();
-            List<CvResponse> cvs = cv.getContent();
-            log.info("Response data: " + cv);
-            return ResponseEntity.ok(CvListResponse.builder()
-                    .cvResponses(cvs)
-                    .totalPages(totalPage)
-                    .build());
+            Page<CvResponse> cvList = cvService.searchCv(page, limit, username, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
+            int totalPage = cvList.getTotalPages();
+            List<CvResponse> cvs = cvList.getContent();
+            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
         } catch (Exception e) {
-            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     @Operation(summary = "Get Cv by ID", description = "Cv ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Create new Cv successfully"),
@@ -205,5 +230,17 @@ public class CvController {
                                        @RequestHeader("username") String username) throws IllegalAccessException {
         cvService.saveCv(file, username);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/list/skill")
+    public ResponseEntity<?> getListSkill(){
+        return ResponseEntity.ok(getListService.getListSkill());
+    }
+    @GetMapping("/list/apply-position")
+    public ResponseEntity<?> getListApplyPosition(){
+        return ResponseEntity.ok(getListService.getListApplyPosition());
+    }
+    @GetMapping("/list/university")
+    public ResponseEntity<?> getListUniversity(){
+        return ResponseEntity.ok(getListService.getListUniversity());
     }
 }

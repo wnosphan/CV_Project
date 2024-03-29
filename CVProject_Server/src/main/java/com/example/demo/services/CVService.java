@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,26 +30,39 @@ public class CVService implements ICvService {
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
 
-    public Page<CvResponse> getAllCv(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Cv> cvPage = cvRepository.findAll(pageable);
-        log.info("Lấy thành công danh sách Cv");
-        return cvPage.map(CvResponse::fromCv);
+//    public Page<CvResponse> getAllCv(int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+//        Page<Cv> cvPage = cvRepository.findAll(pageable);
+//        log.info("Lấy thành công danh sách Cv");
+//        return cvPage.map(CvResponse::fromCv);
+//
+//    }
 
+//    @Override
+//    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
+//        User existingUser = userRepository.findByUserName(userName);
+//        if(existingUser != null){
+//            Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+//            Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
+//            log.info("Lấy thành công danh sách Cv");
+//            return cvPage.map(CvResponse::fromCv);
+//        }
+//        log.error("User "+userName+" not found!!!");
+//        return null;
+//    }
+@Override
+public Page<CvResponse> searchCv(int page, int size, String username, String sortby, String sorttype, String fullname, List<String> skill, List<String> status, LocalDate dateOfBirth, List<String> university, String trainingSystem, String gpa, List<String> applyPosition) throws Exception {
+    User existingUser = userRepository.findByUserName(username);
+    if (existingUser == null) {
+        throw new Exception("User with username: " + username + " not found!!!");
     }
+    Sort.Direction direction = Sort.Direction.fromString(sorttype);
 
-    @Override
-    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
-        User existingUser = userRepository.findByUserName(userName);
-        if(existingUser != null){
-            Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-            Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
-            log.info("Lấy thành công danh sách Cv");
-            return cvPage.map(CvResponse::fromCv);
-        }
-        log.error("User "+userName+" not found!!!");
-        return null;
-    }
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortby));
+    Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName(), fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
+    log.info("Tìm kiếm thành công danh sách Cv");
+    return cvPage.map(CvResponse::fromCv);
+}
 
     public Cv getCvById(Long id) throws Exception {
         Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id =" + id));
