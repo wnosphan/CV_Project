@@ -6,11 +6,11 @@ import moment from 'moment';
 import { useAuth } from 'react-oidc-context';
 
 import CVTable from './CVTable';
-import handleLogError from '../../utils/HandleError';
-import { myCVListApi } from '../../api/MyCVListApi';
+import handleLogError from '~/utils/HandleError';
+import { myCVListApi } from '~/api/MyCVListApi';
 import { modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
-import { NOTIFICATION, STATUS } from '../../configs'
-import {Home} from '../layouts';
+import { NOTIFICATION, STATUS } from '~/configs'
+import Home from '~/components/layouts/main/MainLayout/Home';
 const { Dragger } = Upload;
 
 const paginationProps = {
@@ -332,7 +332,7 @@ const MainContent = () => {
 
 
     return (
-      <Home>
+        <Home>
             <Col span={23}>
                 {contextHolder}
                 <Flex vertical gap={'1rem'}>
@@ -378,7 +378,7 @@ const MainContent = () => {
                     />
                 </Flex>
             </Col>
-      </Home>
+        </Home>
 
     )
 }

@@ -1,55 +1,56 @@
 /* Common */
 html {
-  --primary-color: #4f6f52;
+    --primary-color: #4f6f52;
 }
 body {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 .primary--color {
-  color: #4f6f52 !important;
+    color: #4f6f52 !important;
 }
 
 .primary--light--color {
-  color: #739072 !important;
+    color: #739072 !important;
 }
 
 .secondary--color {
-  color: #86a789 !important;
+    color: #86a789 !important;
 }
 
 .light--color {
-  color: #d2e3c8 !important;
+    color: #d2e3c8 !important;
 }
 
 .gray--color {
-  color: #ccc !important;
+    color: #ccc !important;
 }
 
 .black--color {
-  color: #000 !important;
+    color: #000 !important;
 }
 
 .h-screen {
-  min-height: 100vh;
-  height: auto;
+    min-height: 100vh;
+    height: auto;
 }
 
 .ant-menu-item-selected {
-  background-color: #4f6f52 !important;
-  color: #fff !important;
+    background-color: #4f6f52 !important;
+    color: #fff !important;
 }
 
 .ant-btn:hover {
-  color: #4f6f52 !important;
-  border-color: #4f6f52 !important;
+    color: #4f6f52 !important;
+    border-color: #4f6f52 !important;
 }
 
 .ant-btn-primary {
-  background-color: #4f6f52;
+    background-color: #4f6f52;
 }
 
 .ant-btn-primary:hover {
-  background-color: #173a1a !important;
-  color: #fff !important;
+    background-color: #173a1a !important;
+    color: #fff !important;
 }
+
