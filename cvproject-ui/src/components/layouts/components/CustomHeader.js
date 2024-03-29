@@ -4,7 +4,7 @@ import { Flex, Typography, Dropdown, Image } from 'antd';
 import { FaDashcube } from "react-icons/fa6";
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
-import { properties } from '../configs/properties'
+import { properties } from '~/configs/properties'
 //Navigation Menu Options
 
 function CustomHeader() {

@@ -1,9 +1,9 @@
 import { useAuth } from "react-oidc-context"
 import { Button, Spin, Typography } from 'antd'
 
-import { myCVListApi } from "../api/MyCVListApi";
-import handleLogError from "../utils/HandleError";
-import { properties } from "../configs";
+import { myCVListApi } from "~/api/MyCVListApi";
+import handleLogError from "~/utils/HandleError";
+import { properties } from "~/configs";
 const { Title } = Typography
 
 function PrivateRoute({ children }) {

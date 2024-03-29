@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { properties } from '../configs/properties';
+import { properties } from '~/configs/properties';
 
 export const myCVListApi = {
     getCV,
@@ -8,18 +8,14 @@ export const myCVListApi = {
     deleteCVs,
     fileUpload,
     updateMultipleStatus,
-    saveUser,
     UpdateCV
 }
 
 function getCV(username, page, limit) {
-    return instance.get(`/api/cv/user`, {
+    return instance.get(`/api/cv/user/${username}`, {
         params: {
             page: page,
             limit: limit
-        },
-        headers: {
-            'username': username
         },
         validateStatus: (status) => {
             return status < 500
@@ -79,19 +75,6 @@ function updateMultipleStatus(ids) {
     return instance.patch(`/api/cv`, ids, {
         headers: {
             "Content-Type": "application/json",
-        },
-        validateStatus: (status) => {
-            return status < 500
-        }
-    })
-}
-
-function saveUser(username, email) {
-    return instance.post('/api/cv/save-user', {
-        headers: {
-            'Content-Type': 'application/json',
-            'username': username,
-            'email': email
         },
         validateStatus: (status) => {
             return status < 500

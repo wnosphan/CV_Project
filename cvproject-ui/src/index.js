@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { AuthProvider } from "react-oidc-context";
+
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from "react-oidc-context";
 import { properties } from './configs/properties';
 
 const oidcConfig = {
