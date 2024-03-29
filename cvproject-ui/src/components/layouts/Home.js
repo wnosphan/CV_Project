@@ -9,7 +9,7 @@ import handleLogError from '../../utils/HandleError';
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography
 
-function Home() {
+function Home({ children }) {
     const auth = useAuth();
 
     const access_token = auth.user?.access_token;
@@ -48,7 +48,8 @@ function Home() {
                         </Header>
                         <Content className='mx-3 mb-6 p-5'>
                             <Row justify="space-evenly">
-                                <MainContent />
+                                {children}
+                                {/* <MainContent /> */}
                             </Row>
                         </Content>
                     </>

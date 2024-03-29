@@ -10,6 +10,7 @@ import handleLogError from '../../utils/HandleError';
 import { myCVListApi } from '../../api/MyCVListApi';
 import { modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
 import { NOTIFICATION, STATUS } from '../../configs'
+import {Home} from '../layouts';
 const { Dragger } = Upload;
 
 const paginationProps = {
@@ -331,51 +332,53 @@ const MainContent = () => {
 
 
     return (
-        <Col span={23}>
-            {contextHolder}
-            <Flex vertical gap={'1rem'}>
-                <Card className='h-20'>
-                    <Flex vertical>
-                        <Flex gap="1rem" justify='flex-end' align='center'>
-                            <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
-                            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
-                            <Link to='/create'><Button icon={<PlusCircleOutlined />} onClick={() => localStorage.setItem('currentPage', currentPage)} type='primary' size='large'>Create</Button></Link>
-                            <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
-                            <Modal open={visible}
-                                {...modalUploadProps}
-                                onOk={() => onUpload(excelFile)}
-                                confirmLoading={uploading}
-                                onCancel={() => setVisible(false)}
-                            >
-                                <Dragger {...uploadProps}>
-                                    <p className="ant-upload-drag-icon">
-                                        <InboxOutlined />
-                                    </p>
-                                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                    <p className="ant-upload-hint">
-                                        Support for a single upload. Strictly prohibited from uploading company data or other
-                                        banned files.
-                                    </p>
-                                </Dragger>
-                            </Modal>
+      <Home>
+            <Col span={23}>
+                {contextHolder}
+                <Flex vertical gap={'1rem'}>
+                    <Card className='h-20'>
+                        <Flex vertical>
+                            <Flex gap="1rem" justify='flex-end' align='center'>
+                                <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
+                                <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
+                                <Link to='/create'><Button icon={<PlusCircleOutlined />} onClick={() => localStorage.setItem('currentPage', currentPage)} type='primary' size='large'>Create</Button></Link>
+                                <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
+                                <Modal open={visible}
+                                    {...modalUploadProps}
+                                    onOk={() => onUpload(excelFile)}
+                                    confirmLoading={uploading}
+                                    onCancel={() => setVisible(false)}
+                                >
+                                    <Dragger {...uploadProps}>
+                                        <p className="ant-upload-drag-icon">
+                                            <InboxOutlined />
+                                        </p>
+                                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                        <p className="ant-upload-hint">
+                                            Support for a single upload. Strictly prohibited from uploading company data or other
+                                            banned files.
+                                        </p>
+                                    </Dragger>
+                                </Modal>
+                            </Flex>
                         </Flex>
-                    </Flex>
-                </Card>
-                <CVTable
-                    dataSource={tableData.data}
-                    rowSelection={rowSelection}
-                    onDelete={onDelete}
-                    pagination={{
-                        ...paginationProps,
-                        total: tableData.totalPage * paginationProps.pageSize,
-                        current: currentPage,
-                        onChange: handleTableChange
-                    }}
-                    loading={tableData.loading}
-                    editProps={editProps}
-                />
-            </Flex>
-        </Col>
+                    </Card>
+                    <CVTable
+                        dataSource={tableData.data}
+                        rowSelection={rowSelection}
+                        onDelete={onDelete}
+                        pagination={{
+                            ...paginationProps,
+                            total: tableData.totalPage * paginationProps.pageSize,
+                            current: currentPage,
+                            onChange: handleTableChange
+                        }}
+                        loading={tableData.loading}
+                        editProps={editProps}
+                    />
+                </Flex>
+            </Col>
+      </Home>
 
     )
 }

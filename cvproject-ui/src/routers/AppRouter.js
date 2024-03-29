@@ -1,9 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import { Home, ErrorPage } from '../components/layouts';
+import { ErrorPage, Create } from '../components/layouts';
+import MainContent from '../components/Content/MainContent';
 import PrivateRoute from './PrivateRoute';
-import Create from '../components/layouts/Create';
 
 const AppRouter = () => {
     return (
@@ -11,7 +11,7 @@ const AppRouter = () => {
             <Router>
                 <Routes>
                     <Route
-                        path="/" element={<Home />}
+                        path="/" element={<MainContent />}
                         errorElement={<ErrorPage />}>
                     </Route>
                     <Route path="/create" element={<Create />} />
