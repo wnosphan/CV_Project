@@ -22,4 +22,5 @@ export const NOTIFICATION = {
 export const STATUS = {
     PASS: 'pass',
     NOT_PASS: 'not_pass',
+    INPROGRESS: 'inprogress',
 };

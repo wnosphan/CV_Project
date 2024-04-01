@@ -25,8 +25,8 @@ export const modalUploadProps = {
     keyboard: true,
 }
 
-export const modalUpdateStatusProps = {
-    title: 'Mày có chắc là muốn update?',
+export const modalApplyProps = {
+    title: 'Thay đổi trạng thái CV',
     okText: 'Ok',
     cancelText: 'Cancel',
     okType: 'primary',

@@ -96,14 +96,14 @@ public class CvController {
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
                                      @RequestParam(name = "sortby", defaultValue = "id") String sortby,
                                      @RequestParam(name = "sorttype", defaultValue = "ASC") String sorttype,
-                                     @RequestParam(name = "fullname", required = false) String fullname,
+                                     @RequestParam(name = "full_name", required = false) String fullname,
                                      @RequestParam(name = "skill", required = false) List<String> skill,
                                      @RequestParam(name = "status", required = false) List<String> status,
                                      @RequestParam(name = "dateOfBirth", required = false) LocalDate dateOfBirth,
                                      @RequestParam(name = "university", required = false) List<String> university,
-                                     @RequestParam(name = "trainingSystem", required = false) String trainingSystem,
+                                     @RequestParam(name = "training_system", required = false) String trainingSystem,
                                      @RequestParam(name = "gpa", required = false) String gpa,
-                                     @RequestParam(name = "applyPosition", required = false) List<String> applyPosition) {
+                                     @RequestParam(name = "apply_position", required = false) List<String> applyPosition) {
         try {
             Page<CvResponse> cvList = cvService.searchCv(page, limit, username, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
             int totalPage = cvList.getTotalPages();

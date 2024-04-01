@@ -1,137 +1,48 @@
-import React, { useState, useRef, memo, useEffect } from 'react'
-import { Table, Tag, Space, Button, Input, Flex, Popconfirm, Form, Card } from 'antd'
-import { DeleteOutlined, EditOutlined, SearchOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import Highlighter from 'react-highlight-words';
+import React, { useState, memo } from 'react'
+import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row } from 'antd'
+import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import moment from 'moment';
+
+
 import EditableCell from './EditableCell';
+import { myCVListApi } from '~/api/MyCVListApi';
+import handleLogError from '~/utils/HandleError';
+import { useAuth } from 'react-oidc-context';
 
 
+const DescriptionItem = ({ title, content }) => (
+    <div className="site-description-item-profile-wrapper">
+        <p className="site-description-item-profile-p-label">{title}:</p>
+        {content}
+    </div>
+);
 
-function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef(null);
-    const [filteredInfo, setFilteredInfo] = useState({});
-    const [sortedInfo, setSortedInfo] = useState({});
+function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps, getColumnSearchProps }) {
+    const auth = useAuth();
+    const [open, setOpen] = useState(false);
+    const [info, setInfo] = useState({});
+
     const statusFilter = ['PASS', 'NOTPASS', 'INPROGRESS'];
 
+    const showDrawer = async (key) => {
+        setOpen(true);
+        await myCVListApi.getCvById(key)
+            .then((response) => {
+                console.log(response.data);
+                setInfo(response.data);
+            }).catch((error) => {
+                handleLogError(error);
+            });
+    }
 
-    const handleChange = (filters, sorter) => {
-        setFilteredInfo(filters);
-        setSortedInfo(sorter);
-    };
-
-    const clearAll = () => {
-        setFilteredInfo({});
-        setSortedInfo({});
-    };
+    const closeDrawer = () => {
+        setOpen(false);
+        setInfo({});
+    }
 
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
-    };
 
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        setSearchText('');
-    };
 
-    const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div
-                style={{
-                    padding: 8,
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            confirm({
-                                closeDropdown: false,
-                            });
-                            setSearchText(selectedKeys[0]);
-                            setSearchedColumn(dataIndex);
-                        }}
-                    >
-                        Filter
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        close
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
-            />
-        ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        render: (text) =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                    }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
-    });
     // Columns and data
     const columns = [
         {
@@ -274,6 +185,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                                     icon={<DeleteOutlined />}
                                     type='default' shape='circle'
                                     danger onClick={() => onDelete(record.key)}></Button>
+                                <Button
+                                    icon={<EyeOutlined />}
+                                    onClick={() => showDrawer(record.key)}
+                                ></Button>
+
                             </>
                         )}
                     </Space>
@@ -316,34 +232,101 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
 
     const datas = cvs();
     return (
-        <Card>
-            <div className='mb-4'>
-                <Button onClick={clearAll}>Clear filters and sorters</Button>
-            </div>
-            <Form form={editProps.form} component={false}>
-                <Table
-                    rootClassName='cv-table'
-                    rowSelection={rowSelection}
-                    dataSource={datas}
-                    columns={mergedColumns}
-                    rowClassName="editable-row"
-                    components={{
-                        body: {
-                            cell: EditableCell,
-                        },
-                    }}
-                    scroll={{
-                        scrollToFirstRowOnChange: false,
-                        x: 1600,
-                        y: 420
-                    }}
-                    pagination={pagination}
-                    loading={loading}
-                    onChange={handleChange}
-                />
-            </Form>
+        <>
+            <Card>
+                {/* <div className='mb-4'>
+                    <Button onClick={clearAll}>Clear filters and sorters</Button>
+                </div> */}
+                <Form form={editProps.form} component={false}>
+                    <Table
+                        rootClassName='cv-table'
+                        rowSelection={rowSelection}
+                        dataSource={datas}
+                        columns={mergedColumns}
+                        rowClassName="editable-row"
+                        components={{
+                            body: {
+                                cell: EditableCell,
+                            },
+                        }}
+                        scroll={{
+                            scrollToFirstRowOnChange: false,
+                            x: 1600,
+                            y: 420
+                        }}
+                        pagination={pagination}
+                        loading={loading}
+                    />
+                </Form>
+            </Card>
 
-        </Card>
+            <Drawer width={640} placement="right" closable={false} onClose={closeDrawer} open={open}>
+                <p
+                    className="site-description-item-profile-p"
+                    style={{
+                        marginBottom: 24,
+                    }}
+                >
+                    User Profile
+                </p>
+                <p className="site-description-item-profile-p">Personal</p>
+                <Row>
+                    <Col span={12}>
+                        <DescriptionItem title="Full Name" content={info.fullName} />
+                    </Col>
+                    <Col span={12}>
+                        <DescriptionItem title="Birthday" content={info.dateOfBirth} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <DescriptionItem title="University" content={info.university} />
+                    </Col>
+                    <Col span={12}>
+                        <DescriptionItem title="GPA" content={info.gpa} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <DescriptionItem title="Training System" content={info.trainingSystem} />
+                    </Col>
+                </Row>
+                <Divider />
+                <p className="site-description-item-profile-p">Company</p>
+                <Row>
+                    <Col span={24}>
+                        <DescriptionItem title="Position" content={info.applyPosition} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <DescriptionItem title="Supervisor" content={auth.user?.profile.preferred_username} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <DescriptionItem
+                            title="Skills"
+                            content={info.skill}
+                        />
+                    </Col>
+                </Row>
+                <Divider />
+                <p className="site-description-item-profile-p">Contacts</p>
+                <Row>
+                    <Col span={24}>
+                        <DescriptionItem
+                            title="CV"
+                            content={
+                                <a href={info.linkCV}>
+                                    {info.linkCV}
+                                </a>
+                            }
+                        />
+                    </Col>
+                </Row>
+            </Drawer>
+        </>
     )
 }
 

@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.15.0",
     "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "json-server": "^1.0.0-alpha.23",
     "oidc-client-ts": "^3.0.1",
