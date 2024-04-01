@@ -16,7 +16,8 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
 
     @Query("SELECT c FROM Cv c WHERE c.createdBy.userName = :username" +
             " AND (:fullname IS NULL OR c.fullName LIKE CONCAT('%', :fullname, '%'))" +
-            " AND (:skill IS NULL OR c.skill IN :skill)" +
+            " AND (:skill IS NULL OR CONCAT(',', c.skill, ',') LIKE CONCAT('%,', :skill, ',%'))"
+            +
             " AND (:status IS NULL OR c.status IN :status)" +
             " AND (:dateOfBirth IS NULL OR c.dateOfBirth = :dateOfBirth)" +
             " AND (:university IS NULL OR c.university IN :university)" +

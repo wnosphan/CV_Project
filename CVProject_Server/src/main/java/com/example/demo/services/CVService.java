@@ -126,22 +126,29 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
     }
 
     @Override
-    public Cv updateCvStatus(Long id, String status) throws Exception {
-        Cv existingCv = getCvById(id);
-        if (existingCv != null) {
-            if (status.equals("pass")) {
-                existingCv.setStatus(CvStatus.PASS);
-                log.info("Đã cập nhật trạng thái Cv có ID: " + id + " thành PASS");
-            } else if (status.equals("not_pass")) {
-                existingCv.setStatus(CvStatus.NOTPASS);
-                log.info("Đã cập nhật trạng thái Cv có ID: " + id + " thành NOTPASS");
+    public void updateCvStatus(List<Long> id, String status) throws Exception {
+        for (Long cvId : id) {
+            Optional<Cv> cvOptional = cvRepository.findById(cvId);
+            if (cvOptional.isPresent()) {
+                Cv cv = cvOptional.get();
+                if (status.equals("pass")) {
+                    cv.setStatus(CvStatus.PASS);
+                    cvRepository.save(cv);
+                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
+                } else if (status.equals("not_pass")) {
+                    cv.setStatus(CvStatus.NOTPASS);
+                    cvRepository.save(cv);
+                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
+                } else {
+                    System.err.println("Invalid status: " + status + " for CV ID: " + cvId);
+                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
+                }
             } else {
-                log.info("Đã cập nhật trạng thái Cv có ID: " + id + " không thành công, trạng thái không hợp lệ");
-                throw new Exception("Invalid status");
+                System.err.println("CV not found with ID: " + cvId);
             }
-            return cvRepository.save(existingCv);
         }
-        return null;
+
+
     }
 
     @Override

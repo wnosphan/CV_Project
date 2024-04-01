@@ -20,7 +20,10 @@ public interface ICvService {
     public Cv getCvById(Long id) throws Exception;
     public Cv creatCv(CvDTO cvDTO) throws Exception;
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
-    public Cv updateCvStatus(Long id, String status) throws Exception;
+
+
+    public void updateCvStatus(List<Long> id, String status) throws Exception;
+
     public void updateListCvStatus(List<CvStatusDTO> list) throws Exception;
     public void deleteCv(Long id) throws Exception;
     public void deleteCvs(ListCvIdDTO id) throws Exception;
