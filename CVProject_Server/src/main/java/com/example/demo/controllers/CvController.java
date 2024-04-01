@@ -158,13 +158,13 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @PatchMapping("/{id}")
-    private ResponseEntity<?> updateCvStatus(@PathVariable long id, @Valid @RequestParam("status") String status) {
+    @PatchMapping("/status")
+    private ResponseEntity<?> updateCvStatus(@RequestParam("id") List<Long> id, @Valid @RequestParam("status") String status) {
         try {
             log.info("Request data: Cv ID: " + id + "; status: " + status);
-            Cv cv = cvService.updateCvStatus(id, status);
-            log.info("Response data: " + cv);
-            return ResponseEntity.ok(cv);
+            cvService.updateCvStatus(id, status);
+            log.info("Response data: " + id + " status has been updated successfully");
+            return ResponseEntity.ok(id + " status has been updated successfully");
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
