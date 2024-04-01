@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, notification, Upload } from 'antd';
-import { PlusCircleOutlined, FolderAddOutlined, CheckCircleOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification, Input, Space } from 'antd';
+import { PlusCircleOutlined, CheckCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
 import { Link } from 'react-router-dom'
 import moment from 'moment';
 import { useAuth } from 'react-oidc-context';
@@ -8,23 +9,21 @@ import { useAuth } from 'react-oidc-context';
 import CVTable from './CVTable';
 import handleLogError from '~/utils/HandleError';
 import { myCVListApi } from '~/api/MyCVListApi';
-import { modalDeleteProps, modalUploadProps, modalUpdateStatusProps } from './CommonProps';
+import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION, STATUS } from '~/configs'
 import Home from '~/components/layouts/main/MainLayout/Home';
-const { Dragger } = Upload;
+import { ImportButton, DeleteButton, ApplyButton } from './Button';
 
 const paginationProps = {
     // simple: true,
     showQuickJumper: true,
+    showSizeChanger: false,
     position: ['bottomCenter'],
     pageSize: 8
 }
 
 const MainContent = () => {
     const auth = useAuth();
-    const [visible, setVisible] = useState(false);
-    const [excelFile, setExcelFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -53,11 +52,6 @@ const MainContent = () => {
                             });
                             break;
                         case "NOTPASS":
-                            status.push({
-                                id: item,
-                                status: STATUS.PASS
-                            });
-                            break;
                         case "INPROGRESS":
                             status.push({
                                 id: item,
@@ -89,12 +83,10 @@ const MainContent = () => {
     };
 
     /**Get all */
-    const handleCV = useCallback((page) => {
+    const handleCV = useCallback((page, dataIndex, keySearch) => {
         setTableData((tableData) => ({ ...tableData, loading: true }));
-        setCurrentPage(page);
-        const antdPage = page - 1;
         setTimeout(() => {
-            myCVListApi.getCV(auth.user?.profile.preferred_username, antdPage, paginationProps.pageSize).then((response) => {
+            myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, paginationProps.pageSize, dataIndex, keySearch).then((response) => {
                 setTableData({
                     data: response.data.cvs_list,
                     totalPage: response.data.total,
@@ -119,6 +111,118 @@ const MainContent = () => {
         cancel();
 
     };
+
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+    console.log(searchText, searchedColumn);
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+        handleCV(currentPage, dataIndex, selectedKeys[0]);
+    };
+
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+    };
+
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+            <div
+                style={{
+                    padding: 8,
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+            >
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{
+                        marginBottom: 8,
+                        display: 'block',
+                    }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Reset
+                    </Button>
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            confirm({
+                                closeDropdown: false,
+                            });
+                            setSearchText(selectedKeys[0]);
+                            setSearchedColumn(dataIndex);
+                        }}
+                    >
+                        Filter
+                    </Button>
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        close
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered) => (
+            <SearchOutlined
+                style={{
+                    color: filtered ? '#1677ff' : undefined,
+                }}
+            />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownOpenChange: (visible) => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                    }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
 
     const isEditing = (record) => record.key === editingKey;
     const edit = (record) => {
@@ -193,7 +297,6 @@ const MainContent = () => {
                 handleLogError(error);
             });
     };
-
     /*Delete*/
     const onDelete = (key) => {
         Modal.confirm({
@@ -231,106 +334,6 @@ const MainContent = () => {
         setSelectedRowKeys(prev => prev.filter((item) => item !== key));
     }
 
-    /** Delete multiple row */
-    const onMultipleDelete = async () => {
-        Modal.confirm({
-            ...modalDeleteProps,
-            onOk: async () => {
-                await myCVListApi.deleteCVs(selectedRowKeys)
-                    .then(async (response) => {
-                        if (response.status === 200) {
-                            if (tableData.data.length === 0) {
-                                let i = setCurrentPage(currentPage - 1);
-                                console.log('currentPage', i);
-                            }
-                            await handleCV(currentPage);
-                            setSelectedRowKeys([]);
-                            api.success({
-                                message: NOTIFICATION.DELETE.SUCCESS,
-                                duration: 2,
-                            })
-                        }
-                    })
-                    .catch((error) => {
-                        api.error({
-                            message: NOTIFICATION.DELETE.ERROR,
-                            duration: 2,
-                        });
-                        handleLogError(error);
-                    });
-
-            },
-        })
-    }
-
-    const onUpdateMultipleStatus = async () => {
-        Modal.confirm({
-            ...modalUpdateStatusProps,
-            onOk: async () => {
-                await myCVListApi.updateMultipleStatus(selectedStatus)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            handleCV(currentPage);
-                            api.success({
-                                message: NOTIFICATION.UPDATE.SUCCESS,
-                                duration: 2,
-                            })
-                        }
-                    })
-                    .catch((error) => {
-                        api.error({
-                            message: NOTIFICATION.UPDATE.ERROR,
-                            duration: 2,
-                        });
-                        handleLogError(error);
-                    }).finally(() => {
-                        setSelectedRowKeys([]);
-                        setSelectedStatus([]);
-                    });
-            },
-        })
-    }
-
-
-    const onUpload = (file) => {
-        if (excelFile === null) {
-            setVisible(false);
-            return;
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        setUploading(true);
-        myCVListApi.fileUpload(auth.user?.profile.preferred_username, formData).then((response) => {
-            console.log(response.data);
-            setExcelFile(null);
-            api.success({
-                message: NOTIFICATION.UPLOAD.SUCCESS,
-                duration: 2,
-            })
-        }).catch((error) => {
-            handleLogError(error);
-        }).finally(() => {
-            setUploading(false);
-            setVisible(false);
-            handleCV(currentPage);
-        });
-
-    }
-    const uploadProps = {
-        maxCount: 1,
-        listType: 'picture',
-        accept: '.xlsx, .xls, .csv',
-        onRemove: () => {
-            setExcelFile(null);
-        },
-        beforeUpload: (file) => {
-            setExcelFile(file);
-            return false;
-        },
-        excelFile
-    }
-
-
     return (
         <Home>
             <Col span={23}>
@@ -339,27 +342,11 @@ const MainContent = () => {
                     <Card className='h-20'>
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
-                                <Button icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0} className='bg-red-600 text-white' size='large' onClick={onMultipleDelete}>Delete</Button>
-                                <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button>
+                                <DeleteButton api={api} selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} />
+                                {/* <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button> */}
+                                <ApplyButton selectedRowKeys={selectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
                                 <Link to='/create'><Button icon={<PlusCircleOutlined />} onClick={() => localStorage.setItem('currentPage', currentPage)} type='primary' size='large'>Create</Button></Link>
-                                <Button icon={<FolderAddOutlined />} size='large' onClick={() => setVisible(true)}>Import</Button>
-                                <Modal open={visible}
-                                    {...modalUploadProps}
-                                    onOk={() => onUpload(excelFile)}
-                                    confirmLoading={uploading}
-                                    onCancel={() => setVisible(false)}
-                                >
-                                    <Dragger {...uploadProps}>
-                                        <p className="ant-upload-drag-icon">
-                                            <InboxOutlined />
-                                        </p>
-                                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                        <p className="ant-upload-hint">
-                                            Support for a single upload. Strictly prohibited from uploading company data or other
-                                            banned files.
-                                        </p>
-                                    </Dragger>
-                                </Modal>
+                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} />
                             </Flex>
                         </Flex>
                     </Card>
@@ -375,6 +362,7 @@ const MainContent = () => {
                         }}
                         loading={tableData.loading}
                         editProps={editProps}
+                        getColumnSearchProps={getColumnSearchProps}
                     />
                 </Flex>
             </Col>

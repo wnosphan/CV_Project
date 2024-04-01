@@ -1,8 +1,11 @@
 import axios from 'axios'
+import { useAuth } from 'react-oidc-context';
 import { properties } from '~/configs/properties';
+
 
 export const myCVListApi = {
     getCV,
+    getCvById,
     createCV,
     deleteCV,
     deleteCVs,
@@ -11,12 +14,21 @@ export const myCVListApi = {
     UpdateCV
 }
 
-function getCV(username, page, limit) {
+function getCV(username, page, limit, dataIndex, keySearch) {
     return instance.get(`/api/cv/user/${username}`, {
         params: {
             page: page,
-            limit: limit
+            limit: limit,
+            [dataIndex]: keySearch
         },
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+
+function getCvById(id) {
+    return instance.get(`/api/cv/${id}`, {
         validateStatus: (status) => {
             return status < 500
         }

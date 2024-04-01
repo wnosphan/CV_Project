@@ -1,5 +1,5 @@
 import { useAuth } from "react-oidc-context"
-import { Button, Spin, Typography } from 'antd'
+import { Button, Flex, Spin, Typography } from 'antd'
 
 import { myCVListApi } from "~/api/MyCVListApi";
 import handleLogError from "~/utils/HandleError";
@@ -12,8 +12,9 @@ function PrivateRoute({ children }) {
     if (auth.isLoading) {
         return (
             <div className="text-center">
-                <Title>Keycloak is loading</Title>
-                <Title className="text-gray-500" level={2}>or running authorization code flow with PKCE</Title>
+                {/* <Title>Keycloak is loading</Title>
+                <Title className="text-gray-500" level={2}>or running authorization code flow with PKCE</Title> */}
+                <Title>Loading...</Title>
                 <Spin size="large"></Spin>
             </div>
         )
@@ -26,7 +27,7 @@ function PrivateRoute({ children }) {
                 <Title className="text-gray-500" level={2}>{auth.error.message}</Title>
                 <Button onClick={() => {
                     auth.removeUser();
-                    auth.signinRedirect({redirect_uri : properties.project.url});
+                    auth.signinRedirect({ redirect_uri: properties.project.url });
                 }
                 }>Login</Button>
             </div>
@@ -34,7 +35,7 @@ function PrivateRoute({ children }) {
     }
 
     if (!auth.isAuthenticated) {
-        auth.signinRedirect({redirect_uri : properties.project.url})
+        auth.signinRedirect({ redirect_uri: properties.project.url })
         return null
     }
     // else {

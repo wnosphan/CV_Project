@@ -54,3 +54,58 @@ body {
     color: #fff !important;
 }
 
+.site-description-item-profile-wrapper {
+    margin-bottom: 7px;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    line-height: 1.5715;
+}
+
+.ant-drawer-body p.site-description-item-profile-p {
+    display: block;
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 16px;
+    line-height: 1.5715;
+}
+
+.site-description-item-profile-p-label {
+    display: inline-block;
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.ant-radio-group-solid
+    :where(.css-dev-only-do-not-override-1drr2mu).ant-radio-button-wrapper-checked:not(
+        .ant-radio-button-wrapper-disabled
+    ) {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.ant-radio-group-solid
+    :where(.css-dev-only-do-not-override-1drr2mu).ant-radio-button-wrapper-checked:not(
+        .ant-radio-button-wrapper-disabled
+    ):hover {
+    background-color: #173a1a !important;
+    color: #fff !important;
+    border-color: #173a1a;
+}
+
+:where(.css-dev-only-do-not-override-1drr2mu).ant-radio-button-wrapper:hover {
+    position: relative;
+    color: var(--primary-color);
+}
+
+:where(.css-dev-only-do-not-override-1drr2mu).ant-radio-button-wrapper-checked:not(
+        .ant-radio-button-wrapper-disabled
+    )::before {
+    background-color: var(--primary-color);
+}
+
+:where(.css-dev-only-do-not-override-1drr2mu).ant-radio-button-wrapper-checked:not(
+        .ant-radio-button-wrapper-disabled
+    ):hover::before {
+    background-color: #173a1a !important;
+}
