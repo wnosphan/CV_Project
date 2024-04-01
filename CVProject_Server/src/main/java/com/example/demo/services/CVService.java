@@ -126,21 +126,22 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
     }
 
     @Override
-    public void updateCvStatus(List<Long> id, String status) throws Exception {
-        for (Long cvId : id) {
+    public void updateCvStatus(ListCvIdDTO id) throws Exception {
+        List<Long> idList = id.ids;
+        for (Long cvId : idList) {
             Optional<Cv> cvOptional = cvRepository.findById(cvId);
             if (cvOptional.isPresent()) {
                 Cv cv = cvOptional.get();
-                if (status.equals("pass")) {
+                if (id.getStatus().equals("pass")) {
                     cv.setStatus(CvStatus.PASS);
                     cvRepository.save(cv);
                     log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
-                } else if (status.equals("not_pass")) {
+                } else if (id.getStatus().equals("not_pass")) {
                     cv.setStatus(CvStatus.NOTPASS);
                     cvRepository.save(cv);
                     log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
                 } else {
-                    System.err.println("Invalid status: " + status + " for CV ID: " + cvId);
+                    System.err.println("Invalid status: " + id.getStatus() + " for CV ID: " + cvId);
                     log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
                 }
             } else {
@@ -148,35 +149,34 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
             }
         }
 
-
     }
 
-    @Override
-    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception {
-        for (CvStatusDTO cvStatusDTO : list) {
-            Long cvId = cvStatusDTO.getId();
-            String newStatus = cvStatusDTO.getStatus();
-
-            Optional<Cv> cvOptional = cvRepository.findById(cvId);
-            if (cvOptional.isPresent()) {
-                Cv cv = cvOptional.get();
-                if (newStatus.equals("pass")) {
-                    cv.setStatus(CvStatus.PASS);
-                    cvRepository.save(cv);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
-                } else if (newStatus.equals("not_pass")) {
-                    cv.setStatus(CvStatus.NOTPASS);
-                    cvRepository.save(cv);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
-                } else {
-                    System.err.println("Invalid status: " + newStatus + " for CV ID: " + cvId);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
-                }
-            } else {
-                System.err.println("CV not found with ID: " + cvId);
-            }
-        }
-    }
+//    @Override
+//    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception {
+//        for (CvStatusDTO cvStatusDTO : list) {
+//            Long cvId = cvStatusDTO.getId();
+//            String newStatus = cvStatusDTO.getStatus();
+//
+//            Optional<Cv> cvOptional = cvRepository.findById(cvId);
+//            if (cvOptional.isPresent()) {
+//                Cv cv = cvOptional.get();
+//                if (newStatus.equals("pass")) {
+//                    cv.setStatus(CvStatus.PASS);
+//                    cvRepository.save(cv);
+//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
+//                } else if (newStatus.equals("not_pass")) {
+//                    cv.setStatus(CvStatus.NOTPASS);
+//                    cvRepository.save(cv);
+//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
+//                } else {
+//                    System.err.println("Invalid status: " + newStatus + " for CV ID: " + cvId);
+//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
+//                }
+//            } else {
+//                System.err.println("CV not found with ID: " + cvId);
+//            }
+//        }
+//    }
 
     @Override
     public void deleteCv(Long id) throws Exception {

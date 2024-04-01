@@ -14,4 +14,6 @@ import java.util.List;
 public class ListCvIdDTO {
     @JsonProperty("ids")
     public List<Long> ids;
+    @JsonProperty("status")
+    private String status;
 }

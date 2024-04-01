@@ -22,9 +22,11 @@ public interface ICvService {
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
 
 
-    public void updateCvStatus(List<Long> id, String status) throws Exception;
 
-    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception;
+
+   public void updateCvStatus(ListCvIdDTO id) throws Exception;
+
+//    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception;
     public void deleteCv(Long id) throws Exception;
     public void deleteCvs(ListCvIdDTO id) throws Exception;
     void saveCv(MultipartFile file, String username) throws IllegalAccessException;

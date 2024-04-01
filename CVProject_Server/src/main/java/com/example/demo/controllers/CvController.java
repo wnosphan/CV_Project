@@ -8,6 +8,7 @@ import com.example.demo.responses.CvListResponse;
 import com.example.demo.responses.CvResponse;
 import com.example.demo.services.GetListService;
 import com.example.demo.services.ICvService;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -159,35 +160,34 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @PatchMapping("/status")
-    private ResponseEntity<?> updateCvStatus(@RequestParam("id") List<Long> id, @Valid @RequestParam("status") String status) {
-        try {
-            log.info("Request data: Cv ID: " + id + "; status: " + status);
-            cvService.updateCvStatus(id, status);
-            log.info("Response data: " + id + " status has been updated successfully");
-            return ResponseEntity.ok(id + " status has been updated successfully");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @Operation(summary = "Update list CV status", description = "Require list of Cv ID - status")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Update status successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "401", description = "User not found")
-    })
-    @PatchMapping("")
-    private ResponseEntity<?> updateListCvStatus(@Valid @RequestBody List<CvStatusDTO> ids) {
+    private ResponseEntity<?> updateCvStatus(@RequestBody ListCvIdDTO ids) {
         try {
             log.info("Request data: ");
-            cvService.updateListCvStatus(ids);
-            return ResponseEntity.ok("CV status list has been updated successfully");
+            cvService.updateCvStatus(ids);
+            return ResponseEntity.ok("CV status has been updated successfully");
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+//
+//    @Operation(summary = "Update list CV status", description = "Require list of Cv ID - status")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Update status successfully"),
+//            @ApiResponse(responseCode = "400", description = "Invalid request"),
+//            @ApiResponse(responseCode = "401", description = "User not found")
+//    })
+//    @PatchMapping("")
+//    private ResponseEntity<?> updateListCvStatus(@Valid @RequestBody List<CvStatusDTO> ids) {
+//        try {
+//            log.info("Request data: ");
+//            cvService.updateListCvStatus(ids);
+//            return ResponseEntity.ok("CV status list has been updated successfully");
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     @Operation(summary = "Delete Cv", description = "Require Cv ID")
     @ApiResponses(value = {
