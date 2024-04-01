@@ -3,18 +3,23 @@ import { Button, Modal, Upload, Radio } from 'antd'
 import { CheckCircleOutlined, InboxOutlined } from '@ant-design/icons'
 
 import { modalApplyProps } from '../CommonProps';
-import myCVListApi from '~/api/MyCVListApi';
+import { myCVListApi } from '~/api/MyCVListApi';
 import { NOTIFICATION } from '~/configs/constants';
 import handleLogError from '~/utils/HandleError';
 const { Dragger } = Upload;
 
-const ApplyButton = ({ selectedRowKeys, handleCV, currentPage, api, setSelectedRowKeys }) => {
+const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPage, api }) => {
     const [visible, setVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState('pass');
 
-    const onUpdateMultipleStatus = async () => {
-        await myCVListApi.updateMultipleStatus(selectedStatus)
+    const onUpdateMultipleStatus = async (selectedRowKeys, selectedStatus) => {
+        const obj = {
+            id: selectedRowKeys,
+            status: selectedStatus
+        }
+        setUploading(true);
+        await myCVListApi.updateMultipleStatus(obj)
             .then((response) => {
                 if (response.status === 200) {
                     handleCV(currentPage);
@@ -31,7 +36,9 @@ const ApplyButton = ({ selectedRowKeys, handleCV, currentPage, api, setSelectedR
                 });
                 handleLogError(error);
             }).finally(() => {
-                setSelectedRowKeys([]);
+                setUploading(false);
+                setVisible(false);
+                // setSelectedRowKeys([]);
             });
 
     }
@@ -45,7 +52,7 @@ const ApplyButton = ({ selectedRowKeys, handleCV, currentPage, api, setSelectedR
                 size='large' onClick={() => setVisible(true)}>Apply</Button>
             <Modal open={visible}
                 {...modalApplyProps}
-                // onOk={() => }
+                onOk={() => onUpdateMultipleStatus(selectedRowKeys, selectedStatus)}
                 confirmLoading={uploading}
                 onCancel={() => setVisible(false)}
             >
