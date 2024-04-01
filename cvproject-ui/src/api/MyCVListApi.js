@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { useAuth } from 'react-oidc-context';
 import { properties } from '~/configs/properties';
 
 
@@ -83,8 +82,19 @@ function fileUpload(username, file) {
     });
 }
 
+// function updateMultipleStatus(ids) {
+//     return instance.patch(`/api/cv`, ids, {
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         validateStatus: (status) => {
+//             return status < 500
+//         }
+//     })
+// }
+
 function updateMultipleStatus(ids) {
-    return instance.patch(`/api/cv`, ids, {
+    return instance.patch(`/api/cv/status`, ids, {
         headers: {
             "Content-Type": "application/json",
         },
