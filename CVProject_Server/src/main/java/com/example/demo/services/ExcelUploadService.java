@@ -60,8 +60,6 @@ public class ExcelUploadService {
                         case 7:
                             cv.setLinkCV(cell.getStringCellValue());
                             break;
-                        case 8:
-                            cv.setStatus(CvStatus.INPROGRESS);
                         default:
                             break;
                     }
