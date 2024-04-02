@@ -1,25 +1,53 @@
 import axios from 'axios'
-import { properties } from '../configs/properties';
+import { properties } from '~/configs/properties';
+
 
 export const myCVListApi = {
     getCV,
+    getCvById,
+    createCV,
     deleteCV,
     deleteCVs,
     fileUpload,
     updateMultipleStatus,
-    saveUser
+    UpdateCV
 }
 
-function getCV(username, page, limit) {
-    return instance.get(`/api/cv/user`, {
+function getCV(username, page, limit, dataIndex, keySearch) {
+    return instance.get(`/api/cv/user/${username}`, {
         params: {
             page: page,
-            limit: limit
+            limit: limit,
+            [dataIndex]: keySearch
         },
-        headers: {
-            'username': username
+        validateStatus: (status) => {
+            return status < 500
         }
     });
+}
+
+function getCvById(id) {
+    return instance.get(`/api/cv/${id}`, {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+
+function UpdateCV(id, data) {
+    return instance.get(`/api/cv/${id}`, {
+        data: data,
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+function createCV(post) {
+    return instance.post(`/api/cv`, post, {
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
 }
 
 function deleteCV(id) {
@@ -35,6 +63,9 @@ function deleteCVs(ids) {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'DELETE',
             'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     })
 }
@@ -44,23 +75,31 @@ function fileUpload(username, file) {
         headers: {
             "Content-Type": "multipart/form-data",
             'username': username
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     });
 }
 
+// function updateMultipleStatus(ids) {
+//     return instance.patch(`/api/cv`, ids, {
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         validateStatus: (status) => {
+//             return status < 500
+//         }
+//     })
+// }
+
 function updateMultipleStatus(ids) {
-    return instance.patch(`/api/cv`, ids, {
+    return instance.patch(`/api/cv/status`, ids, {
         headers: {
             "Content-Type": "application/json",
-        }
-    })
-}
-
-function saveUser(username, email) {
-    return instance.post(`/api/cv/save-user`, {
-        headers: {
-            'username': username,
-            'email': email
+        },
+        validateStatus: (status) => {
+            return status < 500
         }
     })
 }
