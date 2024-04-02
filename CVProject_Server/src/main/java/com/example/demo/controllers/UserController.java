@@ -27,6 +27,9 @@ public class UserController {
     public void saveUser(@RequestBody UserDTO userDTO) {
         log.info("Request data: " + userDTO);
         userService.saveUser(userDTO);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 
