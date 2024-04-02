@@ -49,7 +49,7 @@ public class ExcelUploadService {
                             cv.setUniversity(cell.getStringCellValue());
                             break;
                         case 4:
-                            cv.setGpa(cell.getStringCellValue());
+                            cv.setGpa(cell.getStringCellValue().toString());
                             break;
                         case 5:
                             cv.setSkill(cell.getStringCellValue());
