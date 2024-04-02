@@ -5,12 +5,8 @@ export const AuthApi = {
     saveUser,
 }
 
-function saveUser(username, email) {
-    return instance.post('/api/cv/save-user', {
-        headers: {
-            'username': username,
-            'email': email
-        },
+function saveUser(user) {
+    return instance.post('/api/cv/save-user', user, {
         validateStatus: (status) => {
             return status < 500
         }

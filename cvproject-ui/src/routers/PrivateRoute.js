@@ -38,10 +38,14 @@ function PrivateRoute({ children }) {
         auth.signinRedirect({ redirect_uri: properties.project.url })
         return null
     }
-    else {
-        AuthApi.saveUser(auth.user.profile.preferred_username, auth.user?.profile.email)
-            .catch(error => handleLogError(error))
-    }
+    // else {
+    //     const user = {
+    //         username: auth.user?.profile.preferred_username,
+    //         email: auth.user?.profile.email
+    //     }
+    //     AuthApi.saveUser(user)
+    //         .catch(error => handleLogError(error))
+    // }
 
     return children
 }

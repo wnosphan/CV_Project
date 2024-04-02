@@ -28,14 +28,33 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
 
     useEffect(() => {
         const fetchData = () => {
+            const uni = [];
+            const ski = [];
             Promise.all([ListApi.getUniversity(), ListApi.getSkill()])
                 .then(function (results) {
-                    setUniversity(results[0].data);
-                    setSkill(results[1].data);
+                    results[0].data.forEach((item) => {
+                        uni.push({
+                            text: item,
+                            value: item
+                        })
+                    });
+                    setUniversity(uni);
+                    results[1].data.forEach((item) => {
+                        ski.push({
+                            text: item,
+                            value: item
+                        })
+                    });
+                    setSkill(ski);
                 });
         };
         fetchData();
     }, []);
+
+    console.group('CVTable');
+    console.log(universityFilter);
+    console.log(skillFilter);
+    console.groupEnd();
 
     const showDrawer = async (key) => {
         setOpen(true);
@@ -52,8 +71,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
         setOpen(false);
         setInfo({});
     }
-
-
 
 
     // Columns and data
@@ -80,13 +97,12 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'University',
             dataIndex: 'university',
             key: 'university',
-            filters: universityFilter.map((item) => {
-                return {
-                    text: item,
-                    value: item
-                }
-            }),
-            onFilter: (value, record) => record.status.indexOf(value) === 0,
+            filterSearch: true,
+            filters: universityFilter,
+            onFilter: (value, record) => {
+                console.log(value, record);
+                return record.university.includes(value);
+            },
             ellipsis: true,
             editable: true,
 
