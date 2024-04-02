@@ -214,6 +214,7 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
                 // Set createdBy field for each Cv
                 for (Cv cv : cvList) {
                     cv.setCreatedBy(user);
+                    cv.setStatus(CvStatus.INPROGRESS);
                 }
 
                 cvRepository.saveAll(cvList);
