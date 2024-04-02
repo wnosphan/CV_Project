@@ -24,9 +24,6 @@ public class UserController {
         log.info("Request data: " + userDTO);
         userService.saveUser(userDTO);
 
-    public void saveUser(@RequestBody UserDTO userDTO){
-        userService.saveUser(userDTO);
-
     }
 
 }
