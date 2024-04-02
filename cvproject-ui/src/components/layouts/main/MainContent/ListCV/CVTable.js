@@ -27,29 +27,15 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     const [skillFilter, setSkill] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            await ListApi.getUniversity()
-                .then((response) => {
-                    setUniversity(response.data);
-                }).catch((error) => {
-                    handleLogError(error);
-                });
-            await ListApi.getSkill()
-                .then((response) => {
-                    setSkill(response.data);
-                }).catch((error) => {
-                    handleLogError(error);
+        const fetchData = () => {
+            Promise.all([ListApi.getUniversity(), ListApi.getSkill()])
+                .then(function (results) {
+                    setUniversity(results[0].data);
+                    setSkill(results[1].data);
                 });
         };
         fetchData();
     }, []);
-
-
-    console.group('CVTable');
-    console.log(universityFilter);
-    console.log(skillFilter);
-    console.groupEnd();
-
 
     const showDrawer = async (key) => {
         setOpen(true);

@@ -8,7 +8,6 @@ export const AuthApi = {
 function saveUser(username, email) {
     return instance.post('/api/cv/save-user', {
         headers: {
-            'Content-Type': 'application/json',
             'username': username,
             'email': email
         },

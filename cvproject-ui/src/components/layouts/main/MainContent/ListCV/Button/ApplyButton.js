@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Button, Modal, Upload, Radio } from 'antd'
-import { CheckCircleOutlined, InboxOutlined } from '@ant-design/icons'
+import { Button, Modal, Radio } from 'antd'
+import { CheckCircleOutlined } from '@ant-design/icons'
 
 import { modalApplyProps } from '../CommonProps';
 import { myCVListApi } from '~/api/MyCVListApi';
 import { NOTIFICATION } from '~/configs/constants';
 import handleLogError from '~/utils/HandleError';
-const { Dragger } = Upload;
 
 const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPage, api }) => {
     const [visible, setVisible] = useState(false);
@@ -15,7 +14,7 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
 
     const onUpdateMultipleStatus = async (selectedRowKeys, selectedStatus) => {
         const obj = {
-            id: selectedRowKeys,
+            ids: selectedRowKeys,
             status: selectedStatus
         }
         setUploading(true);
@@ -43,7 +42,6 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
 
     }
 
-    console.log(selectedStatus);
     return (
         <>
             <Button icon={<CheckCircleOutlined />}
