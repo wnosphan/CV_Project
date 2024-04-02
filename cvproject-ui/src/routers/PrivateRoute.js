@@ -1,7 +1,7 @@
 import { useAuth } from "react-oidc-context"
 import { Button, Flex, Spin, Typography } from 'antd'
 
-import { myCVListApi } from "~/api/MyCVListApi";
+import { AuthApi } from "~/api/AuthApi";
 import handleLogError from "~/utils/HandleError";
 import { properties } from "~/configs";
 const { Title } = Typography
@@ -38,10 +38,10 @@ function PrivateRoute({ children }) {
         auth.signinRedirect({ redirect_uri: properties.project.url })
         return null
     }
-    // else {
-    //     myCVListApi.saveUser(auth.user.profile.preferred_username, auth.user?.profile.email)
-    //         .catch(error => handleLogError(error))
-    // }
+    else {
+        AuthApi.saveUser(auth.user.profile.preferred_username, auth.user?.profile.email)
+            .catch(error => handleLogError(error))
+    }
 
     return children
 }
