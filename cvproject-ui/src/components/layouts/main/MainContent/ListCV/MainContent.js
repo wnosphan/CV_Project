@@ -36,7 +36,7 @@ const MainContent = () => {
     });
     const [currentPage, setCurrentPage] = useState(() => {
         const storedPage = localStorage.getItem('currentPage');
-        return storedPage ? JSON.parse(storedPage) : 1;
+        return /*storedPage ? JSON.parse(storedPage)*/ 1;
     });
 
     const onSelectChange = (newSelectedRowKeys) => {
@@ -107,7 +107,7 @@ const MainContent = () => {
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
-        localStorage.setItem('currentPage', page);
+        // localStorage.setItem('currentPage', page);
         cancel();
 
     };
@@ -116,6 +116,29 @@ const MainContent = () => {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
     console.log(searchText, searchedColumn);
+
+    const getColumnFilterProps = (dataIndex, menu) => ({
+        filterSearch: true,
+        filters: menu,
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                    }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+
+
+    });
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -306,7 +329,6 @@ const MainContent = () => {
                     .then(async (response) => {
                         if (response.status === 200) {
                             await onChangeSelectRow(key);
-                            await onChangePage();
                             await handleCV(currentPage);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
@@ -325,11 +347,7 @@ const MainContent = () => {
 
         })
     }
-    const onChangePage = () => {
-        if (tableData.data.length === 0) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
+
     const onChangeSelectRow = (key) => {
         setSelectedRowKeys(prev => prev.filter((item) => item !== key));
     }
