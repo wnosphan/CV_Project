@@ -3,7 +3,7 @@ import { Form, Input, Layout, Button, Space, DatePicker, notification } from 'an
 import { SaveOutlined } from "@ant-design/icons"
 import { useNavigate } from 'react-router-dom'
 
-import { myCVListApi } from '~/api/MyCVListApi';
+import { myCVListApi } from '~/api';
 import handleLogError from '~/utils/HandleError';
 import { NOTIFICATION } from '~/configs'
 import Home from '~/components/layouts/main/MainLayout/Home';

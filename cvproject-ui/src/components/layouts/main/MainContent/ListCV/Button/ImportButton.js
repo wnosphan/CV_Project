@@ -4,7 +4,7 @@ import { Button, Modal, Upload } from 'antd'
 import { FolderAddOutlined, InboxOutlined } from '@ant-design/icons'
 
 import { modalUploadProps } from '~/components/layouts/main/MainContent/ListCV/CommonProps'
-import { myCVListApi } from '~/api/MyCVListApi'
+import { myCVListApi } from '~/api'
 import handleLogError from '~/utils/HandleError'
 import { NOTIFICATION } from '~/configs'
 const { Dragger } = Upload;

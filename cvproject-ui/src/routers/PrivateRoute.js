@@ -1,7 +1,7 @@
 import { useAuth } from "react-oidc-context"
 import { Button, Flex, Spin, Typography } from 'antd'
 
-import { AuthApi } from "~/api/AuthApi";
+import { AuthApi } from "~/api";
 import handleLogError from "~/utils/HandleError";
 import { properties } from "~/configs";
 const { Title } = Typography
@@ -38,14 +38,14 @@ function PrivateRoute({ children }) {
         auth.signinRedirect({ redirect_uri: properties.project.url })
         return null
     }
-    // else {
-    //     const user = {
-    //         username: auth.user?.profile.preferred_username,
-    //         email: auth.user?.profile.email
-    //     }
-    //     AuthApi.saveUser(user)
-    //         .catch(error => handleLogError(error))
-    // }
+    else {
+        const user = {
+            username: auth.user?.profile.preferred_username,
+            email: auth.user?.profile.email
+        }
+        AuthApi.saveUser(user)
+            .catch(error => handleLogError(error))
+    }
 
     return children
 }
