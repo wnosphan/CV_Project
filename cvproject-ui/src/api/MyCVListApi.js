@@ -18,7 +18,6 @@ function getCV(username, page, limit, dataIndex, keySearch) {
             page: page,
             limit: limit,
             [dataIndex]: keySearch,
-            [dataIndex]: keySearch,
         },
         validateStatus: (status) => {
             return status < 500
