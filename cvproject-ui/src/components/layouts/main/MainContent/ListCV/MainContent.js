@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, notification, Input, Space } from 'antd';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification, Input, Space, List } from 'antd';
 import { PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { Link } from 'react-router-dom'
@@ -8,9 +8,9 @@ import { useAuth } from 'react-oidc-context';
 
 import CVTable from './CVTable';
 import handleLogError from '~/utils/HandleError';
-import { myCVListApi } from '~/api/MyCVListApi';
+import { myCVListApi } from '~/api';
 import { modalDeleteProps } from './CommonProps';
-import { NOTIFICATION, STATUS } from '~/configs'
+import { NOTIFICATION } from '~/configs'
 import Home from '~/components/layouts/main/MainLayout/Home';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
 
@@ -19,7 +19,7 @@ const paginationProps = {
     showQuickJumper: true,
     showSizeChanger: false,
     position: ['bottomCenter'],
-    pageSize: 8
+    pageSize: 10
 }
 
 const MainContent = () => {
@@ -27,50 +27,20 @@ const MainContent = () => {
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [selectedStatus, setSelectedStatus] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [tableData, setTableData] = useState({
         data: [],
         totalPage: 1,
         loading: false,
     });
-    const [currentPage, setCurrentPage] = useState(() => {
-        const storedPage = localStorage.getItem('currentPage');
-        return /*storedPage ? JSON.parse(storedPage)*/ 1;
-    });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
 
     const onSelectChange = (newSelectedRowKeys) => {
-        const status = [];
-        newSelectedRowKeys.forEach((item) => {
-            tableData.data.forEach((data) => {
-                if (data.id === item) {
-                    switch (data.status) {
-                        case "PASS":
-                            status.push({
-                                id: item,
-                                status: STATUS.NOT_PASS
-                            });
-                            break;
-                        case "NOTPASS":
-                        case "INPROGRESS":
-                            status.push({
-                                id: item,
-                                status: STATUS.PASS
-                            });
-                            break;
-                        default:
-                            throw new Error('Invalid status');
-
-                    }
-
-                }
-            });
-        })
-
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-        console.log('selectedStatus changed:', status);
         setSelectedRowKeys(newSelectedRowKeys);
-        setSelectedStatus(status);
     };
     const rowSelection = {
         selectedRowKeys,
@@ -96,30 +66,27 @@ const MainContent = () => {
             }).catch((error) => {
                 handleLogError(error);
             });
-        }, 1000);
+        }, 500);
     }, []);
 
     console.log('tableData', tableData);
 
     useEffect(() => {
-        handleCV(currentPage);
+        if (searchText !== '') {
+            handleCV(currentPage, searchedColumn, searchText);
+        } else {
+            handleCV(currentPage);
+        }
     }, [handleCV, currentPage]);
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
-        // localStorage.setItem('currentPage', page);
         cancel();
-
     };
 
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef(null);
-    console.log(searchText, searchedColumn);
 
     const getColumnFilterProps = (dataIndex, menu) => ({
         filterSearch: true,
-        filters: menu,
         onFilter: (value, record) =>
             record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
         render: (text) =>
@@ -145,6 +112,7 @@ const MainContent = () => {
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
         handleCV(currentPage, dataIndex, selectedKeys[0]);
+        console.log('selectedKeys', selectedKeys[0]);
     };
 
     const handleReset = (clearFilters) => {
@@ -191,19 +159,6 @@ const MainContent = () => {
                         }}
                     >
                         Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            confirm({
-                                closeDropdown: false,
-                            });
-                            setSearchText(selectedKeys[0]);
-                            setSearchedColumn(dataIndex);
-                        }}
-                    >
-                        Filter
                     </Button>
                     <Button
                         type="link"

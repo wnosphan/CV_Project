@@ -1,19 +1,31 @@
-import axios from 'axios'
-import { properties } from '~/configs/properties';
-
+import {instance} from './baseApi'
 
 export const ListApi = {
     getUniversity,
-    getSkill
+    getSkill,
+    getPosition
 }
 
 function getUniversity() {
-    return instance.get('/api/cv/list/university');
+    return instance.get('/api/cv/list/university', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
 }
 function getSkill() {
-    return instance.get('/api/cv/list/skill');
+    return instance.get('/api/cv/list/skill', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
 }
 
-const instance = axios.create({
-    baseURL: properties.api.baseUrl
-})
+function getPosition() {
+    return instance.get('/api/cv/list/apply-position', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+
+}

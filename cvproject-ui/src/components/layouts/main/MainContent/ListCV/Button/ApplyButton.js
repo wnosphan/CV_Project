@@ -3,7 +3,7 @@ import { Button, Modal, Radio } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
 
 import { modalApplyProps } from '../CommonProps';
-import { myCVListApi } from '~/api/MyCVListApi';
+import { myCVListApi } from '~/api';
 import { NOTIFICATION } from '~/configs/constants';
 import handleLogError from '~/utils/HandleError';
 
@@ -58,7 +58,7 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
                     <Radio.Group buttonStyle='solid' defaultValue="pass" size="large" onChange={(e) => setSelectedStatus(e.target.value)}>
                         <Radio.Button value="pass">PASS</Radio.Button>
                         <Radio.Button value="not_pass">NOT PASS</Radio.Button>
-                        <Radio.Button value="inprogress">INPROGRESS</Radio.Button>
+                        <Radio.Button disabled value="inprogress">INPROGRESS</Radio.Button>
                     </Radio.Group>
                 </div>
             </Modal>

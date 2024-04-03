@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { properties } from '~/configs/properties';
+import { instance } from './baseApi'
+
 
 export const AuthApi = {
     saveUser,
@@ -12,7 +12,3 @@ function saveUser(user) {
         }
     })
 }
-// -- Axios
-const instance = axios.create({
-    baseURL: properties.api.baseUrl
-})

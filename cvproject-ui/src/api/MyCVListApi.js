@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { properties } from '~/configs/properties';
+import { instance } from './baseApi'
 
 
 export const myCVListApi = {
@@ -18,7 +17,8 @@ function getCV(username, page, limit, dataIndex, keySearch) {
         params: {
             page: page,
             limit: limit,
-            [dataIndex]: keySearch
+            [dataIndex]: keySearch,
+            [dataIndex]: keySearch,
         },
         validateStatus: (status) => {
             return status < 500
@@ -104,7 +104,3 @@ function updateMultipleStatus(ids) {
     })
 }
 
-// -- Axios
-const instance = axios.create({
-    baseURL: properties.api.baseUrl
-})

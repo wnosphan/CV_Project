@@ -2,7 +2,7 @@ import { Button, Modal } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 
 import { modalDeleteProps } from '~/components/layouts/main/MainContent/ListCV/CommonProps'
-import { myCVListApi } from '~/api/MyCVListApi'
+import { myCVListApi } from '~/api'
 import { NOTIFICATION } from '~/configs/constants'
 import handleLogError from '~/utils/HandleError'
 

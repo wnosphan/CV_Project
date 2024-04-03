@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from 'react'
+import React, { useState, memo } from 'react'
 import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import moment from 'moment';
@@ -8,7 +8,7 @@ import EditableCell from './EditableCell';
 import { myCVListApi } from '~/api/MyCVListApi';
 import handleLogError from '~/utils/HandleError';
 import { useAuth } from 'react-oidc-context';
-import { ListApi } from '~/api/ListApi';
+import { filterService } from '~/utils/FilterService';
 
 
 const DescriptionItem = ({ title, content }) => (
@@ -20,44 +20,11 @@ const DescriptionItem = ({ title, content }) => (
 
 function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps, getColumnSearchProps }) {
     const auth = useAuth();
-    const [open, setOpen] = useState(false);
+    const [isOpenDrawer, setOpenDrawer] = useState(false);
     const [info, setInfo] = useState({});
-    const statusFilter = ['PASS', 'NOTPASS', 'INPROGRESS'];
-    const [universityFilter, setUniversity] = useState([]);
-    const [skillFilter, setSkill] = useState([]);
-
-    useEffect(() => {
-        const fetchData = () => {
-            const uni = [];
-            const ski = [];
-            Promise.all([ListApi.getUniversity(), ListApi.getSkill()])
-                .then(function (results) {
-                    results[0].data.forEach((item) => {
-                        uni.push({
-                            text: item,
-                            value: item
-                        })
-                    });
-                    setUniversity(uni);
-                    results[1].data.forEach((item) => {
-                        ski.push({
-                            text: item,
-                            value: item
-                        })
-                    });
-                    setSkill(ski);
-                });
-        };
-        fetchData();
-    }, []);
-
-    console.group('CVTable');
-    console.log(universityFilter);
-    console.log(skillFilter);
-    console.groupEnd();
 
     const showDrawer = async (key) => {
-        setOpen(true);
+        setOpenDrawer(true);
         await myCVListApi.getCvById(key)
             .then((response) => {
                 console.log(response.data);
@@ -68,7 +35,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     }
 
     const closeDrawer = () => {
-        setOpen(false);
+        setOpenDrawer(false);
         setInfo({});
     }
 
@@ -97,11 +64,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             title: 'University',
             dataIndex: 'university',
             key: 'university',
-            filterSearch: true,
-            filters: universityFilter,
+            filters: filterService.getUniversityFilter(),
             onFilter: (value, record) => {
-                console.log(value, record);
-                return record.university.includes(value);
+                return record.university.indexOf(value) === 0;
             },
             ellipsis: true,
             editable: true,
@@ -130,7 +95,8 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             dataIndex: 'apply_position',
             key: 'apply_position',
             width: '12%',
-            ...getColumnSearchProps('apply_position'),
+            filterSearch: true,
+            filters: filterService.getPositionFilter(),
             editable: true,
         },
         {
@@ -139,12 +105,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'skill',
             width: '14%',
             editable: true,
-            filters: skillFilter.map((item) => {
-                return {
-                    text: item,
-                    value: item
-                }
-            }),
             onFilter: (value, record) => record.status.indexOf(value) === 0,
             ellipsis: true,
             render: (text) => {
@@ -190,13 +150,8 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                     </Tag>
                 )
             },
-            filters: statusFilter.map((item) => {
-                return {
-                    text: item,
-                    value: item
-                }
-            }),
-            onFilter: (value, record) => record.status.indexOf(value) === 0,
+            filters: filterService.getStatusFilter(),
+            onFilter: (value, record) => record.status.includes(value),
             ellipsis: true,
         },
         {
@@ -304,7 +259,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                 </Form>
             </Card>
 
-            <Drawer width={640} placement="right" closable={false} onClose={closeDrawer} open={open}>
+            <Drawer width={640} placement="right" closable={false} onClose={closeDrawer} open={isOpenDrawer}>
                 <p
                     className="site-description-item-profile-p"
                     style={{
