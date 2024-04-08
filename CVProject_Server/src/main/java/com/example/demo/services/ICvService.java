@@ -18,8 +18,8 @@ public interface ICvService {
     Page<CvResponse> searchCv(int page, int size, String username, String sortby, String sorttype, String fullname, List<String> skill, List<String> status, LocalDate dateOfBirth, List<String> university, String trainingSystem, String gpa, List<String> applyPosition) throws Exception;
 
     public Cv getCvById(Long id) throws Exception;
-    public Cv creatCv(CvDTO cvDTO) throws Exception;
-    public Cv updateCv(Long id, CvDTO cvDTO) throws Exception;
+    public Cv createCv(String username,CvDTO cvDTO) throws Exception;
+    public Cv updateCv(String username,Long id, CvDTO cvDTO) throws Exception;
 
 
 
