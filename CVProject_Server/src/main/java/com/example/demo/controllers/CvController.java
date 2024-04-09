@@ -48,17 +48,18 @@ public class CvController {
     @PostMapping("")
     private ResponseEntity<?> postCV(@PathVariable("username") String username,@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
         try {
-            log.info("Request data: " + cvDTO);
+//            log.info("Request data: " + cvDTO);
+            log.info("POST method data: {}", cvDTO);
             if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
                 log.error(errorMessages.toString());
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            Cv cv = cvService.createCv(username,cvDTO);
-            log.info("Response data: " + cv);
+            Cv cv = cvService.creatCv(cvDTO);
+            log.info("Response data: {}", cv);
             return ResponseEntity.ok(cv);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -106,11 +107,14 @@ public class CvController {
                                      @RequestParam(name = "gpa", required = false) String gpa,
                                      @RequestParam(name = "apply_position", required = false) List<String> applyPosition) {
         try {
+            log.info("GET method data: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", username, page, limit, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
             Page<CvResponse> cvList = cvService.searchCv(page, limit, username, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
             int totalPage = cvList.getTotalPages();
             List<CvResponse> cvs = cvList.getContent();
+            log.info("Response data: {} CVs", cvs.size());
             return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
         } catch (Exception e) {
+            log.error("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -124,12 +128,12 @@ public class CvController {
     @GetMapping("/{id}")
     private ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
         try {
-            log.info("Request data: Cv ID: " + id);
+            log.info("GET method data: {}", id);
             Cv cv = cvService.getCvById(id);
-            log.info("Response data: " + cv);
+            log.info("Response data: {}", cv);
             return ResponseEntity.ok(cv);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Processing: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -143,12 +147,12 @@ public class CvController {
     @PutMapping("{username}/{id}")
     private ResponseEntity<?> updateCv(@PathVariable("username") String username,@PathVariable("id") long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
-            log.info("Request data: Cv ID: " + id + ";\nCvDTO: " + cvDTO);
-            Cv updateCv = cvService.updateCv(username,id, cvDTO);
-            log.info("Response data: " + updateCv);
+            log.info("PUT method data: ID: {}, {}", id, cvDTO);
+            Cv updateCv = cvService.updateCv(id, cvDTO);
+            log.info("Response data: {}", updateCv);
             return ResponseEntity.ok(updateCv);
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -162,11 +166,11 @@ public class CvController {
     @PatchMapping("/status")
     private ResponseEntity<?> updateCvStatus(@RequestBody ListCvIdDTO ids) {
         try {
-            log.info("Request data: ");
+            log.info("Request data: {}", ids);
             cvService.updateCvStatus(ids);
             return ResponseEntity.ok("CV status has been updated successfully");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -198,12 +202,12 @@ public class CvController {
     @DeleteMapping("/{id}")
     private ResponseEntity<?> deleteCv(@PathVariable long id) {
         try {
-            log.info("Request data: Id: " + id);
+            log.info("Request data: Id: {}", id);
             cvService.deleteCv(id);
-            log.info("CV with id: " + id + " deleted successfully!");
+            log.info("CV with id: {} deleted successfully!", id);
             return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -217,11 +221,12 @@ public class CvController {
     @DeleteMapping("")
     private ResponseEntity<?> deleteCvs(@Valid @RequestBody ListCvIdDTO ids) {
         try {
-            log.info("Request data: Cv ID list" + ids);
+            log.info("Request data: {}", ids);
             cvService.deleteCvs(ids);
+            log.info("List CV deleted successfully! {}", ids);
             return ResponseEntity.ok("List CV deleted successfully!");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Processing: "+e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -229,8 +234,14 @@ public class CvController {
     @PostMapping("/upload")
     private ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file,
                                        @RequestHeader("username") String username) throws IllegalAccessException {
-        cvService.saveCv(file, username);
-        return ResponseEntity.ok().build();
+        try {
+            log.info("Request data: {}, {}", file, username);
+            cvService.saveCv(file, username);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            log.error("Processing");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     @GetMapping("/list/skill")
     public ResponseEntity<?> getListSkill(){
