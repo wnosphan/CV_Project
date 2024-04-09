@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AuthProvider } from "react-oidc-context";
+import { Provider } from 'react-redux'
 
+import store from '~/redux/store'
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -25,9 +27,9 @@ const oidcConfig = {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider {...oidcConfig}>
-    <React.StrictMode>
+    <Provider store={store}>
       <App />
-    </React.StrictMode>
+    </Provider>
   </AuthProvider>
 );
 

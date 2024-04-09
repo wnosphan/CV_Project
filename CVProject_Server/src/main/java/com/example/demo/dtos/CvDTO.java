@@ -32,8 +32,6 @@ public class CvDTO {
     @JsonProperty("training_system")
     private String trainingSystem;
 
-    @JsonProperty("create_by")
-    private Long createBy;
 
     private String GPA;
 

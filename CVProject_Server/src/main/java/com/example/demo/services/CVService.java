@@ -86,8 +86,8 @@ public class CVService implements ICvService {
         return cv;
     }
 
-    public Cv creatCv(CvDTO cvDTO) throws Exception {
-        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User with ID: " + cvDTO.getCreateBy() + " not found!!!"));
+    public Cv createCv(String username,CvDTO cvDTO) throws Exception {
+        User user = userRepository.findByUserName(username);
         Cv newCv = Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
@@ -105,7 +105,7 @@ public class CVService implements ICvService {
         return newCv;
     }
 
-    public Cv updateCv(Long id, CvDTO cvDTO) throws Exception {
+    public Cv updateCv(String username,Long id, CvDTO cvDTO) throws Exception {
         Cv existingCv = getCvById(id);
         Cv oldCv = existingCv;
         if (existingCv != null) {

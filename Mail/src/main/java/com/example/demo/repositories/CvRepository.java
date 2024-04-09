@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface CvRepository extends JpaRepository<Cv, Long> {
     Page<Cv> findAll(Pageable pageable);
     Integer countByStatusContaining (String status);
-
+    Integer countByStatusContainingAndCreatedByUserName (String status, String username);
+ 
 
 }

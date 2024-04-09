@@ -46,7 +46,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @PostMapping("")
-    private ResponseEntity<?> postCV(@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
+    private ResponseEntity<?> postCV(@PathVariable("username") String username,@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
         try {
 //            log.info("Request data: " + cvDTO);
             log.info("POST method data: {}", cvDTO);
@@ -144,8 +144,8 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @PutMapping("/{id}")
-    private ResponseEntity<?> updateCv(@PathVariable long id, @Valid @RequestBody CvDTO cvDTO) {
+    @PutMapping("{username}/{id}")
+    private ResponseEntity<?> updateCv(@PathVariable("username") String username,@PathVariable("id") long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
             log.info("PUT method data: ID: {}, {}", id, cvDTO);
             Cv updateCv = cvService.updateCv(id, cvDTO);
