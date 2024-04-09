@@ -1,20 +1,16 @@
-import { ListApi } from '~/api'
+import { myCVListApi } from '~/api'
 import handleLogError from './HandleError'
-
-const statusFilter = ['PASS', 'NOTPASS', 'INPROGRESS'];
 
 const getUniversityFilter = () => {
     const university = [];
-    ListApi.getUniversity()
+    myCVListApi.getUniversity()
         .then(response => {
-
-            response.data.map((item) => {
+            response.data.forEach((item) => {
                 university.push({
-                    text: item,
+                    label: item,
                     value: item
                 })
             })
-
         })
         .catch(error => {
             handleLogError(error)
@@ -25,12 +21,13 @@ const getUniversityFilter = () => {
 
 const getSkillFilter = () => {
     const skill = [];
-    ListApi.getSkill()
+    myCVListApi.getSkill()
         .then(response => {
-            response.data.map((item) => {
+            response.data.forEach((item) => {
                 skill.push({
-                    text: item,
+                    label: item,
                     value: item
+
                 })
             })
         })
@@ -44,12 +41,13 @@ const getSkillFilter = () => {
 const getPositionFilter = () => {
     const pos = [];
 
-    ListApi.getPosition()
+    myCVListApi.getPosition()
         .then(response => {
-            response.data.map((item) => {
+            response.data.forEach((item) => {
                 pos.push({
-                    text: item,
+                    label: item,
                     value: item
+
                 })
             })
         })
@@ -64,12 +62,4 @@ export const filterService = {
     getUniversityFilter,
     getSkillFilter,
     getPositionFilter,
-    getStatusFilter: () => {
-        return statusFilter.map((item) => {
-            return {
-                text: item,
-                value: item
-            }
-        })
-    }
 }

@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, notification, Input, Space, List } from 'antd';
-import { PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import Highlighter from 'react-highlight-words';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Col, Card, Flex, Button, Modal, Table, Form, notification } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,9 +11,10 @@ import handleLogError from '~/utils/HandleError';
 import { myCVListApi } from '~/api';
 import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
-import { cvListSelector } from '~/redux/selectors';
+import { cvListSelector, filtersSelector } from '~/redux/selectors';
 import Home from '~/components/layouts/main/MainLayout/Home';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
+import SearchBox from '../Filters/SearchBox';
 
 const paginationProps = {
     // simple: true,
@@ -27,21 +27,13 @@ const MainContent = () => {
     const auth = useAuth();
     const dispatch = useDispatch();
     const cvList = useSelector(cvListSelector);
-    const { data, totalPage, loading, pageSize } = cvList;
+    const filters = useSelector(filtersSelector);
+    const { data, loading, totalPage, pageSize } = cvList;
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    // const [tableData, setTableData] = useState({
-    //     data: [],
-    //     totalPage: 1,
-    //     loading: false,
-    //     pageSize: 10,
-    // });
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef(null);
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -57,39 +49,13 @@ const MainContent = () => {
         ],
     };
 
-    /**Get all */
-    // const handleCV = useCallback((page, dataIndex, keySearch) => {
-    //     setTableData((tableData) => ({ ...tableData, loading: true }));
-    //     setTimeout(() => {
-    //         myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, tableData.pageSize, dataIndex, keySearch).then((response) => {
-    //             setTableData({
-    //                 ...tableData,
-    //                 data: response.data.cvs_list,
-    //                 totalPage: response.data.total,
-    //                 loading: false,
-    //             });
-
-    //         }).catch((error) => {
-    //             handleLogError(error);
-    //         });
-    //     }, 500);
-    // }, []);
-
-    // useEffect(() => {
-    //     if (searchText !== '') {
-    //         handleCV(currentPage, searchedColumn, searchText);
-    //     } else {
-    //         handleCV(currentPage);
-    //     }
-    // }, [handleCV, currentPage]);
-
     const handleCV = useCallback((page) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, pageSize));
+        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, pageSize, filters));
     }, []);
 
     useEffect(() => {
         handleCV(currentPage);
-    }, [handleCV, currentPage]);
+    }, [handleCV, currentPage, filters]);
 
     console.log('tableData', data);
 
@@ -98,102 +64,6 @@ const MainContent = () => {
         setCurrentPage(page);
         cancel();
     };
-
-
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
-        handleCV(currentPage, dataIndex, selectedKeys[0]);
-        console.log('selectedKeys', selectedKeys[0]);
-    };
-
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        setSearchText('');
-    };
-
-    const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div
-                style={{
-                    padding: 8,
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        close
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
-            />
-        ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        render: (text) =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                    }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
-    });
 
     const isEditing = (record) => record.key === editingKey;
     const edit = (record) => {
@@ -283,16 +153,18 @@ const MainContent = () => {
 
     return (
         <Home>
-            <Col span={23}>
+            <Col span={6}>
+                <SearchBox />
+            </Col>
+            <Col span={18}>
                 {contextHolder}
                 <Flex vertical gap={'1rem'}>
-                    <Card className='h-20'>
+                    <Card className='h-20 shadow-lg'>
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
                                 <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
-                                {/* <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} className='text-white bg-violet-500' size='large' onClick={onUpdateMultipleStatus}>Apply</Button> */}
                                 <ApplyButton selectedRowKeys={selectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
-                                <Link to='/create'><Button icon={<PlusCircleOutlined />} onClick={() => localStorage.setItem('currentPage', currentPage)} type='primary' size='large'>Create</Button></Link>
+                                <Link to='/create'><Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button></Link>
                                 <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} />
                             </Flex>
                         </Flex>
@@ -310,7 +182,6 @@ const MainContent = () => {
                         }}
                         loading={loading}
                         editProps={editProps}
-                        getColumnSearchProps={getColumnSearchProps}
                     />
                 </Flex>
             </Col>

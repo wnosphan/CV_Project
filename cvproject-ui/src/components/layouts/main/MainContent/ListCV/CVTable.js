@@ -2,13 +2,12 @@ import React, { useState, memo } from 'react'
 import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import moment from 'moment';
-
+import dayjs from 'dayjs';
 
 import EditableCell from '../EditCV/EditableCell';
 import { myCVListApi } from '~/api/MyCVListApi';
 import handleLogError from '~/utils/HandleError';
 import { useAuth } from 'react-oidc-context';
-import { filterService } from '~/utils/FilterService';
 
 
 const DescriptionItem = ({ title, content }) => (
@@ -18,7 +17,7 @@ const DescriptionItem = ({ title, content }) => (
     </div>
 );
 
-function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps, getColumnSearchProps }) {
+function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
     const auth = useAuth();
     const [isOpenDrawer, setOpenDrawer] = useState(false);
     const [info, setInfo] = useState({});
@@ -47,9 +46,10 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             dataIndex: 'full_name',
             key: 'full_name',
             fixed: 'left',
-            width: '10%',
-            ...getColumnSearchProps('full_name'),
+            width: '12%',
             editable: true,
+            ellipsis: true,
+
         },
         {
             title: 'DOB',
@@ -57,17 +57,14 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'date_of_birth',
             width: '12%',
             editable: true,
-            render: (text) => moment(text).format('DD-MM-YYYY'),
+            render: (text) => dayjs(text).format('DD-MM-YYYY'),
 
         },
         {
             title: 'University',
             dataIndex: 'university',
             key: 'university',
-            filters: filterService.getUniversityFilter(),
-            onFilter: (value, record) => {
-                return record.university.indexOf(value) === 0;
-            },
+            width: '14%',
             ellipsis: true,
             editable: true,
 
@@ -77,16 +74,15 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             dataIndex: 'training_system',
             key: 'training_system',
             width: '12%',
-            ...getColumnSearchProps('training_system'),
             editable: true,
+            ellipsis: true,
+
         },
         {
             title: 'GPA',
             dataIndex: 'gpa',
             key: 'gpa',
             width: '8%',
-            ...getColumnSearchProps('gpa'),
-            sorter: (a, b) => a.gpa - b.gpa,
             editable: true,
 
         },
@@ -95,9 +91,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             dataIndex: 'apply_position',
             key: 'apply_position',
             width: '12%',
-            filterSearch: true,
-            filters: filterService.getPositionFilter(),
             editable: true,
+            ellipsis: true,
+
         },
         {
             title: 'Skills',
@@ -105,11 +101,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             key: 'skill',
             width: '14%',
             editable: true,
-            onFilter: (value, record) => record.status.indexOf(value) === 0,
             ellipsis: true,
             render: (text) => {
                 const split = text.split(',');
-                const result = split.map((item) => item = item.trim());
+                const result = split.map((item) => item = item.trim()).slice(0, 3);
+                const remaining = split.length - 3;
                 return (
                     <>
                         <Flex gap={'4px'} wrap='wrap'>
@@ -120,6 +116,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                                     </Tag>
                                 )
                             })}
+                            {remaining > 0 && (
+                                <Tooltip title={`+ ${remaining} kỹ năng khác`}>
+                                    <Tag color={'blue'}>+{remaining}</Tag>
+                                </Tooltip>
+                            )}
                         </Flex>
                     </>
                 )
@@ -150,8 +151,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                     </Tag>
                 )
             },
-            filters: filterService.getStatusFilter(),
-            onFilter: (value, record) => record.status.includes(value),
             ellipsis: true,
         },
         {
@@ -183,11 +182,11 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                     <Space size="middle">
                         {editable ? (
                             <>
-                                <Button icon={<SaveOutlined />} type="primary" onClick={() => editProps.save(record.key)}>
-                                </Button>
-                                <Popconfirm title="Chắc chưa?" onConfirm={editProps.cancel}>
-                                    <Button danger icon={<CloseCircleOutlined />}></Button>
+                                <Popconfirm title="Are you sure?" onConfirm={() => editProps.save(record.key)}>
+                                    <Button icon={<SaveOutlined />} type="primary">
+                                    </Button>
                                 </Popconfirm>
+                                <Button danger icon={<CloseCircleOutlined />} onClick={editProps.cancel}></Button>
                             </>
                         ) : (
                             <>
@@ -248,11 +247,8 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     const datas = cvs();
     return (
         <>
-            <Card>
-                {/* <div className='mb-4'>
-                    <Button onClick={clearAll}>Clear filters and sorters</Button>
-                </div> */}
-                <Form form={editProps.form} component={false}>
+            <Card className='shadow-lg'>
+                <Form form={editProps.form} component={false} colon>
                     <Table
                         rootClassName='cv-table'
                         rowSelection={rowSelection}
