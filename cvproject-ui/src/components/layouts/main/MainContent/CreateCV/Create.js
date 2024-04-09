@@ -8,7 +8,7 @@ import handleLogError from '~/utils/HandleError';
 import { NOTIFICATION } from '~/configs'
 import Home from '~/components/layouts/main/MainLayout/Home';
 
-const { Header, Content, Footer } = Layout
+const { Content } = Layout
 
 function Create() {
 

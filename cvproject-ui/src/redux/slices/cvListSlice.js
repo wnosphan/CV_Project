@@ -4,10 +4,10 @@ const cvListSlice = createSlice({
     name: 'cvList',
     initialState: {
         data: [],
-        totalPage: 1,
         loading: false,
-        pageSize: 10,
         editingKey: '',
+        totalPage: 1,
+        pageSize: 10,
     },
     reducers: {
         fetchDataBegin: (state) => {
@@ -15,12 +15,9 @@ const cvListSlice = createSlice({
         },
         fetchDataSuccess: (state, action) => {
             state.data = action.payload.cvs_list;
-            state.totalPage = action.payload.total;
             state.loading = false;
-        },
-        editCv: (state, action) => {
-            state.editingKey = action.payload;
-        },
+            state.totalPage = action.payload.total;
+        }
     },
 });
 

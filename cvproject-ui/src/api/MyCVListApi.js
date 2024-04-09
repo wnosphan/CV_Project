@@ -1,5 +1,5 @@
 import { instance } from './baseApi'
-import cvListSlice from '~/redux/slices/cvs/cvListSlice'
+import cvListSlice from '~/redux/slices/cvListSlice'
 import handleLogError from '~/utils/HandleError'
 
 
@@ -11,21 +11,11 @@ export const myCVListApi = {
     deleteCVs,
     fileUpload,
     updateMultipleStatus,
-    updateCV
+    updateCV,
+    getUniversity,
+    getSkill,
+    getPosition
 }
-
-// function getCV(username, page, limit, dataIndex, keySearch) {
-//     return instance.get(`/api/cv/user/${username}`, {
-//         params: {
-//             page: page,
-//             limit: limit,
-//             [dataIndex]: keySearch,
-//         },
-//         validateStatus: (status) => {
-//             return status < 500
-//         }
-//     });
-// }
 
 function getCV(username, page, limit) {
     return (dispatch) => {
@@ -39,7 +29,9 @@ function getCV(username, page, limit) {
                 return status < 500
             }
         }).then((response) => {
-            dispatch(cvListSlice.actions.fetchDataSuccess(response.data));
+            setTimeout(() => {
+                dispatch(cvListSlice.actions.fetchDataSuccess(response.data));
+            }, 200);
         }).catch((error) => {
             handleLogError(error);
         });
@@ -65,8 +57,8 @@ function updateCV(username, id, data) {
     });
 }
 
-function createCV(post) {
-    return instance.post(`/api/cv`, post, {
+function createCV(username, post) {
+    return instance.post(`/api/cv/${username}`, post, {
         headers: {
             "Content-Type": "application/json",
         }
@@ -105,17 +97,6 @@ function fileUpload(username, file) {
     });
 }
 
-// function updateMultipleStatus(ids) {
-//     return instance.patch(`/api/cv`, ids, {
-//         headers: {
-//             "Content-Type": "application/json",
-//         },
-//         validateStatus: (status) => {
-//             return status < 500
-//         }
-//     })
-// }
-
 function updateMultipleStatus(ids) {
     return instance.patch(`/api/cv/status`, ids, {
         headers: {
@@ -125,5 +106,30 @@ function updateMultipleStatus(ids) {
             return status < 500
         }
     })
+}
+
+function getUniversity() {
+
+    return instance.get('/api/cv/list/university', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+function getSkill() {
+    return instance.get('/api/cv/list/skill', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+}
+
+function getPosition() {
+    return instance.get('/api/cv/list/apply-position', {
+        validateStatus: (status) => {
+            return status < 500
+        }
+    });
+
 }
 

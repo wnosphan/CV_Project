@@ -45,7 +45,7 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @PostMapping("")
+    @PostMapping("{username}")
     private ResponseEntity<?> postCV(@PathVariable("username") String username,@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
         try {
 //            log.info("Request data: " + cvDTO);

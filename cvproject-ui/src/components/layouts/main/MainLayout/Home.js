@@ -42,11 +42,11 @@ function Home({ children }) {
         <Layout>
             {isUser ? (
                 <>
-                    <Header className='flex justify-between bg-white'>
+                    <Header className='flex justify-between bg-white shadow-sm'>
                         <CustomHeader />
                     </Header>
                     <Content className='mx-3 mb-6 p-5'>
-                        <Row justify="space-evenly">
+                        <Row>
                             {children}
                         </Row>
                     </Content>
