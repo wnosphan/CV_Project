@@ -40,7 +40,7 @@ public class CVService implements ICvService {
 //
 //    }
 
-//    @Override
+    //    @Override
 //    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
 //        User existingUser = userRepository.findByUserName(userName);
 //        if(existingUser != null){
@@ -52,35 +52,37 @@ public class CVService implements ICvService {
 //        log.error("User "+userName+" not found!!!");
 //        return null;
 //    }
-@Override
-public Page<CvResponse> searchCv(int page, int size, String username, String sortby, String sorttype, String fullname, List<String> skill, List<String> status, LocalDate dateOfBirth, List<String> university, String trainingSystem, String gpa, List<String> applyPosition) throws Exception {
-    User existingUser = userRepository.findByUserName(username);
-    if (existingUser == null) {
-        throw new Exception("User with username: " + username + " not found!!!");
+    @Override
+    public Page<CvResponse> searchCv(int page, int size, String username, String sortby, String sorttype, String fullname, List<String> skill, List<String> status, LocalDate dateOfBirth, List<String> university, String trainingSystem, String gpa, List<String> applyPosition) throws Exception {
+        User existingUser = userRepository.findByUserName(username);
+        if (existingUser == null) {
+            log.error("User with username: {} not found!!!", username);
+            throw new Exception("User with username: " + username + " not found!!!");
+        }
+
+        // Kiểm tra và set giá trị cho các trường
+        if (StringUtils.isBlank(fullname)) fullname = null;
+        if (CollectionUtils.isEmpty(skill)) skill = null;
+        if (CollectionUtils.isEmpty(status)) status = null;
+        if (dateOfBirth != null && dateOfBirth.isEqual(LocalDate.MIN))
+            dateOfBirth = null; // hoặc kiểm tra giá trị mặc định khác
+        if (CollectionUtils.isEmpty(university)) university = null;
+        if (StringUtils.isBlank(trainingSystem)) trainingSystem = null;
+        if (StringUtils.isBlank(gpa)) gpa = null;
+        if (CollectionUtils.isEmpty(applyPosition)) applyPosition = null;
+
+        Sort.Direction direction = Sort.Direction.fromString(sorttype);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortby));
+
+        Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName(), fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
+        log.info("Processing: {} found", cvPage);
+        return cvPage.map(CvResponse::fromCv);
     }
-
-    // Kiểm tra và set giá trị cho các trường
-    if (StringUtils.isBlank(fullname)) fullname = null;
-    if (CollectionUtils.isEmpty(skill)) skill = null;
-    if (CollectionUtils.isEmpty(status)) status = null;
-    if (dateOfBirth != null && dateOfBirth.isEqual(LocalDate.MIN)) dateOfBirth = null; // hoặc kiểm tra giá trị mặc định khác
-    if (CollectionUtils.isEmpty(university)) university = null;
-    if (StringUtils.isBlank(trainingSystem)) trainingSystem = null;
-    if (StringUtils.isBlank(gpa)) gpa = null;
-    if (CollectionUtils.isEmpty(applyPosition)) applyPosition = null;
-
-    Sort.Direction direction = Sort.Direction.fromString(sorttype);
-    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortby));
-
-    Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName(), fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
-    log.info("Tìm kiếm thành công danh sách Cv");
-    return cvPage.map(CvResponse::fromCv);
-}
 
 
     public Cv getCvById(Long id) throws Exception {
         Cv cv = cvRepository.findById(id).orElseThrow(() -> new Exception("Cannot find CV with id =" + id));
-        log.info("Lấy thành công thông tin Cv: "+cv.toString());
+        log.info("Processing: {} found", cv);
         return cv;
     }
 
@@ -99,14 +101,14 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
                 .linkCV(cvDTO.getLinkCV())
                 .build();
         cvRepository.save(newCv);
-        log.info("Tạo mới thành công Cv: "+newCv.toString());
+        log.info("Processing: create CV: {}", newCv);
         return newCv;
     }
 
     public Cv updateCv(Long id, CvDTO cvDTO) throws Exception {
         Cv existingCv = getCvById(id);
+        Cv oldCv = existingCv;
         if (existingCv != null) {
-            log.info("Tìm thấy Cv có nội dung: " +existingCv.toString());
             User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
             existingCv.setFullName(cvDTO.getFullName());
             existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
@@ -118,10 +120,10 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
             existingCv.setApplyPosition(cvDTO.getApplyPosition());
             existingCv.setLinkCV(cvDTO.getLinkCV());
             Cv newCv = cvRepository.save(existingCv);
-            log.info("Cập nhật thành công Cv thành: " +existingCv.toString());
+            log.info("Processing: Updated CV with id: {} from {} to {}", id, oldCv, existingCv);
             return newCv;
         }
-        log.info("Cập nhật Cv thất bại(không tìm thấy Cv)");
+        log.error("Processing: CV with id: {} not existing", id);
         return null;
     }
 
@@ -135,17 +137,17 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
                 if (id.getStatus().equals("pass")) {
                     cv.setStatus(CvStatus.PASS);
                     cvRepository.save(cv);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
+                    log.info("Processing: update Cv status with Id: {} into {}", id, CvStatus.PASS);
                 } else if (id.getStatus().equals("not_pass")) {
                     cv.setStatus(CvStatus.NOTPASS);
                     cvRepository.save(cv);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
+                    log.info("Processing: update Cv status with Id: {} into {}", id, CvStatus.NOTPASS);
                 } else {
-                    System.err.println("Invalid status: " + id.getStatus() + " for CV ID: " + cvId);
-                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
+                    log.error("Processing: status value {} of Cv Id: {} is invalid", id.getStatus(), cvId);
+                    throw new Exception("Status value is invalid");
                 }
             } else {
-                System.err.println("CV not found with ID: " + cvId);
+                log.error("Processing: Cv with Id: {} not found", cvId);
             }
         }
 
@@ -183,16 +185,15 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
         Cv cv = getCvById(id);
         if (cv != null) {
             cvRepository.delete(cv);
-            log.info("Xoá thành công Cv với ID:" + id);
-        } else log.info("Xoá Cv không thành công");
-
+            log.info("Processing: Cv with Id: {} deleted successfully", id);
+        } else log.error("Processing: Cv with Id: {} not found", id);
     }
 
     @Override
     public void deleteCvs(ListCvIdDTO ids) {
         List<Long> idList = ids.ids;
         cvRepository.deleteAllById(idList);
-        log.info("Xoá thành công "+idList.size()+" Cv");
+        log.info("Processing: Deleted successfully {} CVs", idList.size());
     }
 
     @Override
