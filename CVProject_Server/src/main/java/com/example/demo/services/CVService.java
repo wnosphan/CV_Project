@@ -84,8 +84,8 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
         return cv;
     }
 
-    public Cv creatCv(CvDTO cvDTO) throws Exception {
-        User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User with ID: " + cvDTO.getCreateBy() + " not found!!!"));
+    public Cv createCv(String username,CvDTO cvDTO) throws Exception {
+        User user = userRepository.findByUserName(username);
         Cv newCv = Cv.builder()
                 .fullName(cvDTO.getFullName())
                 .dateOfBirth(cvDTO.getDateOfBirth())
@@ -103,11 +103,11 @@ public Page<CvResponse> searchCv(int page, int size, String username, String sor
         return newCv;
     }
 
-    public Cv updateCv(Long id, CvDTO cvDTO) throws Exception {
+    public Cv updateCv(String username,Long id, CvDTO cvDTO) throws Exception {
         Cv existingCv = getCvById(id);
         if (existingCv != null) {
+            User user = userRepository.findByUserName(username);
             log.info("Tìm thấy Cv có nội dung: " +existingCv.toString());
-            User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
             existingCv.setFullName(cvDTO.getFullName());
             existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
             existingCv.setSkill(cvDTO.getSkill());

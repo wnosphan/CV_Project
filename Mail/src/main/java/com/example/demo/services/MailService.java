@@ -48,10 +48,11 @@ public class MailService {
             return; // Trả về nếu danh sách email trống
         }
         for (String toEmail : toEmails) {
+
             MimeMessage message = mailSender.createMimeMessage();
             message.addRecipient(MimeMessage.RecipientType.TO, new InternetAddress(toEmail));
             message.setSubject("Test");
-            message.setText("Have "+countCvStatus()+" CV waiting to approve");
+            message.setText("Have "+countCvStatus("INPROGRESS",userRepository.findUserByEmail(toEmail))+" CV waiting to approve");
             mailSender.send(message);
         }
     }
@@ -61,8 +62,8 @@ public class MailService {
                return Files.readString(path, StandardCharsets.UTF_8);
 
         }
-    public int countCvStatus () {
-        return cvRepository.countByStatusContaining("INPROGRESS");
+    public int countCvStatus(String status, String username) {
+        return cvRepository.countByStatusContainingAndCreatedByUserName(status, username);
     }
 
 }
