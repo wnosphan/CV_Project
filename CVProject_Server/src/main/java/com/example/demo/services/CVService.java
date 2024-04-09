@@ -109,7 +109,7 @@ public class CVService implements ICvService {
         Cv existingCv = getCvById(id);
         Cv oldCv = existingCv;
         if (existingCv != null) {
-            User user = userRepository.findById(cvDTO.getCreateBy()).orElseThrow(() -> new Exception("User not found"));
+            User user = userRepository.findByUserName(username);
             existingCv.setFullName(cvDTO.getFullName());
             existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
             existingCv.setSkill(cvDTO.getSkill());

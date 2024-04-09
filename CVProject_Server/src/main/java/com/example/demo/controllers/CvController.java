@@ -55,7 +55,7 @@ public class CvController {
                 log.error(errorMessages.toString());
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            Cv cv = cvService.creatCv(cvDTO);
+            Cv cv = cvService.createCv(username,cvDTO);
             log.info("Response data: {}", cv);
             return ResponseEntity.ok(cv);
         } catch (Exception e) {
@@ -148,7 +148,7 @@ public class CvController {
     private ResponseEntity<?> updateCv(@PathVariable("username") String username,@PathVariable("id") long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
             log.info("PUT method data: ID: {}, {}", id, cvDTO);
-            Cv updateCv = cvService.updateCv(id, cvDTO);
+            Cv updateCv = cvService.updateCv(username,id, cvDTO);
             log.info("Response data: {}", updateCv);
             return ResponseEntity.ok(updateCv);
         } catch (Exception e) {
