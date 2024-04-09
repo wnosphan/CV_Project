@@ -1,4 +1,6 @@
 import { instance } from './baseApi'
+import cvListSlice from '~/redux/slices/cvs/cvListSlice'
+import handleLogError from '~/utils/HandleError'
 
 
 export const myCVListApi = {
@@ -9,20 +11,39 @@ export const myCVListApi = {
     deleteCVs,
     fileUpload,
     updateMultipleStatus,
-    UpdateCV
+    updateCV
 }
 
-function getCV(username, page, limit, dataIndex, keySearch) {
-    return instance.get(`/api/cv/user/${username}`, {
-        params: {
-            page: page,
-            limit: limit,
-            [dataIndex]: keySearch,
-        },
-        validateStatus: (status) => {
-            return status < 500
-        }
-    });
+// function getCV(username, page, limit, dataIndex, keySearch) {
+//     return instance.get(`/api/cv/user/${username}`, {
+//         params: {
+//             page: page,
+//             limit: limit,
+//             [dataIndex]: keySearch,
+//         },
+//         validateStatus: (status) => {
+//             return status < 500
+//         }
+//     });
+// }
+
+function getCV(username, page, limit) {
+    return (dispatch) => {
+        dispatch(cvListSlice.actions.fetchDataBegin());
+        return instance.get(`/api/cv/user/${username}`, {
+            params: {
+                page: page,
+                limit: limit,
+            },
+            validateStatus: (status) => {
+                return status < 500
+            }
+        }).then((response) => {
+            dispatch(cvListSlice.actions.fetchDataSuccess(response.data));
+        }).catch((error) => {
+            handleLogError(error);
+        });
+    }
 }
 
 function getCvById(id) {
@@ -33,14 +54,17 @@ function getCvById(id) {
     });
 }
 
-function UpdateCV(id, data) {
-    return instance.get(`/api/cv/${id}`, {
-        data: data,
+function updateCV(username, id, data) {
+    return instance.put(`/api/cv/${username}/${id}`, data, {
+        headers: {
+            "Content-Type": "application/json",
+        },
         validateStatus: (status) => {
             return status < 500
         }
     });
 }
+
 function createCV(post) {
     return instance.post(`/api/cv`, post, {
         headers: {

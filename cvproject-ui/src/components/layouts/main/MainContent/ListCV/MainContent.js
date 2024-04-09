@@ -3,14 +3,16 @@ import { Col, Card, Flex, Button, Modal, Table, Form, notification, Input, Space
 import { PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { Link } from 'react-router-dom'
-import moment from 'moment';
 import { useAuth } from 'react-oidc-context';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 import CVTable from './CVTable';
 import handleLogError from '~/utils/HandleError';
 import { myCVListApi } from '~/api';
 import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
+import { cvListSelector } from '~/redux/selectors';
 import Home from '~/components/layouts/main/MainLayout/Home';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
 
@@ -19,20 +21,23 @@ const paginationProps = {
     showQuickJumper: true,
     showSizeChanger: false,
     position: ['bottomCenter'],
-    pageSize: 10
 }
 
 const MainContent = () => {
     const auth = useAuth();
+    const dispatch = useDispatch();
+    const cvList = useSelector(cvListSelector);
+    const { data, totalPage, loading, pageSize } = cvList;
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    const [tableData, setTableData] = useState({
-        data: [],
-        totalPage: 1,
-        loading: false,
-    });
+    // const [tableData, setTableData] = useState({
+    //     data: [],
+    //     totalPage: 1,
+    //     loading: false,
+    //     pageSize: 10,
+    // });
     const [currentPage, setCurrentPage] = useState(1);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -53,59 +58,47 @@ const MainContent = () => {
     };
 
     /**Get all */
-    const handleCV = useCallback((page, dataIndex, keySearch) => {
-        setTableData((tableData) => ({ ...tableData, loading: true }));
-        setTimeout(() => {
-            myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, paginationProps.pageSize, dataIndex, keySearch).then((response) => {
-                setTableData({
-                    data: response.data.cvs_list,
-                    totalPage: response.data.total,
-                    loading: false,
-                });
+    // const handleCV = useCallback((page, dataIndex, keySearch) => {
+    //     setTableData((tableData) => ({ ...tableData, loading: true }));
+    //     setTimeout(() => {
+    //         myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, tableData.pageSize, dataIndex, keySearch).then((response) => {
+    //             setTableData({
+    //                 ...tableData,
+    //                 data: response.data.cvs_list,
+    //                 totalPage: response.data.total,
+    //                 loading: false,
+    //             });
 
-            }).catch((error) => {
-                handleLogError(error);
-            });
-        }, 500);
+    //         }).catch((error) => {
+    //             handleLogError(error);
+    //         });
+    //     }, 500);
+    // }, []);
+
+    // useEffect(() => {
+    //     if (searchText !== '') {
+    //         handleCV(currentPage, searchedColumn, searchText);
+    //     } else {
+    //         handleCV(currentPage);
+    //     }
+    // }, [handleCV, currentPage]);
+
+    const handleCV = useCallback((page) => {
+        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, pageSize));
     }, []);
 
-    console.log('tableData', tableData);
-
     useEffect(() => {
-        if (searchText !== '') {
-            handleCV(currentPage, searchedColumn, searchText);
-        } else {
-            handleCV(currentPage);
-        }
+        handleCV(currentPage);
     }, [handleCV, currentPage]);
+
+    console.log('tableData', data);
+
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
         cancel();
     };
 
-
-    const getColumnFilterProps = (dataIndex, menu) => ({
-        filterSearch: true,
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        render: (text) =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                    }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
-
-
-    });
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -204,15 +197,17 @@ const MainContent = () => {
 
     const isEditing = (record) => record.key === editingKey;
     const edit = (record) => {
+        console.log(record);
         form.setFieldsValue({
             full_name: '',
-            dob: moment(record.dob),
+            date_of_birth: '',
             university: '',
             training_system: '',
             gpa: '',
             apply_position: '',
             skill: '',
-            ...record,
+            link_cv: '',
+            ...record
         });
         setEditingKey(record.key);
     };
@@ -222,27 +217,6 @@ const MainContent = () => {
     const save = async (key) => {
         const row = await form.validateFields();
         handleUpdateCV(key, row);
-        // try {
-
-        //     // const row = await form.validateFields();
-
-        //     // const newData = [...tableData.data];
-        //     // const index = newData.findIndex((item) => key === item.key);
-        //     // if (index > -1) {
-        //     //     const item = newData[index];
-        //     //     newData.splice(index, 1, {
-        //     //         ...item,    
-        //     //         ...row,
-        //     //         dob: moment(row.dob).format('YYYY-MM-DD')
-        //     //     });
-        //     // } else {
-        //     //     newData.push(row);
-        //     // }
-        //     // setTableData({ ...tableData, data: newData });
-        //     // setEditingKey('');
-        // } catch (errInfo) {
-        //     handleLogError(errInfo);
-        // }
     };
     const editProps = {
         isEditing,
@@ -254,10 +228,10 @@ const MainContent = () => {
     }
 
     const handleUpdateCV = async (key, record) => {
-        const data = JSON.stringify(record);
-        console.log('data', data);
-        await myCVListApi.updateCV(key, data)
+        await myCVListApi.updateCV(auth.user?.profile.preferred_username, key, record)
             .then((response) => {
+                console.log('request', record);
+                console.log('response', response);
                 if (response.status === 200) {
                     setEditingKey('');
                     handleCV(currentPage);
@@ -324,16 +298,17 @@ const MainContent = () => {
                         </Flex>
                     </Card>
                     <CVTable
-                        dataSource={tableData.data}
+                        dataSource={data}
                         rowSelection={rowSelection}
                         onDelete={onDelete}
                         pagination={{
                             ...paginationProps,
-                            total: tableData.totalPage * paginationProps.pageSize,
+                            total: totalPage * pageSize,
                             current: currentPage,
-                            onChange: handleTableChange
+                            pageSize: pageSize,
+                            onChange: handleTableChange,
                         }}
-                        loading={tableData.loading}
+                        loading={loading}
                         editProps={editProps}
                         getColumnSearchProps={getColumnSearchProps}
                     />

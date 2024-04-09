@@ -1,10 +1,10 @@
 import React, { useState, memo } from 'react'
-import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row } from 'antd'
+import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import moment from 'moment';
 
 
-import EditableCell from './EditableCell';
+import EditableCell from '../EditCV/EditableCell';
 import { myCVListApi } from '~/api/MyCVListApi';
 import handleLogError from '~/utils/HandleError';
 import { useAuth } from 'react-oidc-context';
@@ -53,9 +53,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
         },
         {
             title: 'DOB',
-            dataIndex: 'dob',
-            key: 'dob',
-            width: '10%',
+            dataIndex: 'date_of_birth',
+            key: 'date_of_birth',
+            width: '12%',
             editable: true,
             render: (text) => moment(text).format('DD-MM-YYYY'),
 
@@ -155,6 +155,22 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             ellipsis: true,
         },
         {
+            title: 'Link CV',
+            dataIndex: 'link_cv',
+            key: 'link_cv',
+            width: '10%',
+            render(link) {
+                return (
+                    <Tooltip title={link}>
+                        <a href={link}>{link}</a>
+                    </Tooltip>
+                )
+            },
+            editable: true,
+            ellipsis: true,
+
+        },
+        {
             title: 'Action',
             key: 'action',
             fixed: 'right',
@@ -205,7 +221,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             ...col,
             onCell: (record) => ({
                 record,
-                inputType: col.dataIndex === 'gpa' ? 'number' : col.dataIndex === 'dob' ? 'date' : 'text',
+                inputType: col.dataIndex === 'gpa' ? 'number' : col.dataIndex === 'date_of_birth' ? 'date' : 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: editProps.isEditing(record),
@@ -221,7 +237,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             gpa: cv.gpa,
             status: cv.status,
             full_name: cv.full_name,
-            dob: moment(cv.date_of_birth),
+            date_of_birth: cv.date_of_birth,
             training_system: cv.training_system,
             create_by: cv.create_by,
             apply_position: cv.apply_position,
@@ -274,7 +290,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         <DescriptionItem title="Full Name" content={info.fullName} />
                     </Col>
                     <Col span={12}>
-                        <DescriptionItem title="Birthday" content={info.dateOfBirth} />
+                        <DescriptionItem title="Birthday" content={moment(info.dateOfBirth).format('DD-MM-YYYY')} />
                     </Col>
                 </Row>
                 <Row>
