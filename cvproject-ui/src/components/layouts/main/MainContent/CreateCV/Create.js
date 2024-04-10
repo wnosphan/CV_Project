@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
+import { useAuth } from 'react-oidc-context'
 import { Form, Input, Layout, Button, Space, DatePicker, notification } from 'antd'
 import { SaveOutlined } from "@ant-design/icons"
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 import { myCVListApi } from '~/api';
 import handleLogError from '~/utils/HandleError';
@@ -13,6 +14,7 @@ const { Content } = Layout
 function Create() {
 
     let navigate = useNavigate()
+    const auth = useAuth();
     const [api, contextHolder] = notification.useNotification();
     const [post, setPost] = useState({
         full_name: "",
@@ -20,24 +22,13 @@ function Create() {
         skill: "",
         university: "",
         training_system: "",
-        create_by: 1,
         gpa: "",
         apply_position: "",
         link_cv: "",
     },)
 
     const handleInput = (event) => {
-        if (event.target.name === "create_by") {
-            const numberValue = parseInt(event.target.value, 10);
-            if (!isNaN(numberValue)) {
-                setPost({ ...post, [event.target.name]: numberValue });
-            } else {
-                console.error("create_by must be a number");
-            }
-        }
-        else {
             setPost({ ...post, [event.target.name]: event.target.value });
-        }
     }
 
     const handleDateChange = (date, dateString) => {
@@ -51,7 +42,7 @@ function Create() {
         try {
             event.preventDefault()
             await form.validateFields()
-            const response = await myCVListApi.createCV(post)
+            const response = await myCVListApi.createCV(auth.user?.profile.preferred_username, post)
             if (response.status === 200) {
                 api.success({
                     message: NOTIFICATION.CREATE.SUCCESS,
@@ -175,9 +166,9 @@ function Create() {
                                     Save
                                 </Button>
 
-                                <Button href='/'>
+                                <Link to='/'><Button >
                                     Cancel
-                                </Button>
+                                </Button></Link>
                             </Space>
                         </Form.Item>
                     </Form>
