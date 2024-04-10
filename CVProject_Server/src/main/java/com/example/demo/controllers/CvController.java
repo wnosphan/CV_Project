@@ -98,12 +98,13 @@ public class CvController {
     private ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
                                      @RequestParam(name = "page", defaultValue = "0") int page,
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
+                                     @RequestParam(name = "sort_type", defaultValue = "ASC") String sortType,
+                                     @RequestParam(name = "sort_by", defaultValue = "id") String sortBy,
                                      @Valid @RequestBody SearchDTO searchDTO) {
             log.info("GET method data: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", username, page, limit, searchDTO.getFullName(), searchDTO.getSkill(), searchDTO.getStatus(), searchDTO.getDateOfBirth(), searchDTO.getUniversity(), searchDTO.getTrainingSystem(), searchDTO.getGpa(), searchDTO.getApplyPosition());
             try {
-                searchDTO.setSortBy("full_name");
-                searchDTO.setSoftType("ASC");
-                Page<CvResponse> cvList = cvService.searchCv(page, limit, username,searchDTO);
+
+                Page<CvResponse> cvList = cvService.searchCv(page, limit,sortBy,sortType, username,searchDTO);
                 int totalPage = cvList.getTotalPages();
                 List<CvResponse> cvs = cvList.getContent();
                 log.info("Response data: {} CVs", cvs.size());

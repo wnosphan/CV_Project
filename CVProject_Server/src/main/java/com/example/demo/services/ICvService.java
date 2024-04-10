@@ -30,7 +30,20 @@ public interface ICvService {
 //        log.error("User "+userName+" not found!!!");
 //        return null;
 //    }
-    Page<CvResponse> searchCv(int page, int size, String username, SearchDTO SeacrhDTO) throws Exception;
+
+    //    @Override
+//    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
+//        User existingUser = userRepository.findByUserName(userName);
+//        if(existingUser != null){
+//            Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+//            Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
+//            log.info("Lấy thành công danh sách Cv");
+//            return cvPage.map(CvResponse::fromCv);
+//        }
+//        log.error("User "+userName+" not found!!!");
+//        return null;
+//    }
+    Page<CvResponse> searchCv(int page, int size, String sortBy, String sortType, String username, SearchDTO SeacrhDTO) throws Exception;
 
     public Cv getCvById(Long id) throws Exception;
     public Cv createCv(String username,CvDTO cvDTO) throws Exception;

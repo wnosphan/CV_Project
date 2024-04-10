@@ -37,10 +37,6 @@ public class SearchDTO {
     private List<String> applyPosition;
 
     private String status;
-    @JsonProperty("sort_by")
 
-    private String sortBy;
-    @JsonProperty("sort_type")
-    private String softType;
 
 }

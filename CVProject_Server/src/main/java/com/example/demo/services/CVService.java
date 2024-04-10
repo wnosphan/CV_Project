@@ -52,8 +52,17 @@ public class CVService implements ICvService {
 //        return null;
 //    }
     @Override
-    public Page<CvResponse> searchCv(int page, int size, String username, SearchDTO SeacrhDTO) throws Exception {
-
+    public Page<CvResponse> searchCv(int page, int size,String sortBy,String sortType, String username, SearchDTO SeacrhDTO) throws Exception {
+        try {
+            User user = userRepository.findByUserName(username);
+            if (user == null) {
+                log.error("Processing: User with username: {} not found", username);
+                throw new Exception("User not found");
+            }
+        } catch (Exception e) {
+            log.error("Processing: User with username: {} not found", username);
+            throw new Exception("User not found");
+        }
 
         // Kiểm tra và set giá trị cho các trường
         if (StringUtils.isBlank(SeacrhDTO.getFullName())) SeacrhDTO.setFullName(null);
@@ -64,8 +73,8 @@ public class CVService implements ICvService {
         if (CollectionUtils.isEmpty(SeacrhDTO.getApplyPosition())) SeacrhDTO.setApplyPosition(null);
         if (StringUtils.isBlank(SeacrhDTO.getStatus())) SeacrhDTO.setStatus(null);
 
-        Sort.Direction direction = Sort.Direction.fromString(SeacrhDTO.getSoftType());
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, SeacrhDTO.getSortBy()));
+        Sort.Direction direction = Sort.Direction.fromString(sortType);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<Cv> cvPage = cvRepository.searchCv(pageable, username, SeacrhDTO.getFullName(), SeacrhDTO.getSkill(), SeacrhDTO.getTrainingSystem(), SeacrhDTO.getDateOfBirth(), SeacrhDTO.getUniversity(), SeacrhDTO.getStatus(), SeacrhDTO.getGpa(), SeacrhDTO.getApplyPosition());
         log.info("Processing: {} found", cvPage);
