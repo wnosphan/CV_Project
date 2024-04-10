@@ -1,8 +1,8 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.CvDTO;
-import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.ListCvIdDTO;
+import com.example.demo.dtos.SearchDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.models.CvStatus;
 import com.example.demo.models.User;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,28 +52,22 @@ public class CVService implements ICvService {
 //        return null;
 //    }
     @Override
-    public Page<CvResponse> searchCv(int page, int size, String username, String sortby, String sorttype, String fullname, List<String> skill, List<String> status, LocalDate dateOfBirth, List<String> university, String trainingSystem, String gpa, List<String> applyPosition) throws Exception {
-        User existingUser = userRepository.findByUserName(username);
-        if (existingUser == null) {
-            log.error("User with username: {} not found!!!", username);
-            throw new Exception("User with username: " + username + " not found!!!");
-        }
+    public Page<CvResponse> searchCv(int page, int size, String username, SearchDTO SeacrhDTO) throws Exception {
+
 
         // Kiểm tra và set giá trị cho các trường
-        if (StringUtils.isBlank(fullname)) fullname = null;
-        if (CollectionUtils.isEmpty(skill)) skill = null;
-        if (CollectionUtils.isEmpty(status)) status = null;
-        if (dateOfBirth != null && dateOfBirth.isEqual(LocalDate.MIN))
-            dateOfBirth = null; // hoặc kiểm tra giá trị mặc định khác
-        if (CollectionUtils.isEmpty(university)) university = null;
-        if (StringUtils.isBlank(trainingSystem)) trainingSystem = null;
-        if (StringUtils.isBlank(gpa)) gpa = null;
-        if (CollectionUtils.isEmpty(applyPosition)) applyPosition = null;
+        if (StringUtils.isBlank(SeacrhDTO.getFullName())) SeacrhDTO.setFullName(null);
+        if (CollectionUtils.isEmpty(SeacrhDTO.getSkill())) SeacrhDTO.setSkill(null);
+        if (CollectionUtils.isEmpty(SeacrhDTO.getUniversity())) SeacrhDTO.setUniversity(null);
+        if (CollectionUtils.isEmpty(SeacrhDTO.getTrainingSystem())) SeacrhDTO.setTrainingSystem(null);
+        if (StringUtils.isBlank(SeacrhDTO.getGpa())) SeacrhDTO.setGpa(null);
+        if (CollectionUtils.isEmpty(SeacrhDTO.getApplyPosition())) SeacrhDTO.setApplyPosition(null);
+        if (StringUtils.isBlank(SeacrhDTO.getStatus())) SeacrhDTO.setStatus(null);
 
-        Sort.Direction direction = Sort.Direction.fromString(sorttype);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortby));
+        Sort.Direction direction = Sort.Direction.fromString(SeacrhDTO.getSoftType());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, SeacrhDTO.getSortBy()));
 
-        Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName(), fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
+        Page<Cv> cvPage = cvRepository.searchCv(pageable, username, SeacrhDTO.getFullName(), SeacrhDTO.getSkill(), SeacrhDTO.getTrainingSystem(), SeacrhDTO.getDateOfBirth(), SeacrhDTO.getUniversity(), SeacrhDTO.getStatus(), SeacrhDTO.getGpa(), SeacrhDTO.getApplyPosition());
         log.info("Processing: {} found", cvPage);
         return cvPage.map(CvResponse::fromCv);
     }

@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.CvDTO;
 import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.ListCvIdDTO;
+import com.example.demo.dtos.SearchDTO;
 import com.example.demo.models.Cv;
 import com.example.demo.responses.CvListResponse;
 import com.example.demo.responses.CvResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -96,27 +98,20 @@ public class CvController {
     private ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
                                      @RequestParam(name = "page", defaultValue = "0") int page,
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
-                                     @RequestParam(name = "sort_by", defaultValue = "id") String sortby,
-                                     @RequestParam(name = "sort_type", defaultValue = "ASC") String sorttype,
-                                     @RequestParam(name = "full_name", required = false) String fullname,
-                                     @RequestParam(name = "skill", required = false) List<String> skill,
-                                     @RequestParam(name = "status", required = false) List<String> status,
-                                     @RequestParam(name = "date_of_birth", required = false) LocalDate dateOfBirth,
-                                     @RequestParam(name = "university", required = false) List<String> university,
-                                     @RequestParam(name = "training_system", required = false) String trainingSystem,
-                                     @RequestParam(name = "gpa", required = false) String gpa,
-                                     @RequestParam(name = "apply_position", required = false) List<String> applyPosition) {
-        try {
-            log.info("GET method data: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", username, page, limit, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
-            Page<CvResponse> cvList = cvService.searchCv(page, limit, username, sortby, sorttype, fullname, skill, status, dateOfBirth, university, trainingSystem, gpa, applyPosition);
-            int totalPage = cvList.getTotalPages();
-            List<CvResponse> cvs = cvList.getContent();
-            log.info("Response data: {} CVs", cvs.size());
-            return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
-        } catch (Exception e) {
-            log.error("Processing: "+e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+                                     @Valid @RequestBody SearchDTO searchDTO) {
+            log.info("GET method data: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", username, page, limit, searchDTO.getFullName(), searchDTO.getSkill(), searchDTO.getStatus(), searchDTO.getDateOfBirth(), searchDTO.getUniversity(), searchDTO.getTrainingSystem(), searchDTO.getGpa(), searchDTO.getApplyPosition());
+            try {
+                searchDTO.setSortBy("full_name");
+                searchDTO.setSoftType("ASC");
+                Page<CvResponse> cvList = cvService.searchCv(page, limit, username,searchDTO);
+                int totalPage = cvList.getTotalPages();
+                List<CvResponse> cvs = cvList.getContent();
+                log.info("Response data: {} CVs", cvs.size());
+                return ResponseEntity.ok(CvListResponse.builder().cvResponses(cvs).totalPages(totalPage).build());
+            } catch (Exception e) {
+                log.error("Processing: "+e.getMessage());
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
     }
 
     @Operation(summary = "Get Cv by ID", description = "Cv ID")
