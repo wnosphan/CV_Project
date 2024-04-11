@@ -11,6 +11,7 @@ import handleLogError from '~/utils/HandleError';
 import { myCVListApi } from '~/api';
 import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
+import useNotification from '~/hooks/useNotification';
 import { cvListSelector, filtersSelector } from '~/redux/selectors';
 import Home from '~/components/layouts/main/MainLayout/Home';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
@@ -28,11 +29,20 @@ const MainContent = () => {
     const dispatch = useDispatch();
     const cvList = useSelector(cvListSelector);
     const filters = useSelector(filtersSelector);
-    const [api, contextHolder] = notification.useNotification();
+    const [api, contextHolder] = useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const obj = {
+        full_name: "",
+        apply_position: [],
+        status: "",
+        university: [],
+        training_system: [],
+        gpa: "",
+        skill: []
+    }
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -49,7 +59,7 @@ const MainContent = () => {
     };
 
     const handleCV = useCallback((page) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
+        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, obj));
     }, []);
 
     useEffect(() => {
