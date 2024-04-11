@@ -22,6 +22,9 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
             .then((response) => {
                 if (response.status === 200) {
                     handleCV(currentPage);
+                    setUploading(false);
+                    setVisible(false);
+                    setSelectedRowKeys([]);
                     api.success({
                         message: NOTIFICATION.UPDATE.SUCCESS,
                         duration: 2,
@@ -34,11 +37,7 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
                     duration: 2,
                 });
                 handleLogError(error);
-            }).finally(() => {
-                setUploading(false);
-                setVisible(false);
-                // setSelectedRowKeys([]);
-            });
+            })
 
     }
 

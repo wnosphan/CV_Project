@@ -7,7 +7,6 @@ const { Title } = Typography
 
 function PrivateRoute({ children }) {
     const auth = useAuth();
-
     if (auth.isLoading) {
         return (
             <div className="text-center">
@@ -43,12 +42,8 @@ function PrivateRoute({ children }) {
             email: auth.user?.profile.email
         }
         AuthApi.saveUser(user)
-        .then(response => {
-            console.log(response);
-        })
             .catch(error => handleLogError(error))
     }
-
     return children
 }
 export default PrivateRoute;
