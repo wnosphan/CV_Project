@@ -44,6 +44,9 @@ function PrivateRoute({ children }) {
             email: auth.user?.profile.email
         }
         AuthApi.saveUser(user)
+        .then(response => {
+            console.log(response);
+        })
             .catch(error => handleLogError(error))
     }
 

@@ -1,8 +1,8 @@
 export const properties = {
     oidc: {
-        authority: 'http://localhost:8080/realms/test',
-        clientId: 'test',
-        clientSecret: 'XZFD3f6K87mYWJRD36Ug0zfg4YAmEhEi'
+        authority: 'http://localhost:8080/realms/cvproject',
+        clientId: 'react-auth',
+        clientSecret: 'oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo'
     },
     api: {
         baseUrl: 'http://localhost:8088'
