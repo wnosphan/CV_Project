@@ -5,15 +5,17 @@ import { createSlice } from '@reduxjs/toolkit';
 const filtersSlice = createSlice({
     name: 'filters',
     initialState: {
-        name: '',
+        full_name: '',
         status: '',
         university: [],
         skill: [],
-        position: [],
+        apply_position: [],
+        training_system: [],
+        gpa: '',
     },
     reducers: {
         nameFilterChange: (state, action) => {
-            state.name = action.payload;
+            state.full_name = action.payload;
         },
         statusFilterChange: (state, action) => {
             state.status = action.payload;
@@ -25,7 +27,13 @@ const filtersSlice = createSlice({
             state.skill = action.payload;
         },
         positionFilterChange: (state, action) => {
-            state.position = action.payload;
+            state.apply_position = action.payload;
+        },
+        trainingSystemFilterChange: (state, action) => {
+            state.training_system = action.payload;
+        },
+        gpaFilterChange: (state, action) => {
+            state.gpa = action.payload;
         },
     }
 });

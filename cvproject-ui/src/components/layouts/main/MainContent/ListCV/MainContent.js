@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Col, Card, Flex, Button, Modal, Table, Form, notification } from 'antd';
+import { Col, Card, Flex, Button, Modal, Table, Form } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context';
@@ -34,15 +34,6 @@ const MainContent = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const obj = {
-        full_name: "",
-        apply_position: [],
-        status: "",
-        university: [],
-        training_system: [],
-        gpa: "",
-        skill: []
-    }
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -58,13 +49,14 @@ const MainContent = () => {
         ],
     };
 
-    const handleCV = useCallback((page) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, obj));
+    const handleCV = useCallback((page, filters) => {
+        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
     }, []);
 
     useEffect(() => {
-        handleCV(currentPage);
+        handleCV(currentPage, filters);
     }, [handleCV, currentPage, filters]);
+
     console.log('filters', filters);
     console.log('tableData', cvList.data);
 
@@ -171,7 +163,7 @@ const MainContent = () => {
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
                                 <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
-                                <ApplyButton selectedRowKeys={selectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
+                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
                                 <Link to='/create'><Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button></Link>
                                 <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} />
                             </Flex>

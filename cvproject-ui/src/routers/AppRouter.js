@@ -1,8 +1,8 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import {  Create, MainContent } from '~/components/layouts/main/MainContent';
-import {ErrorPage} from '~/components/layouts';
+import { Create, MainContent } from '~/components/layouts/main/MainContent';
+import { ErrorPage } from '~/components/layouts';
 import PrivateRoute from './PrivateRoute';
 
 const AppRouter = () => {

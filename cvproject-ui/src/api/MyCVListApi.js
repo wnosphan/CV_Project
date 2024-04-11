@@ -17,15 +17,10 @@ export const myCVListApi = {
     getPosition
 }
 
-function getCV(username, page, limit, obj) {
+function getCV(username, page, limit, filters) {
     return (dispatch) => {
         dispatch(cvListSlice.actions.fetchDataBegin());
-        return instance.get(`/api/cv/user/${username}`, {
-            params: {
-                page: page,
-                limit: limit,
-            },
-            data: obj,
+        return instance.post(`/api/cv/user/${username}?page=${page}&limit=${limit}`, filters, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -33,7 +28,7 @@ function getCV(username, page, limit, obj) {
                 return status < 500
             }
         }).then((response) => {
-
+            console.log(filters);
             setTimeout(() => {
                 dispatch(cvListSlice.actions.fetchDataSuccess(response.data));
             }, 200);

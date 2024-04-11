@@ -72,7 +72,7 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
-    @GetMapping("user/{username}")
+    @PostMapping("user/{username}")
     private ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
                                      @RequestParam(name = "page", defaultValue = "0") int page,
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
