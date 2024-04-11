@@ -14,7 +14,5 @@ public class Skill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "skill_item")
-    private String Skill;
-
-
+    private String skillItem;
 }
