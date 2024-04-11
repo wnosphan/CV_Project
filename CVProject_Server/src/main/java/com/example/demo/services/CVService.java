@@ -53,17 +53,11 @@ public class CVService implements ICvService {
 //    }
     @Override
     public Page<CvResponse> searchCv(int page, int size,String sortBy,String sortType, String username, SearchDTO SeacrhDTO) throws Exception {
-        try {
             User user = userRepository.findByUserName(username);
             if (user == null) {
                 log.error("Processing: User with username: {} not found", username);
                 throw new Exception("User not found");
             }
-        } catch (Exception e) {
-            log.error("Processing: User with username: {} not found", username);
-            throw new Exception("User not found");
-        }
-
         // Kiểm tra và set giá trị cho các trường
         if (StringUtils.isBlank(SeacrhDTO.getFullName())) SeacrhDTO.setFullName(null);
         if (CollectionUtils.isEmpty(SeacrhDTO.getSkill())) SeacrhDTO.setSkill(null);
@@ -77,7 +71,7 @@ public class CVService implements ICvService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<Cv> cvPage = cvRepository.searchCv(pageable, username, SeacrhDTO.getFullName(), SeacrhDTO.getSkill(), SeacrhDTO.getTrainingSystem(), SeacrhDTO.getDateOfBirth(), SeacrhDTO.getUniversity(), SeacrhDTO.getStatus(), SeacrhDTO.getGpa(), SeacrhDTO.getApplyPosition());
-        log.info("Processing: {} found", cvPage);
+        log.info("Processing: {} found", cvPage.map(CvResponse::fromCv));
         return cvPage.map(CvResponse::fromCv);
     }
 
@@ -89,44 +83,57 @@ public class CVService implements ICvService {
     }
 
     public Cv createCv(String username,CvDTO cvDTO) throws Exception {
-        User user = userRepository.findByUserName(username);
-        Cv newCv = Cv.builder()
-                .fullName(cvDTO.getFullName())
-                .dateOfBirth(cvDTO.getDateOfBirth())
-                .skill(cvDTO.getSkill())
-                .university(cvDTO.getUniversity())
-                .applyPosition(cvDTO.getApplyPosition())
-                .trainingSystem(cvDTO.getTrainingSystem())
-                .createdBy(user)
-                .gpa(cvDTO.getGPA())
-                .status(CvStatus.INPROGRESS)
-                .linkCV(cvDTO.getLinkCV())
-                .build();
-        cvRepository.save(newCv);
-        log.info("Processing: create CV: {}", newCv);
-        return newCv;
+        try {
+            User user = userRepository.findByUserName(username);
+            if (user != null){
+                Cv newCv = Cv.builder()
+                        .fullName(cvDTO.getFullName())
+                        .dateOfBirth(cvDTO.getDateOfBirth())
+                        .skill(cvDTO.getSkill())
+                        .university(cvDTO.getUniversity())
+                        .applyPosition(cvDTO.getApplyPosition())
+                        .trainingSystem(cvDTO.getTrainingSystem())
+                        .createdBy(user)
+                        .gpa(cvDTO.getGPA())
+                        .status(CvStatus.INPROGRESS)
+                        .linkCV(cvDTO.getLinkCV())
+                        .build();
+                cvRepository.save(newCv);
+                log.info("Processing: create CV: {}", newCv);
+                return newCv;
+            }
+            return null;
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
     }
 
     public Cv updateCv(String username,Long id, CvDTO cvDTO) throws Exception {
         Cv existingCv = getCvById(id);
-        Cv oldCv = existingCv;
         if (existingCv != null) {
             User user = userRepository.findByUserName(username);
-            existingCv.setFullName(cvDTO.getFullName());
-            existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
-            existingCv.setSkill(cvDTO.getSkill());
-            existingCv.setUniversity(cvDTO.getUniversity());
-            existingCv.setTrainingSystem(cvDTO.getTrainingSystem());
-            existingCv.setCreatedBy(user);
-            existingCv.setGpa(cvDTO.getGPA());
-            existingCv.setApplyPosition(cvDTO.getApplyPosition());
-            existingCv.setLinkCV(cvDTO.getLinkCV());
-            Cv newCv = cvRepository.save(existingCv);
-            log.info("Processing: Updated CV with id: {} from {} to {}", id, oldCv, existingCv);
-            return newCv;
+            if(user != null){
+                Cv oldCv = existingCv;
+                existingCv.setFullName(cvDTO.getFullName());
+                existingCv.setDateOfBirth(cvDTO.getDateOfBirth());
+                existingCv.setSkill(cvDTO.getSkill());
+                existingCv.setUniversity(cvDTO.getUniversity());
+                existingCv.setTrainingSystem(cvDTO.getTrainingSystem());
+                existingCv.setCreatedBy(user);
+                existingCv.setGpa(cvDTO.getGPA());
+                existingCv.setApplyPosition(cvDTO.getApplyPosition());
+                existingCv.setLinkCV(cvDTO.getLinkCV());
+                Cv newCv = cvRepository.save(existingCv);
+                log.info("Processing: Updated CV with id: {} from {} to {}", id, oldCv, existingCv);
+                return newCv;
+            }else {
+                log.error("Processing: username not found: {}", username);
+                throw new Exception("Username not found: "+username);
+            }
+        }else {
+            log.error("Processing: CV with id: {} not existing", id);
+            return null;
         }
-        log.error("Processing: CV with id: {} not existing", id);
-        return null;
     }
 
     @Override
