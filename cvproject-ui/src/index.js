@@ -7,13 +7,12 @@ import store from '~/redux/store'
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { properties } from './configs/properties';
 
 const oidcConfig = {
-  authority: properties.oidc.authority,
-  client_id: properties.oidc.clientId,
-  redirect_uri: properties.project.url,
-  client_secret: properties.oidc.clientSecret,
+  authority: process.env.REACT_APP_OIDC_AUTHORITY,
+  client_id: process.env.REACT_APP_OIDC_CLIENT_ID,
+  redirect_uri: process.env.REACT_APP_PROJECT_URL,
+  client_secret: process.env.REACT_APP_OIDC_CLIENT_SECRET,
   onSigninCallback: () => {
     window.history.replaceState(
       {},

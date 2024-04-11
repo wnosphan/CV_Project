@@ -4,7 +4,6 @@ import { Flex, Typography, Dropdown, Image } from 'antd';
 import { FaDashcube } from "react-icons/fa6";
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
-import { properties } from '~/configs/properties'
 //Navigation Menu Options
 
 function CustomHeader() {
@@ -13,7 +12,7 @@ function CustomHeader() {
     const handleLogout = () => {
         try {
             auth.removeUser();
-            auth.signoutRedirect({ post_logout_redirect_uri: properties.project.url });
+            auth.signoutRedirect({ post_logout_redirect_uri: process.env.REACT_APP_PROJECT_URL });
         } catch (error) {
             console.log(error)
         }
