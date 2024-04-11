@@ -15,7 +15,6 @@ public class UserService {
     }
     public void saveUser(UserDTO userDTO) {
         User user = new User();
-
         user.setUserName(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         if(userRepository.findByUserName(user.getUserName()) != null){
@@ -23,12 +22,5 @@ public class UserService {
             throw new IllegalArgumentException("User already exists");
         }
         log.info("Processing: User: "+user+" added successfully!");
-
-        user.setUserName(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        if(userRepository.findByUserName(user.getUserName()) != null){
-            throw new IllegalArgumentException("Processing: User already exists");
-        }
-        userRepository.save(user);
     }
 }

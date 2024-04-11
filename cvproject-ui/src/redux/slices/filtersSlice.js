@@ -1,18 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 
+
 const filtersSlice = createSlice({
     name: 'filters',
     initialState: {
-        searchText: '',
+        name: '',
         status: '',
         university: [],
         skill: [],
         position: [],
     },
     reducers: {
-        searchTextFilterChange: (state, action) => {
-            state.searchText = action.payload;
+        nameFilterChange: (state, action) => {
+            state.name = action.payload;
         },
         statusFilterChange: (state, action) => {
             state.status = action.payload;
@@ -27,7 +28,6 @@ const filtersSlice = createSlice({
             state.position = action.payload;
         },
     }
-
 });
 
 export default filtersSlice;

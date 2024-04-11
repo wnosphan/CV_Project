@@ -1,9 +1,8 @@
 import { useAuth } from "react-oidc-context"
-import { Button, Flex, Spin, Typography } from 'antd'
+import { Button, Spin, Typography } from 'antd'
 
 import { AuthApi } from "~/api";
 import handleLogError from "~/utils/HandleError";
-import { properties } from "~/configs";
 const { Title } = Typography
 
 function PrivateRoute({ children }) {
@@ -27,7 +26,7 @@ function PrivateRoute({ children }) {
                 <Title className="text-gray-500" level={2}>{auth.error.message}</Title>
                 <Button onClick={() => {
                     auth.removeUser();
-                    auth.signinRedirect({ redirect_uri: properties.project.url });
+                    auth.signinRedirect({ redirect_uri: process.env.REACT_APP_PROJECT_URL });
                 }
                 }>Login</Button>
             </div>
@@ -35,7 +34,7 @@ function PrivateRoute({ children }) {
     }
 
     if (!auth.isAuthenticated) {
-        auth.signinRedirect({ redirect_uri: properties.project.url })
+        auth.signinRedirect({ redirect_uri: process.env.REACT_APP_PROJECT_URL })
         return null
     }
     else {
@@ -44,6 +43,9 @@ function PrivateRoute({ children }) {
             email: auth.user?.profile.email
         }
         AuthApi.saveUser(user)
+        .then(response => {
+            console.log(response);
+        })
             .catch(error => handleLogError(error))
     }
 

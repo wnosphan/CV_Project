@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col, Typography, Input, Select, Tooltip, Button } from 'antd'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { filterService } from '~/utils/FilterService';
 import filtersSlice from '~/redux/slices/filtersSlice';
-import { filtersSelector } from '~/redux/selectors';
 
 
 const optionItems = [
@@ -28,51 +27,46 @@ const optionItems = [
 
 const SearchBox = () => {
     const dispatch = useDispatch();
-    const filters = useSelector(filtersSelector);
     const [searchText, setSearchText] = useState('');
     const [status, setStatus] = useState('');
-    const [filterData, setFilterData] = useState({
-        university: [],
-        skill: [],
-        position: [],
-    });
+    // const [filterData, setFilterData] = useState({
+    //     university: [],
+    //     skill: [],
+    //     position: [],
+    // });
 
     useEffect(() => {
-        setFilterData(prev => {
-            return {
-                ...prev,
-                university: filterService.getUniversityFilter(),
-                skill: filterService.getSkillFilter(),
-                position: filterService.getPositionFilter(),
-            }
-        })
-    }, []);
+        // setFilterData(prev => {
+        //     return {
+        //         ...prev,
+        //         university: filterService.getUniversityFilter(),
+        //         skill: filterService.getSkillFilter(),
+        //         position: filterService.getPositionFilter(),
+        //     }
+        // })
+        dispatch(filtersSlice.actions.nameFilterChange(searchText));
+        dispatch(filtersSlice.actions.statusFilterChange(status));
+    }, [searchText, status, dispatch]);
 
-    console.group('Filter item');
-    console.log(searchText);
-    console.log(filters);
-    console.groupEnd();
 
     const handleSearchTextChange = (e) => {
         setSearchText(e.target.value);
-        dispatch(filtersSlice.actions.searchTextFilterChange(e.target.value));
     }
 
     const handleStatusChange = (value) => {
-
-        dispatch(filtersSlice.actions.statusFilterChange(value));
-    };
-
-    const handleUniversityChange = (value) => {
-        dispatch(filtersSlice.actions.universityFilterChange(value));
+        setStatus(value);
     }
 
-    const handleSkillChange = (value) => {
-        dispatch(filtersSlice.actions.skillFilterChange(value));
-    }
-    const handlePositionChange = (value) => {
-        dispatch(filtersSlice.actions.positionFilterChange(value));
-    }
+    // const handleUniversityChange = (value) => {
+    //     dispatch(filtersSlice.actions.universityFilterChange(value));
+    // }
+
+    // const handleSkillChange = (value) => {
+    //     dispatch(filtersSlice.actions.skillFilterChange(value));
+    // }
+    // const handlePositionChange = (value) => {
+    //     dispatch(filtersSlice.actions.positionFilterChange(value));
+    // }
 
     const onClearFilter = () => {
         setSearchText('');
@@ -110,7 +104,7 @@ const SearchBox = () => {
                         value={status}
                         onChange={handleStatusChange} />
                 </Col>
-                <Col sm={24}>
+                {/* <Col sm={24}>
                     <Typography.Paragraph
                         style={{ fontWeight: 'bold', marginBottom: 5, marginTop: 10 }}
                     >
@@ -186,7 +180,7 @@ const SearchBox = () => {
                             return <Select.Option key={key} value={item.value}>{item.label}</Select.Option>
                         })}
                     </Select>
-                </Col>
+                </Col> */}
                 <Col sm={24} className='text-center mt-4'>
                     <Button size='large' onClick={onClearFilter}>Clear filter</Button>
                 </Col>

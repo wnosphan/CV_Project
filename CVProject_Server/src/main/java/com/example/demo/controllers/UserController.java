@@ -26,10 +26,10 @@ public class UserController {
         try {
             userService.saveUser(userDTO);
             log.info("Response data: User created");
-            return ResponseEntity.status(HttpStatus.OK).body("User created");
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created");
         } catch (Exception e) {
             log.error("Response data: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.CREATED).body("User already exists");
+            return ResponseEntity.status(HttpStatus.OK).body("User already exists");
         }
 
     }
