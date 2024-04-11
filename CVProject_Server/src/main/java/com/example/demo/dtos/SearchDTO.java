@@ -37,6 +37,4 @@ public class SearchDTO {
     private List<String> applyPosition;
 
     private String status;
-
-
 }
