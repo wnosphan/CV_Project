@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dtos.CvDTO;
-import com.example.demo.dtos.CvStatusDTO;
 import com.example.demo.dtos.ListCvIdDTO;
 import com.example.demo.dtos.SearchDTO;
 import com.example.demo.models.Cv;
@@ -9,7 +8,6 @@ import com.example.demo.responses.CvListResponse;
 import com.example.demo.responses.CvResponse;
 import com.example.demo.services.GetListService;
 import com.example.demo.services.ICvService;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,10 +21,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -49,7 +45,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @PostMapping("{username}")
-    private ResponseEntity<?> postCV(@PathVariable("username") String username,@Valid @RequestBody CvDTO cvDTO, BindingResult result) {
+    public ResponseEntity<?> postCV(@PathVariable("username") String username, @Valid @RequestBody CvDTO cvDTO, BindingResult result) {
         try {
             log.info("POST method data: {}", cvDTO);
             if (result.hasErrors()) {
@@ -72,8 +68,9 @@ public class CvController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "401", description = "User not found")
     })
+
     @PostMapping("user/{username}")
-    private ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
+    public ResponseEntity<?> getAll(@PathVariable(name = "username") String username,
                                      @RequestParam(name = "page", defaultValue = "0") int page,
                                      @RequestParam(name = "limit", defaultValue = "5") int limit,
                                      @RequestParam(name = "sort_type", defaultValue = "ASC") String sortType,
@@ -99,7 +96,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @GetMapping("/{id}")
-    private ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
+    public ResponseEntity<?> getCvById(@Valid @PathVariable("id") Long id) {
         try {
             log.info("GET method data: {}", id);
             Cv cv = cvService.getCvById(id);
@@ -118,7 +115,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @PutMapping("{username}/{id}")
-    private ResponseEntity<?> updateCv(@PathVariable("username") String username,@PathVariable("id") long id, @Valid @RequestBody CvDTO cvDTO) {
+    public ResponseEntity<?> updateCv(@PathVariable("username") String username,@PathVariable("id") long id, @Valid @RequestBody CvDTO cvDTO) {
         try {
             log.info("PUT method data: ID: {}, {}", id, cvDTO);
             Cv updateCv = cvService.updateCv(username,id, cvDTO);
@@ -142,7 +139,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @PatchMapping("/status")
-    private ResponseEntity<?> updateCvStatus(@RequestBody ListCvIdDTO ids) {
+    public ResponseEntity<?> updateCvStatus(@RequestBody ListCvIdDTO ids) {
         try {
             log.info("Patch method data: {}", ids);
             cvService.updateCvStatus(ids);
@@ -161,7 +158,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @DeleteMapping("/{id}")
-    private ResponseEntity<?> deleteCv(@PathVariable long id) {
+    public ResponseEntity<?> deleteCv(@PathVariable long id) {
         try {
             log.info("Delete method data: ID: {}", id);
             cvService.deleteCv(id);
@@ -180,7 +177,7 @@ public class CvController {
             @ApiResponse(responseCode = "401", description = "User not found")
     })
     @DeleteMapping("")
-    private ResponseEntity<?> deleteCvs(@Valid @RequestBody ListCvIdDTO ids) {
+    public ResponseEntity<?> deleteCvs(@Valid @RequestBody ListCvIdDTO ids) {
         try {
             log.info("Delete method data: {}", ids);
             cvService.deleteCvs(ids);
@@ -193,27 +190,27 @@ public class CvController {
     }
 
     @PostMapping("/upload")
-    private ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file,
                                        @RequestHeader("username") String username) throws IllegalAccessException {
         try {
             log.info("Request data: {}, {}", file, username);
             cvService.saveCv(file, username);
             return ResponseEntity.ok().build();
         }catch (Exception e){
-            log.error("Processing: {}", e.getMessage());
+            log.error(PROCESS, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @GetMapping("/list/skill")
-    public ResponseEntity<?> getListSkill(){
+    public ResponseEntity<List<String>> getListSkill(){
         return ResponseEntity.ok(getListService.getListSkill());
     }
     @GetMapping("/list/apply-position")
-    public ResponseEntity<?> getListApplyPosition(){
+    public ResponseEntity<List<String>> getListApplyPosition(){
         return ResponseEntity.ok(getListService.getListApplyPosition());
     }
     @GetMapping("/list/university")
-    public ResponseEntity<?> getListUniversity(){
+    public ResponseEntity<List<String>> getListUniversity(){
         return ResponseEntity.ok(getListService.getListUniversity());
     }
 }

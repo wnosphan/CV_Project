@@ -1,14 +1,10 @@
 package com.example.demo.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @Builder
@@ -32,8 +28,8 @@ public class CvDTO {
     @JsonProperty("training_system")
     private String trainingSystem;
 
-
-    private String GPA;
+    @JsonProperty("gpa")
+    private String gpa;
 
     @JsonProperty("apply_position")
     private String applyPosition;

@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -31,46 +30,26 @@ public class CVService implements ICvService {
     private final CvRepository cvRepository;
     private final UserRepository userRepository;
 
-//    public Page<CvResponse> getAllCv(int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-//        Page<Cv> cvPage = cvRepository.findAll(pageable);
-//        log.info("Lấy thành công danh sách Cv");
-//        return cvPage.map(CvResponse::fromCv);
-//
-//    }
-
-    //    @Override
-//    public Page<CvResponse> getListCv(int page, int size, String userName) throws Exception {
-//        User existingUser = userRepository.findByUserName(userName);
-//        if(existingUser != null){
-//            Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-//            Page<Cv> cvPage = cvRepository.searchCv(pageable, existingUser.getUserName());
-//            log.info("Lấy thành công danh sách Cv");
-//            return cvPage.map(CvResponse::fromCv);
-//        }
-//        log.error("User "+userName+" not found!!!");
-//        return null;
-//    }
     @Override
-    public Page<CvResponse> searchCv(int page, int size,String sortBy,String sortType, String username, SearchDTO SeacrhDTO) throws Exception {
-            User user = userRepository.findByUserName(username);
+    public Page<CvResponse> searchCv(int page, int size,String sortBy,String sortType, String userName, SearchDTO seacrhDTO) throws Exception {
+            User user = userRepository.findByUserName(userName);
             if (user == null) {
-                log.error("Processing: User with username: {} not found", username);
-                throw new Exception("User not found");
+                log.error("Processing: User with username: {} not found", userName);
+                throw new IllegalArgumentException("User not found");
             }
         // Kiểm tra và set giá trị cho các trường
-        if (StringUtils.isBlank(SeacrhDTO.getFullName())) SeacrhDTO.setFullName(null);
-        if (CollectionUtils.isEmpty(SeacrhDTO.getSkill())) SeacrhDTO.setSkill(null);
-        if (CollectionUtils.isEmpty(SeacrhDTO.getUniversity())) SeacrhDTO.setUniversity(null);
-        if (CollectionUtils.isEmpty(SeacrhDTO.getTrainingSystem())) SeacrhDTO.setTrainingSystem(null);
-        if (StringUtils.isBlank(SeacrhDTO.getGpa())) SeacrhDTO.setGpa(null);
-        if (CollectionUtils.isEmpty(SeacrhDTO.getApplyPosition())) SeacrhDTO.setApplyPosition(null);
-        if (StringUtils.isBlank(SeacrhDTO.getStatus())) SeacrhDTO.setStatus(null);
+        if (StringUtils.isBlank(seacrhDTO.getFullName())) seacrhDTO.setFullName(null);
+        if (CollectionUtils.isEmpty(seacrhDTO.getSkill())) seacrhDTO.setSkill(null);
+        if (CollectionUtils.isEmpty(seacrhDTO.getUniversity())) seacrhDTO.setUniversity(null);
+        if (CollectionUtils.isEmpty(seacrhDTO.getTrainingSystem())) seacrhDTO.setTrainingSystem(null);
+        if (StringUtils.isBlank(seacrhDTO.getGpa())) seacrhDTO.setGpa(null);
+        if (CollectionUtils.isEmpty(seacrhDTO.getApplyPosition())) seacrhDTO.setApplyPosition(null);
+        if (StringUtils.isBlank(seacrhDTO.getStatus())) seacrhDTO.setStatus(null);
 
         Sort.Direction direction = Sort.Direction.fromString(sortType);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<Cv> cvPage = cvRepository.searchCv(pageable, username, SeacrhDTO.getFullName(), SeacrhDTO.getSkill(), SeacrhDTO.getTrainingSystem(), SeacrhDTO.getDateOfBirth(), SeacrhDTO.getUniversity(), SeacrhDTO.getStatus(), SeacrhDTO.getGpa(), SeacrhDTO.getApplyPosition());
+        Page<Cv> cvPage = cvRepository.searchCv(pageable, userName, seacrhDTO.getFullName(), seacrhDTO.getSkill(), seacrhDTO.getTrainingSystem(), seacrhDTO.getDateOfBirth(), seacrhDTO.getUniversity(), seacrhDTO.getStatus(), seacrhDTO.getGpa(), seacrhDTO.getApplyPosition());
         log.info("Processing: {} found", cvPage.map(CvResponse::fromCv));
         return cvPage.map(CvResponse::fromCv);
     }
@@ -94,7 +73,7 @@ public class CVService implements ICvService {
                         .applyPosition(cvDTO.getApplyPosition())
                         .trainingSystem(cvDTO.getTrainingSystem())
                         .createdBy(user)
-                        .gpa(cvDTO.getGPA())
+                        .gpa(cvDTO.getGpa())
                         .status(CvStatus.INPROGRESS)
                         .linkCV(cvDTO.getLinkCV())
                         .build();
@@ -104,7 +83,7 @@ public class CVService implements ICvService {
             }
             return null;
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
@@ -120,7 +99,7 @@ public class CVService implements ICvService {
                 existingCv.setUniversity(cvDTO.getUniversity());
                 existingCv.setTrainingSystem(cvDTO.getTrainingSystem());
                 existingCv.setCreatedBy(user);
-                existingCv.setGpa(cvDTO.getGPA());
+                existingCv.setGpa(cvDTO.getGpa());
                 existingCv.setApplyPosition(cvDTO.getApplyPosition());
                 existingCv.setLinkCV(cvDTO.getLinkCV());
                 Cv newCv = cvRepository.save(existingCv);
@@ -128,7 +107,7 @@ public class CVService implements ICvService {
                 return newCv;
             }else {
                 log.error("Processing: username not found: {}", username);
-                throw new Exception("Username not found: "+username);
+                throw new IllegalArgumentException("Username not found: "+username);
             }
         }else {
             log.error("Processing: CV with id: {} not existing", id);
@@ -153,7 +132,7 @@ public class CVService implements ICvService {
                     log.info("Processing: update Cv status with Id: {} into {}", id, CvStatus.NOTPASS);
                 } else {
                     log.error("Processing: status value {} of Cv Id: {} is invalid", id.getStatus(), cvId);
-                    throw new Exception("Status value is invalid");
+                    throw new IllegalArgumentException("Status value is invalid");
                 }
             } else {
                 log.error("Processing: Cv with Id: {} not found", cvId);
@@ -161,34 +140,7 @@ public class CVService implements ICvService {
         }
 
     }
-
-//    @Override
-//    public void updateListCvStatus(List<CvStatusDTO> list) throws Exception {
-//        for (CvStatusDTO cvStatusDTO : list) {
-//            Long cvId = cvStatusDTO.getId();
-//            String newStatus = cvStatusDTO.getStatus();
-//
-//            Optional<Cv> cvOptional = cvRepository.findById(cvId);
-//            if (cvOptional.isPresent()) {
-//                Cv cv = cvOptional.get();
-//                if (newStatus.equals("pass")) {
-//                    cv.setStatus(CvStatus.PASS);
-//                    cvRepository.save(cv);
-//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành PASS");
-//                } else if (newStatus.equals("not_pass")) {
-//                    cv.setStatus(CvStatus.NOTPASS);
-//                    cvRepository.save(cv);
-//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " thành NOTPASS");
-//                } else {
-//                    System.err.println("Invalid status: " + newStatus + " for CV ID: " + cvId);
-//                    log.info("Đã cập nhật trạng thái Cv có ID: " + cvId + " không thành công, trạng thái không hợp lệ");
-//                }
-//            } else {
-//                System.err.println("CV not found with ID: " + cvId);
-//            }
-//        }
-//    }
-
+    
     @Override
     public void deleteCv(Long id) throws Exception {
         Cv cv = getCvById(id);
@@ -218,15 +170,11 @@ public class CVService implements ICvService {
                 if (user == null) {
                     throw new IllegalAccessException("User with username " + username + " not found!");
                 }
-
-                long id = user.getId();
-
                 // Set createdBy field for each Cv
                 for (Cv cv : cvList) {
                     cv.setCreatedBy(user);
                     cv.setStatus(CvStatus.INPROGRESS);
                 }
-
                 cvRepository.saveAll(cvList);
                 log.info("Import CV successfully!");
             } catch (IOException e) {

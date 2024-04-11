@@ -1,10 +1,7 @@
 package com.example.demo.dtos;
 
-import com.example.demo.models.CvStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-
-import java.util.ArrayList;
 
 @Data
 @Builder
