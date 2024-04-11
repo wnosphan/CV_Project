@@ -1,19 +1,19 @@
 //Notification
 export const NOTIFICATION = {
     DELETE: {
-        SUCCESS: 'Xóa thành công',
+        SUCCESS: 'Delete successfully',
         ERROR: 'Delete failed'
     },
     CREATE: {
-        SUCCESS: 'Tạo thành công',
+        SUCCESS: 'Create successfully',
         ERROR: 'Create failed'
     },
     UPDATE: {
-        SUCCESS: 'Cập nhật thành công',
+        SUCCESS: 'Update successfully',
         ERROR: 'Update failed'
     },
     UPLOAD: {
-        SUCCESS: 'Tải lên thành công',
+        SUCCESS: 'Upload successfully',
         ERROR: 'Upload failed'
     }
 };
