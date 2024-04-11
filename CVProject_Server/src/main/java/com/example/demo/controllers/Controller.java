@@ -15,18 +15,17 @@ public class Controller {
 
     @PostMapping("/verify-token")
     private ResponseEntity<?> verifyToken(
-
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception {
-        log.info("Request dataa: Token: "+token);
+        log.info("Request data: Token: "+token);
         if (token.isEmpty()){
-            log.error("Token missing");
+            log.error("Response data: Token missing");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token missing");
         }else if (!token.startsWith("Bearer ")){
-            log.error("Format error");
+            log.error("Response data: Format error");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Format error");
         }
         String realToken = token.substring(7);
-        if (keycloakService.introspectToken(realToken)) {
+        if (Boolean.TRUE.equals(keycloakService.introspectToken(realToken))) {
             log.info("Response data: True");
             return ResponseEntity.status(HttpStatus.OK).body("True");
         }

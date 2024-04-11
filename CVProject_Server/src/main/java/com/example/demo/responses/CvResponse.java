@@ -3,10 +3,7 @@ package com.example.demo.responses;
 import com.example.demo.models.Cv;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -33,7 +30,7 @@ public class CvResponse {
     private String status;
 
     public static CvResponse fromCv(Cv cv){
-        CvResponse cvResponse = CvResponse.builder()
+        return CvResponse.builder()
                 .id(cv.getId())
                 .fullName(cv.getFullName())
                 .dateOfBirth(cv.getDateOfBirth())
@@ -46,6 +43,5 @@ public class CvResponse {
                 .linkCv(cv.getLinkCV())
                 .status(cv.getStatus())
                 .build();
-        return cvResponse;
     }
 }

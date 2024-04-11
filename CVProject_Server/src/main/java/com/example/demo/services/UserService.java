@@ -18,9 +18,9 @@ public class UserService {
         user.setUserName(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         if(userRepository.findByUserName(user.getUserName()) != null){
-            throw new RuntimeException("User already exists");
+            log.warn("Processing: User already exists");
+            throw new IllegalArgumentException("User already exists");
         }
-        log.info("User created: " + user);
-        userRepository.save(user);
+        log.info("Processing: User: "+user+" added successfully!");
     }
 }
