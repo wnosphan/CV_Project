@@ -15,20 +15,12 @@ public class UserService {
     }
     public void saveUser(UserDTO userDTO) {
         User user = new User();
-
-        user.setUserName(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        if(userRepository.findByUserName(user.getUserName()) != null){
-            log.warn("User already exists");
-            throw new RuntimeException("User already exists");
-        }
-        log.info("User: "+user+" added successfully!");
-
         user.setUserName(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         if(userRepository.findByUserName(user.getUserName()) != null){
             throw new RuntimeException("User already exists");
         }
+        log.info("User created: " + user);
         userRepository.save(user);
     }
 }

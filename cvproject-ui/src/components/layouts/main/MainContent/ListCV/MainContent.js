@@ -28,7 +28,6 @@ const MainContent = () => {
     const dispatch = useDispatch();
     const cvList = useSelector(cvListSelector);
     const filters = useSelector(filtersSelector);
-    const { data, loading, totalPage, pageSize } = cvList;
     const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -50,15 +49,14 @@ const MainContent = () => {
     };
 
     const handleCV = useCallback((page) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, pageSize, filters));
+        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
     }, []);
 
     useEffect(() => {
         handleCV(currentPage);
     }, [handleCV, currentPage, filters]);
-
-    console.log('tableData', data);
-
+    console.log('filters', filters);
+    console.log('tableData', cvList.data);
 
     const handleTableChange = (page) => {
         setCurrentPage(page);
@@ -170,17 +168,17 @@ const MainContent = () => {
                         </Flex>
                     </Card>
                     <CVTable
-                        dataSource={data}
+                        dataSource={cvList.data}
                         rowSelection={rowSelection}
                         onDelete={onDelete}
                         pagination={{
                             ...paginationProps,
-                            total: totalPage * pageSize,
+                            total: cvList.totalPage * cvList.pageSize,
                             current: currentPage,
-                            pageSize: pageSize,
+                            pageSize: cvList.pageSize,
                             onChange: handleTableChange,
                         }}
-                        loading={loading}
+                        loading={cvList.loading}
                         editProps={editProps}
                     />
                 </Flex>

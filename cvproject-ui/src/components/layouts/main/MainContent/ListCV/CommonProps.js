@@ -1,7 +1,7 @@
 export const modalDeleteProps = {
-    title: 'Mày có chắc là muốn xóa?',
-    okText: 'Xóa',
-    cancelText: 'Hủy',
+    title: 'Are you sure ?',
+    okText: 'Del',
+    cancelText: 'Cancel',
     okType: 'danger',
     maskClosable: true,
     mask: true,
@@ -13,7 +13,7 @@ export const modalDeleteProps = {
 }
 
 export const modalUploadProps = {
-    title: 'Tải lên CV',
+    title: 'Upload CV',
     okText: 'Ok',
     cancelText: 'Cancel',
     okType: 'primary',
@@ -26,7 +26,7 @@ export const modalUploadProps = {
 }
 
 export const modalApplyProps = {
-    title: 'Thay đổi trạng thái CV',
+    title: 'Change CV status',
     okText: 'Ok',
     cancelText: 'Cancel',
     okType: 'primary',
