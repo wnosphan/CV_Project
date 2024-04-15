@@ -28,7 +28,6 @@ function getCV(username, page, limit, filters) {
                 return status < 500
             }
         }).then((response) => {
-            console.log(filters);
             setTimeout(() => {
                 dispatch(cvListSlice.actions.fetchDataSuccess(response.data));
             }, 200);

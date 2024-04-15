@@ -6,23 +6,25 @@ import { useAuth } from 'react-oidc-context';
 import { useSelector, useDispatch } from 'react-redux';
 
 
+import Home from '~/components/layouts/main/MainLayout/Home';
 import CVTable from './CVTable';
+import SearchBox from '../Filters/SearchBox';
+import useNotification from '~/hooks/useNotification';
 import handleLogError from '~/utils/HandleError';
 import { myCVListApi } from '~/api';
 import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
-import useNotification from '~/hooks/useNotification';
 import { cvListSelector, filtersSelector } from '~/redux/selectors';
-import Home from '~/components/layouts/main/MainLayout/Home';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
-import SearchBox from '../Filters/SearchBox';
 
 const paginationProps = {
     // simple: true,
     showQuickJumper: true,
     showSizeChanger: false,
-    position: ['bottomCenter'],
+    // position: ['bottomCenter'],
 }
+
+
 
 const MainContent = () => {
     const auth = useAuth();
@@ -49,14 +51,30 @@ const MainContent = () => {
         ],
     };
 
+    // const handleResize = () => {
+    //     const bottom = document.querySelector('.pagination').getBoundingClientRect().bottom;
+    //     const offsetHeight = document.querySelector('.pagination').offsetHeight;
+    //     const winHeight = window.innerHeight;
+    //     const pageSizeChanger = (
+    //         (bottom < winHeight) ? Math.floor((winHeight - bottom + offsetHeight) / 50) : 10
+    //     )
+    //     setPageSize(pageSizeChanger);
+    // };
+    // window.addEventListener('resize', handleResize);
+    // handleResize();
+    // return () => {
+    //     window.removeEventListener('resize', handleResize);
+    // };
+
+
     const handleCV = useCallback((page, filters) => {
         dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
-    }, []);
+    }, [dispatch, auth.user?.profile.preferred_username]);
 
     useEffect(() => {
         handleCV(currentPage, filters);
     }, [handleCV, currentPage, filters]);
-
+    
     console.log('filters', filters);
     console.log('tableData', cvList.data);
 

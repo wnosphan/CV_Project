@@ -1,7 +1,6 @@
 import React, { useState, memo } from 'react'
-import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip } from 'antd'
+import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip, Pagination } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
-import moment from 'moment';
 import dayjs from 'dayjs';
 
 import EditableCell from '../EditCV/EditableCell';
@@ -22,6 +21,9 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     const [isOpenDrawer, setOpenDrawer] = useState(false);
     const [info, setInfo] = useState({});
 
+    
+
+
     const showDrawer = async (key) => {
         setOpenDrawer(true);
         await myCVListApi.getCvById(key)
@@ -37,7 +39,6 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
         setOpenDrawer(false);
         setInfo({});
     }
-
 
     // Columns and data
     const columns = [
@@ -265,9 +266,10 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                             x: 1600,
                             y: 420
                         }}
-                        pagination={pagination}
+                        pagination={false}
                         loading={loading}
                     />
+                    <Flex className='mt-4 pagination' justify='center'><Pagination {...pagination} /></Flex>
                 </Form>
             </Card>
 
@@ -286,7 +288,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         <DescriptionItem title="Full Name" content={info.fullName} />
                     </Col>
                     <Col span={12}>
-                        <DescriptionItem title="Birthday" content={moment(info.dateOfBirth).format('DD-MM-YYYY')} />
+                        <DescriptionItem title="Birthday" content={dayjs(info.dateOfBirth).format('DD-MM-YYYY')} />
                     </Col>
                 </Row>
                 <Row>
