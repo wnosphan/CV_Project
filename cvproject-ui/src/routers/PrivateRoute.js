@@ -1,8 +1,8 @@
-import { useAuth } from "react-oidc-context"
+import { useAuth } from 'react-oidc-context'
 import { Button, Spin, Typography } from 'antd'
 
-import { AuthApi } from "~/api";
-import handleLogError from "~/utils/HandleError";
+import { AuthApi } from '~/api';
+import handleLogError from '~/utils/HandleError';
 const { Title } = Typography
 
 function PrivateRoute({ children }) {

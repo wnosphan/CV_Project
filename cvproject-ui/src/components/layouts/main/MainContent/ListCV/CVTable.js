@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react'
-import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip, Pagination } from 'antd'
+import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs';
 
@@ -135,7 +135,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             render(status) {
                 let color;
                 switch (status) {
-                    case "PASS":
+                    case 'PASS':
                         color = 'green';
                         break;
                     case 'NOTPASS':

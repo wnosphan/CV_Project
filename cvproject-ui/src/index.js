@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider } from 'react-oidc-context';
 import { Provider } from 'react-redux'
 
 import store from '~/redux/store'
