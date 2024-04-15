@@ -96,7 +96,7 @@ const SearchBox = () => {
                     >
                         Filter By Status
                     </Typography.Paragraph>
-                    <Select style={{ width: "100%" }}
+                    <Select style={{ width: '100%' }}
                         defaultValue={status}
                         options={statusItems}
                         value={status}
