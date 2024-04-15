@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import { myCVListApi } from '~/api'
-import handleLogError from './HandleError'
+import handleLogError from '../../../../../utils/HandleError'
 
 const getUniversityFilter = () => {
     const university = [];
@@ -20,13 +22,13 @@ const getUniversityFilter = () => {
 
 
 const getSkillFilter = () => {
-    const skill = [];
+    const skill = [{ value: '', label: 'All' }];
     myCVListApi.getSkill()
         .then(response => {
             response.data.forEach((item) => {
                 skill.push({
-                    label: item,
-                    value: item
+                    value: item,
+                    label: item
 
                 })
             })
@@ -40,7 +42,6 @@ const getSkillFilter = () => {
 
 const getPositionFilter = () => {
     const pos = [];
-
     myCVListApi.getPosition()
         .then(response => {
             response.data.forEach((item) => {
@@ -63,3 +64,23 @@ export const filterService = {
     getSkillFilter,
     getPositionFilter,
 }
+
+const useFilterData = () => {
+    const [filterData, setFilterData] = useState({
+        university: [],
+        skill: [],
+        position: [],
+    });
+
+    useEffect(() => {
+        setFilterData({
+            university: getUniversityFilter(),
+            skill: getSkillFilter(),
+            position: getPositionFilter(),
+        });
+    }, []);
+
+    return filterData;
+};
+
+export default useFilterData;
