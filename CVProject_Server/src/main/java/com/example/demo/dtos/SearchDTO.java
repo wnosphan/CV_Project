@@ -17,12 +17,12 @@ public class SearchDTO {
     @JsonProperty("date_of_birth")
     private LocalDate dateOfBirth;
 
-    private List<String> skill;
+    private String skill;
 
     private List<String> university;
 
     @JsonProperty("training_system")
-    private List<String> trainingSystem;
+    private String trainingSystem;
 
 
     private String gpa;

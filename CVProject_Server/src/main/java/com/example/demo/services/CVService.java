@@ -13,13 +13,12 @@ import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,17 +38,16 @@ public class CVService implements ICvService {
             }
         // Kiểm tra và set giá trị cho các trường
         if (StringUtils.isBlank(seacrhDTO.getFullName())) seacrhDTO.setFullName(null);
-        if (CollectionUtils.isEmpty(seacrhDTO.getSkill())) seacrhDTO.setSkill(null);
+        if (StringUtils.isBlank(seacrhDTO.getSkill())) seacrhDTO.setSkill(null);
         if (CollectionUtils.isEmpty(seacrhDTO.getUniversity())) seacrhDTO.setUniversity(null);
-        if (CollectionUtils.isEmpty(seacrhDTO.getTrainingSystem())) seacrhDTO.setTrainingSystem(null);
+        if (StringUtils.isEmpty(seacrhDTO.getTrainingSystem())) seacrhDTO.setTrainingSystem(null);
         if (StringUtils.isBlank(seacrhDTO.getGpa())) seacrhDTO.setGpa(null);
         if (CollectionUtils.isEmpty(seacrhDTO.getApplyPosition())) seacrhDTO.setApplyPosition(null);
         if (StringUtils.isBlank(seacrhDTO.getStatus())) seacrhDTO.setStatus(null);
 
         Sort.Direction direction = Sort.Direction.fromString(sortType);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<Cv> cvPage = cvRepository.searchCv(pageable, userName, seacrhDTO.getFullName(), seacrhDTO.getSkill(), seacrhDTO.getTrainingSystem(), seacrhDTO.getDateOfBirth(), seacrhDTO.getUniversity(), seacrhDTO.getStatus(), seacrhDTO.getGpa(), seacrhDTO.getApplyPosition());
+        Page<Cv> cvPage = cvRepository.searchCv(pageable, userName, seacrhDTO.getFullName(), seacrhDTO.getSkill(), seacrhDTO.getStatus(), seacrhDTO.getDateOfBirth(), seacrhDTO.getUniversity(), seacrhDTO.getTrainingSystem(), seacrhDTO.getGpa(), seacrhDTO.getApplyPosition());
         log.info("Processing: {} found", cvPage.map(CvResponse::fromCv));
         return cvPage.map(CvResponse::fromCv);
     }
