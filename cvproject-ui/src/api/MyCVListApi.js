@@ -22,7 +22,7 @@ function getCV(username, page, limit, filters) {
         dispatch(cvListSlice.actions.fetchDataBegin());
         return instance.post(`/api/cv/user/${username}?page=${page}&limit=${limit}`, filters, {
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             validateStatus: (status) => {
                 return status < 500
@@ -48,7 +48,7 @@ function getCvById(id) {
 function updateCV(username, id, data) {
     return instance.put(`/api/cv/${username}/${id}`, data, {
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
         },
         validateStatus: (status) => {
             return status < 500
@@ -59,7 +59,7 @@ function updateCV(username, id, data) {
 function createCV(username, post) {
     return instance.post(`/api/cv/${username}`, post, {
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
         }
     })
 }
@@ -69,7 +69,7 @@ function deleteCV(id) {
 }
 
 function deleteCVs(ids) {
-    return instance.delete(`/api/cv`, {
+    return instance.delete('/api/cv', {
         data: {
             ids: ids
         },
@@ -87,7 +87,7 @@ function deleteCVs(ids) {
 function fileUpload(username, file) {
     return instance.post('api/cv/upload', file, {
         headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
             'username': username
         },
         validateStatus: (status) => {
@@ -97,9 +97,9 @@ function fileUpload(username, file) {
 }
 
 function updateMultipleStatus(ids) {
-    return instance.patch(`/api/cv/status`, ids, {
+    return instance.patch('/api/cv/status', ids, {
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
         },
         validateStatus: (status) => {
             return status < 500

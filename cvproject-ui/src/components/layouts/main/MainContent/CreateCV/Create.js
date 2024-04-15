@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { Form, Input, Layout, Button, Space, DatePicker, notification } from 'antd'
-import { SaveOutlined } from "@ant-design/icons"
+import { SaveOutlined } from '@ant-design/icons'
 import { useNavigate, Link } from 'react-router-dom'
 
 import { myCVListApi } from '~/api';
@@ -17,14 +17,14 @@ function Create() {
     const auth = useAuth();
     const [api, contextHolder] = notification.useNotification();
     const [post, setPost] = useState({
-        full_name: "",
-        date_of_birth: "",
-        skill: "",
-        university: "",
-        training_system: "",
-        gpa: "",
-        apply_position: "",
-        link_cv: "",
+        full_name: '',
+        date_of_birth: '',
+        skill: '',
+        university: '',
+        training_system: '',
+        gpa: '',
+        apply_position: '',
+        link_cv: '',
     },)
 
     const handleInput = (event) => {
@@ -48,7 +48,7 @@ function Create() {
                     message: NOTIFICATION.CREATE.SUCCESS,
                     duration: 2,
                 });
-                navigate("/");
+                navigate('/');
             }
         } catch (errorInfo) {
             console.log('Validation Failed:', errorInfo);
@@ -63,9 +63,9 @@ function Create() {
 
     const contentStyle = {
         textAlign: 'center',
-        margin: "auto",
-        marginLeft: "120px",
-        padding: " 30px",
+        margin: 'auto',
+        marginLeft: '120px',
+        padding: ' 30px',
     }
 
     const h1Style = {
@@ -85,7 +85,7 @@ function Create() {
                     >
                         <div className='mb-6'><h1 style={h1Style}>Create a New CV</h1></div>
                         <Form.Item name="Full Name" label="Full Name"
-                            rules={[{ required: true, message: "Please Enter Candidate's Full Name" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s Full Name' },
                             { whitespace: true },
                             { min: 2, max: 200 },
                             ]}
@@ -95,7 +95,7 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="Apply position" label="Apply position"
-                            rules={[{ required: true, message: "Please Enter Candidate's Position" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s Position' },
                             { whitespace: true },
                             { min: 1 },
                             ]}
@@ -105,7 +105,7 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="Skills" label="Skills"
-                            rules={[{ required: true, message: "Please Enter Candidate's Skills" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s Skills' },
                             { whitespace: true },
                             ]}
                             hasFeedback
@@ -114,17 +114,17 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="Date of Births" label="Date of Birth"
-                            rules={[{ required: true, message: "Please Provide Candidate's Birthday" },
+                            rules={[{ required: true, message: 'Please Provide Candidate\'s Birthday' },
                             ]}
                             hasFeedback
                         >
-                            <DatePicker name="date_of_birth" type='date' onClick={handleInput} style={{ width: "100%" }} placeholder='Chose date of birth'
+                            <DatePicker name="date_of_birth" type='date' onClick={handleInput} style={{ width: '100%' }} placeholder='Chose date of birth'
                                 value={post.date_of_birth}
                                 onChange={handleDateChange} />
                         </Form.Item>
 
                         <Form.Item name="University" label="University"
-                            rules={[{ required: true, message: "Please Enter Candidate's University" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s University' },
                             { whitespace: true },
                             ]}
                             hasFeedback
@@ -133,7 +133,7 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="GPA" label="GPA"
-                            rules={[{ required: true, message: "Please Enter Candidate's GPA" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s GPA' },
                             { whitespace: true },
                             { pattern: /^(4|3|2|1)(\.\d+)?$/, message: 'GPA is a decimal number and must be between 1 and 4' },
                             ]}
@@ -143,7 +143,7 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="TrainingSystem" label="TrainingSystem"
-                            rules={[{ required: true, message: "Please Enter Candidate's Training system" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s Training system' },
                             { whitespace: true },
                             ]}
                             hasFeedback
@@ -152,7 +152,7 @@ function Create() {
                         </Form.Item>
 
                         <Form.Item name="Upload" label="Upload"
-                            rules={[{ required: true, message: "Please Enter Candidate's CV link" },
+                            rules={[{ required: true, message: 'Please Enter Candidate\'s CV link' },
                             { whitespace: true },
                             ]}
                             hasFeedback

@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
-import { useAuth } from "react-oidc-context"
-import { Flex, Typography, Dropdown, Image } from 'antd';
-import { FaDashcube } from "react-icons/fa6";
+import { useAuth } from 'react-oidc-context'
+import { Flex, Typography, Dropdown } from 'antd';
+import { FaDashcube } from 'react-icons/fa6';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
 //Navigation Menu Options

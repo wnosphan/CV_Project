@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 export const modalDeleteProps = {
     title: 'Are you sure ?',
     okText: 'Del',

@@ -69,7 +69,7 @@ const MainContent = () => {
 
     const handleCV = useCallback((page, filters) => {
         dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
-    }, [dispatch, auth.user?.profile.preferred_username]);
+    }, [dispatch, auth.user?.profile.preferred_username, cvList.pageSize]);
 
     useEffect(() => {
         handleCV(currentPage, filters);
