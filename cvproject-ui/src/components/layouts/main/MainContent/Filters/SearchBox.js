@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Card, Row, Col, Typography, Input, Select, Tooltip, Button } from 'antd'
+import { Card, Row, Col, Typography, Input, Select, Tooltip } from 'antd'
 import { useDispatch } from 'react-redux';
 
 import { filterService } from '~/utils/FilterService';
@@ -12,15 +12,15 @@ const optionItems = [
         label: 'All',
     },
     {
-        value: 'pass',
+        value: 'PASS',
         label: 'Pass',
     },
     {
-        value: 'not_pass',
+        value: 'NOTPASS',
         label: 'Not Pass',
     },
     {
-        value: 'inprogress',
+        value: 'INPROGRESS',
         label: 'Inprogress',
     },
 ]
@@ -66,11 +66,6 @@ const SearchBox = () => {
     }
     const handlePositionChange = (value) => {
         dispatch(filtersSlice.actions.positionFilterChange(value));
-    }
-
-    const onClearFilter = () => {
-        setSearchText('');
-        setStatus('');
     }
 
     return (
@@ -180,9 +175,6 @@ const SearchBox = () => {
                             return <Select.Option key={key} value={item.value}>{item.label}</Select.Option>
                         })}
                     </Select>
-                </Col>
-                <Col sm={24} className='text-center mt-4'>
-                    <Button size='large' onClick={onClearFilter}>Clear filter</Button>
                 </Col>
             </Row>
         </Card>

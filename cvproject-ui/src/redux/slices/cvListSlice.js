@@ -17,7 +17,7 @@ const cvListSlice = createSlice({
             state.data = action.payload.cvs_list;
             state.loading = false;
             state.totalPage = action.payload.total;
-        }
+        },
     },
 });
 
