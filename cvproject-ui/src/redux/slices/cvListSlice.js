@@ -18,6 +18,9 @@ const cvListSlice = createSlice({
             state.loading = false;
             state.totalPage = action.payload.total;
         },
+        setPageSize: (state, action) => {
+            state.pageSize = action.payload;
+        }
     },
 });
 

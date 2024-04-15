@@ -9,7 +9,7 @@ import handleLogError from '~/utils/HandleError'
 import { NOTIFICATION } from '~/configs'
 const { Dragger } = Upload;
 
-const ImportButton = ({ handleCV, currentPage, api }) => {
+const ImportButton = ({ handleCV, currentPage, api, filters }) => {
     const auth = useAuth();
     const [visible, setVisible] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
@@ -35,7 +35,7 @@ const ImportButton = ({ handleCV, currentPage, api }) => {
         }).finally(() => {
             setUploading(false);
             setVisible(false);
-            handleCV(currentPage);
+            handleCV(currentPage, filters);
         });
 
     }

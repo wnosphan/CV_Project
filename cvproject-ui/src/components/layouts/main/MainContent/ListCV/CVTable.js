@@ -1,12 +1,16 @@
-import React, { useState, memo } from 'react'
-import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip } from 'antd'
+import React, { useState, memo, useEffect } from 'react'
+import { Table, Tag, Space, Button, Flex, Popconfirm, Form, Card, Col, Drawer, Divider, Row, Tooltip, Pagination } from 'antd'
 import { DeleteOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs';
+import { useAuth } from 'react-oidc-context';
+import { useDispatch } from 'react-redux';
+
 
 import EditableCell from '../EditCV/EditableCell';
 import { myCVListApi } from '~/api/MyCVListApi';
 import handleLogError from '~/utils/HandleError';
-import { useAuth } from 'react-oidc-context';
+import cvListSlice from '~/redux/slices/cvListSlice';
+import useResize from '~/hooks/useResize';
 
 
 const DescriptionItem = ({ title, content }) => (
@@ -18,10 +22,15 @@ const DescriptionItem = ({ title, content }) => (
 
 function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
     const auth = useAuth();
+    const dispatch = useDispatch();
+    const {ref, pageSize} = useResize();
     const [isOpenDrawer, setOpenDrawer] = useState(false);
     const [info, setInfo] = useState({});
 
-    
+
+    useEffect(() => {
+        dispatch(cvListSlice.actions.setPageSize(pageSize));
+    }, [dispatch, pageSize]);
 
 
     const showDrawer = async (key) => {
@@ -246,6 +255,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
     }
 
     const datas = cvs();
+
     return (
         <>
             <Card className='shadow-lg'>
@@ -263,13 +273,16 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                         }}
                         scroll={{
                             scrollToFirstRowOnChange: false,
-                            x: 1600,
-                            y: 420
+                            x: 1600, y: 420
                         }}
-                        pagination={pagination}
+                        pagination={false}
                         loading={loading}
                     />
-                    {/* <Flex className='mt-4 pagination' justify='center'><Pagination {...pagination} /></Flex> */}
+                    <div ref={ref}>
+                        <Flex className='mt-4 pagination' justify='center'>
+                            <Pagination {...pagination} />
+                        </Flex>
+                    </div>
                 </Form>
             </Card>
 

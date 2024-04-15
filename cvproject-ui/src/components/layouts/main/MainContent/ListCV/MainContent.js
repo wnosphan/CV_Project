@@ -18,10 +18,9 @@ import { cvListSelector, filtersSelector } from '~/redux/selectors';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
 
 const paginationProps = {
-    // simple: true,
     showQuickJumper: true,
     showSizeChanger: false,
-    position: ['bottomCenter'],
+    // position: ['bottomCenter'],
 }
 
 
@@ -51,22 +50,6 @@ const MainContent = () => {
         ],
     };
 
-    // const handleResize = () => {
-    //     const bottom = document.querySelector('.pagination').getBoundingClientRect().bottom;
-    //     const offsetHeight = document.querySelector('.pagination').offsetHeight;
-    //     const winHeight = window.innerHeight;
-    //     const pageSizeChanger = (
-    //         (bottom < winHeight) ? Math.floor((winHeight - bottom + offsetHeight) / 50) : 10
-    //     )
-    //     setPageSize(pageSizeChanger);
-    // };
-    // window.addEventListener('resize', handleResize);
-    // handleResize();
-    // return () => {
-    //     window.removeEventListener('resize', handleResize);
-    // };
-
-
     const handleCV = useCallback((page, filters) => {
         dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
     }, [dispatch, auth.user?.profile.preferred_username, cvList.pageSize]);
@@ -74,7 +57,7 @@ const MainContent = () => {
     useEffect(() => {
         handleCV(currentPage, filters);
     }, [handleCV, currentPage, filters]);
-    
+
     console.log('filters', filters);
     console.log('tableData', cvList.data);
 
@@ -122,7 +105,7 @@ const MainContent = () => {
                 console.log('response', response);
                 if (response.status === 200) {
                     setEditingKey('');
-                    handleCV(currentPage);
+                    handleCV(currentPage, filters);
                     api.success({
                         message: NOTIFICATION.UPDATE.SUCCESS,
                         duration: 2,
@@ -146,7 +129,7 @@ const MainContent = () => {
                     .then(async (response) => {
                         if (response.status === 200) {
                             await onChangeSelectRow(key);
-                            await handleCV(currentPage);
+                            await handleCV(currentPage, filters);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
                                 duration: 2,
@@ -180,10 +163,10 @@ const MainContent = () => {
                     <Card className='h-20 shadow-lg'>
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
-                                <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
-                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} />
+                                <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
+                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
                                 <Link to='/create'><Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button></Link>
-                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} />
+                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
                             </Flex>
                         </Flex>
                     </Card>

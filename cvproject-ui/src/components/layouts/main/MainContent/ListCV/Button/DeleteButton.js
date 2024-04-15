@@ -6,7 +6,7 @@ import { myCVListApi } from '~/api'
 import { NOTIFICATION } from '~/configs/constants'
 import handleLogError from '~/utils/HandleError'
 
-const DeleteButton = ({  api, selectedRowKeys,setSelectedRowKeys, handleCV, currentPage }) => {
+const DeleteButton = ({ api, selectedRowKeys, setSelectedRowKeys, handleCV, currentPage, filters }) => {
 
     const onMultipleDelete = async () => {
         Modal.confirm({
@@ -15,7 +15,7 @@ const DeleteButton = ({  api, selectedRowKeys,setSelectedRowKeys, handleCV, curr
                 await myCVListApi.deleteCVs(selectedRowKeys)
                     .then(async (response) => {
                         if (response.status === 200) {
-                            await handleCV(currentPage);
+                            await handleCV(currentPage, filters);
                             setSelectedRowKeys([]);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
