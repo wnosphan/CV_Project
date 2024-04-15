@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { myCVListApi } from '~/api'
-import handleLogError from '../../../../../utils/HandleError'
+import handleLogError from '~/utils/HandleError'
 
 const getUniversityFilter = () => {
     const university = [];
