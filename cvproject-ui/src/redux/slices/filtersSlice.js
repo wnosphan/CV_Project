@@ -7,11 +7,11 @@ const filtersSlice = createSlice({
     initialState: {
         full_name: '',
         status: '',
-        university: [],
-        skill: [],
-        apply_position: [],
-        training_system: [],
+        skill: '',
+        training_system: '',
         gpa: '',
+        university: [],
+        apply_position: [],
     },
     reducers: {
         nameFilterChange: (state, action) => {

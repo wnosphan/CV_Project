@@ -6,7 +6,7 @@ const cvListSlice = createSlice({
         data: [],
         loading: false,
         editingKey: '',
-        totalPage: 1,
+        totalPage: 0,
         pageSize: 10,
     },
     reducers: {

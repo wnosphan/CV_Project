@@ -1,26 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Card, Row, Col, Typography, Input, Select, Tooltip } from 'antd'
+import { Card, Row, Col, Typography, Input, Select, Tooltip, Button } from 'antd'
 import { useDispatch } from 'react-redux';
 
-import { filterService } from '~/utils/FilterService';
+import useFilterData from './FilterService';
 import filtersSlice from '~/redux/slices/filtersSlice';
 
 
-const optionItems = [
+const statusItems = [
     {
         value: '',
         label: 'All',
     },
     {
-        value: 'PASS',
+        value: 'pass',
         label: 'Pass',
     },
     {
-        value: 'NOTPASS',
+        value: 'notpass',
         label: 'Not Pass',
     },
     {
-        value: 'INPROGRESS',
+        value: 'inprogress',
         label: 'Inprogress',
     },
 ]
@@ -29,25 +29,16 @@ const SearchBox = () => {
     const dispatch = useDispatch();
     const [searchText, setSearchText] = useState('');
     const [status, setStatus] = useState('');
-    const [filterData, setFilterData] = useState({
-        university: [],
-        skill: [],
-        position: [],
-    });
-
+    const [skill, setSkill] = useState('');
+    const filterData = useFilterData();
     useEffect(() => {
-        setFilterData(prev => {
-            return {
-                ...prev,
-                university: filterService.getUniversityFilter(),
-                skill: filterService.getSkillFilter(),
-                position: filterService.getPositionFilter(),
-            }
-        })
         dispatch(filtersSlice.actions.nameFilterChange(searchText));
         dispatch(filtersSlice.actions.statusFilterChange(status));
-    }, [dispatch, searchText, status]);
+        dispatch(filtersSlice.actions.skillFilterChange(skill));
+    }, [dispatch, searchText, status, skill]);
 
+
+    console.log(filterData);
 
     const handleSearchTextChange = (e) => {
         setSearchText(e.target.value);
@@ -57,15 +48,27 @@ const SearchBox = () => {
         setStatus(value);
     }
 
+    const handleSkillChange = (value) => {
+        setSkill(value);
+    }
     const handleUniversityChange = (value) => {
         dispatch(filtersSlice.actions.universityFilterChange(value));
     }
 
-    const handleSkillChange = (value) => {
-        dispatch(filtersSlice.actions.skillFilterChange(value));
-    }
     const handlePositionChange = (value) => {
         dispatch(filtersSlice.actions.positionFilterChange(value));
+    }
+
+    const clearFilter = () => {
+        setSearchText('');
+        setSkill('');
+        setStatus('');
+        dispatch(filtersSlice.actions.nameFilterChange(''));
+        dispatch(filtersSlice.actions.statusFilterChange(''));
+        dispatch(filtersSlice.actions.skillFilterChange(''));
+        dispatch(filtersSlice.actions.universityFilterChange([]));
+        dispatch(filtersSlice.actions.positionFilterChange([]));
+        window.location.reload();
     }
 
     return (
@@ -95,9 +98,27 @@ const SearchBox = () => {
                     </Typography.Paragraph>
                     <Select style={{ width: "100%" }}
                         defaultValue={status}
-                        options={optionItems}
+                        options={statusItems}
                         value={status}
                         onChange={handleStatusChange} />
+                </Col>
+                <Col sm={24}>
+                    <Typography.Paragraph
+                        style={{ fontWeight: 'bold', marginBottom: 5, marginTop: 10 }}
+                    >
+                        Filter By Skill
+                    </Typography.Paragraph>
+                    <Select
+                        // mode='multiple'
+                        placeholder='Please select skill'
+                        style={{ width: '100%' }}
+                        onChange={handleSkillChange}
+                        defaultValue={skill}
+                    >
+                        {filterData.skill.map((item, key) => {
+                            return <Select.Option key={key} value={item.value}>{item.label}</Select.Option>
+                        })}
+                    </Select>
                 </Col>
                 <Col sm={24}>
                     <Typography.Paragraph
@@ -129,31 +150,6 @@ const SearchBox = () => {
                     <Typography.Paragraph
                         style={{ fontWeight: 'bold', marginBottom: 5, marginTop: 10 }}
                     >
-                        Filter By Skill
-                    </Typography.Paragraph>
-                    <Select
-                        mode='multiple'
-                        allowClear
-                        placeholder='Please select skill'
-                        style={{ width: '100%' }}
-                        maxTagPlaceholder={(omittedValues) => (
-                            <Tooltip title={omittedValues.map(({ label }) => label).join(', ')}>
-                                <span>...</span>
-                            </Tooltip>
-                        )}
-                        maxTagCount={'responsive'}
-                        onChange={handleSkillChange}
-
-                    >
-                        {filterData.skill.map((item, key) => {
-                            return <Select.Option key={key} value={item.value}>{item.label}</Select.Option>
-                        })}
-                    </Select>
-                </Col>
-                <Col sm={24}>
-                    <Typography.Paragraph
-                        style={{ fontWeight: 'bold', marginBottom: 5, marginTop: 10 }}
-                    >
                         Filter By Position
                     </Typography.Paragraph>
                     <Select
@@ -175,6 +171,9 @@ const SearchBox = () => {
                             return <Select.Option key={key} value={item.value}>{item.label}</Select.Option>
                         })}
                     </Select>
+                </Col>
+                <Col className='text-center mt-6' sm={24}>
+                    <Button size='large' onClick={clearFilter}>Clear filter</Button>
                 </Col>
             </Row>
         </Card>

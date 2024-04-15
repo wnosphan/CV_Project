@@ -118,7 +118,7 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                                 )
                             })}
                             {remaining > 0 && (
-                                <Tooltip title={`+ ${remaining} kỹ năng khác`}>
+                                <Tooltip title={remaining === 1 ? `+ ${remaining} skill` : `+ ${remaining} skills`}>
                                     <Tag color={'blue'}>+{remaining}</Tag>
                                 </Tooltip>
                             )}
@@ -266,10 +266,10 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                             x: 1600,
                             y: 420
                         }}
-                        pagination={false}
+                        pagination={pagination}
                         loading={loading}
                     />
-                    <Flex className='mt-4 pagination' justify='center'><Pagination {...pagination} /></Flex>
+                    {/* <Flex className='mt-4 pagination' justify='center'><Pagination {...pagination} /></Flex> */}
                 </Form>
             </Card>
 

@@ -21,7 +21,7 @@ const paginationProps = {
     // simple: true,
     showQuickJumper: true,
     showSizeChanger: false,
-    // position: ['bottomCenter'],
+    position: ['bottomCenter'],
 }
 
 
