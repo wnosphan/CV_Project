@@ -147,20 +147,16 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
       ```
       npm install
       ```
-   - Navigate to `cvproject-ui\src\configs` and open properties.js file
+   - Navigate to `cvproject-ui\src` and open .env file
 
      ```
-      oidc: {
-        authority: 'http://localhost:8080/realms/{your-ream}',
-        clientId: '{your-client-id}',
-        clientSecret: '{your-client-secret}'
-      },
-      api: {
-          baseUrl: 'http://localhost:8088'
-      },
-      project: {
-          url: 'http://localhost:3000'
-      }  
+      REACT_APP_API_URL=http://localhost:8088
+      REACT_APP_PROJECT_URL=http://localhost:3001
+      
+      REACT_APP_OIDC_AUTHORITY=http://localhost:8080/realms/cvproject
+      REACT_APP_OIDC_CLIENT_ID=react-auth
+      REACT_APP_OIDC_CLIENT_SECRET=oLTNsGCxnKA6mPxcmnQuEuHApBi5x9Jo
+
       ```
 
   - Run the `npm` command below to start the application
