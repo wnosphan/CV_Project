@@ -16,25 +16,20 @@ import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
 import { cvListSelector, filtersSelector } from '~/redux/selectors';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
-
-const paginationProps = {
-    showQuickJumper: true,
-    showSizeChanger: false,
-    // position: ['bottomCenter'],
-}
-
+import cvListSlice from '~/redux/slices/cvListSlice';
+import { current } from '@reduxjs/toolkit';
 
 
 const MainContent = () => {
     const auth = useAuth();
     const dispatch = useDispatch();
     const cvList = useSelector(cvListSelector);
-    const filters = useSelector(filtersSelector);
+    const filtersList = useSelector(filtersSelector);
     const [api, contextHolder] = useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
+    // const [currentPage, setCurrentPage] = useState(1);   
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -50,19 +45,46 @@ const MainContent = () => {
         ],
     };
 
-    const handleCV = useCallback((page, filters) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
-    }, [dispatch, auth.user?.profile.preferred_username, cvList.pageSize]);
+    // const handleCV = useCallback((page, pageSize, filters) => {
+    //     dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, pageSize, filters));
+    // }, [dispatch, auth.user?.profile.preferred_username]);
+
+    // useEffect(() => {
+    //     handleCV(currentPage, filters);
+    // }, [handleCV, currentPage, filters]);
 
     useEffect(() => {
-        handleCV(currentPage, filters);
-    }, [handleCV, currentPage, filters]);
+        const params = {
+            username: auth.user?.profile.preferred_username,
+            page: cvList.pagination.current - 1,
+            limit: cvList.pagination.pageSize,
+            filters: filtersList,
+            sorter: {}
+        }
+        dispatch(myCVListApi.getCV(params));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    console.log('filters', filters);
+    console.log('filters', filtersList);
     console.log('tableData', cvList.data);
 
-    const handleTableChange = (page) => {
-        setCurrentPage(page);
+    const handleTableChange = (pagination, filters, sorter) => {
+        const pager = { ...pagination };
+        pager.current = pagination.current;
+        dispatch(cvListSlice.actions.setPaginationCurrent(pager.current));
+        dispatch(cvListSlice.actions.setPagination(pager));
+        const params = {
+            username: auth.user?.profile.preferred_username,
+            page: pagination.current - 1,
+            limit: pagination.pageSize,
+            filters: filtersList,
+            sorter: {}
+        }
+        if (sorter.hasOwnProperty('column')) {
+            params.sorter.sort_by = sorter.column.dataIndex;
+            params.sorter.sort_type = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+        }
+        dispatch(myCVListApi.getCV(params));
         cancel();
     };
 
@@ -105,7 +127,7 @@ const MainContent = () => {
                 console.log('response', response);
                 if (response.status === 200) {
                     setEditingKey('');
-                    handleCV(currentPage, filters);
+                    // handleCV(currentPage, filtersList);
                     api.success({
                         message: NOTIFICATION.UPDATE.SUCCESS,
                         duration: 2,
@@ -129,7 +151,7 @@ const MainContent = () => {
                     .then(async (response) => {
                         if (response.status === 200) {
                             await onChangeSelectRow(key);
-                            await handleCV(currentPage, filters);
+                            // await handleCV(currentPage, filtersList);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
                                 duration: 2,
@@ -163,10 +185,10 @@ const MainContent = () => {
                     <Card className='h-20 shadow-lg'>
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
-                                <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
-                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
+                                {/* <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filtersList} />
+                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filtersList} />
                                 <Link to='/create'><Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button></Link>
-                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
+                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} filters={filtersList} /> */}
                             </Flex>
                         </Flex>
                     </Card>
@@ -175,12 +197,13 @@ const MainContent = () => {
                         rowSelection={rowSelection}
                         onDelete={onDelete}
                         pagination={{
-                            ...paginationProps,
-                            total: cvList.totalPage * cvList.pageSize,
-                            current: currentPage,
-                            pageSize: cvList.pageSize,
-                            onChange: handleTableChange,
+                            showQuickJumper: true,
+                            showSizeChanger: false,
+                            total: cvList.pagination.total,
+                            current: cvList.pagination.current,
+                            pageSize: cvList.pagination.pageSize,
                         }}
+                        onChange={handleTableChange}
                         loading={cvList.loading}
                         editProps={editProps}
                     />

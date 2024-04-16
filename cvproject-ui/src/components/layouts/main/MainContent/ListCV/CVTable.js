@@ -20,17 +20,17 @@ const DescriptionItem = ({ title, content }) => (
     </div>
 );
 
-function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, editProps }) {
+function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagination, loading, editProps }) {
     const auth = useAuth();
     const dispatch = useDispatch();
-    const {ref, pageSize} = useResize();
+    const { ref, pageSize } = useResize();
     const [isOpenDrawer, setOpenDrawer] = useState(false);
     const [info, setInfo] = useState({});
 
 
-    useEffect(() => {
-        dispatch(cvListSlice.actions.setPageSize(pageSize));
-    }, [dispatch, pageSize]);
+    // useEffect(() => {
+    //     dispatch(cvListSlice.actions.setPageSize(pageSize));
+    // }, [dispatch, pageSize]);
 
 
     const showDrawer = async (key) => {
@@ -59,6 +59,14 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             width: '12%',
             editable: true,
             ellipsis: true,
+            sorter: true,
+            render(name) {
+                return (
+                    <Tooltip title={name}>
+                        {name}
+                    </Tooltip>
+                )
+            },
 
         },
         {
@@ -77,6 +85,13 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             width: '14%',
             ellipsis: true,
             editable: true,
+            render(university) {
+                return (
+                    <Tooltip title={university}>
+                        {university}
+                    </Tooltip>
+                )
+            },
 
         },
         {
@@ -103,6 +118,13 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
             width: '12%',
             editable: true,
             ellipsis: true,
+            render(position) {
+                return (
+                    <Tooltip title={position}>
+                        {position}
+                    </Tooltip>
+                )
+            },
 
         },
         {
@@ -271,9 +293,14 @@ function CVTable({ dataSource, rowSelection, onDelete, pagination, loading, edit
                                 cell: EditableCell,
                             },
                         }}
+                        onChange={handleTableChange}
                         scroll={{
                             scrollToFirstRowOnChange: false,
-                            x: 1600, y: 420
+                            x: 1600, 
+                            // y: 420
+                        }}
+                        showSorterTooltip={{
+                            target: 'sorter-icon',
                         }}
                         pagination={false}
                         loading={loading}
