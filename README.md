@@ -88,16 +88,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
   ```
  https://www.docker.com/products/docker-desktop
-  ```
-## Install JDK 17
 
-  ```
-  https://www.oracle.com/java/technologies/downloads/#java17
-  ```
-## Install Keycloak
-  ```
- docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev
-  ```
 
 ## Start Environment
 <!--
