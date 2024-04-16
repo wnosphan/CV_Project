@@ -1,21 +1,25 @@
 import { Button, Modal } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 
 import { modalDeleteProps } from '~/components/layouts/main/MainContent/ListCV/CommonProps'
 import { myCVListApi } from '~/api'
 import { NOTIFICATION } from '~/configs/constants'
 import handleLogError from '~/utils/HandleError'
+import { cvListSelector, filtersSelector } from '~/redux/selectors'
 
-const DeleteButton = ({ api, selectedRowKeys, setSelectedRowKeys, handleCV, currentPage, filters }) => {
-
-    const onMultipleDelete = async () => {
+const DeleteButton = ({ api, selectedRowKeys, setSelectedRowKeys, handleCV }) => {
+    const cvList = useSelector(cvListSelector);
+    const filters = useSelector(filtersSelector);
+    
+    const onMultipleDelete = () => {
         Modal.confirm({
             ...modalDeleteProps,
             onOk: async () => {
                 await myCVListApi.deleteCVs(selectedRowKeys)
-                    .then(async (response) => {
+                    .then((response) => {
                         if (response.status === 200) {
-                            await handleCV(currentPage, filters);
+                            handleCV(cvList.current, filters);
                             setSelectedRowKeys([]);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
@@ -30,7 +34,6 @@ const DeleteButton = ({ api, selectedRowKeys, setSelectedRowKeys, handleCV, curr
                         });
                         handleLogError(error);
                     });
-
             },
         })
     }

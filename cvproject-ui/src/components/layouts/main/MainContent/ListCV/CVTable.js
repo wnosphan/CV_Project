@@ -20,7 +20,7 @@ const DescriptionItem = ({ title, content }) => (
     </div>
 );
 
-function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagination, loading, editProps }) {
+function CVTable({ dataSource, rowSelection, onChange, onDelete, pagination, loading, editProps }) {
     const auth = useAuth();
     const dispatch = useDispatch();
     const { ref, pageSize } = useResize();
@@ -28,9 +28,11 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
     const [info, setInfo] = useState({});
 
 
-    // useEffect(() => {
-    //     dispatch(cvListSlice.actions.setPageSize(pageSize));
-    // }, [dispatch, pageSize]);
+    useEffect(() => {
+        let size = pageSize;
+        if (pageSize < 3) size = 3;
+        dispatch(cvListSlice.actions.setPageSize(size));
+    }, [dispatch, pageSize]);
 
 
     const showDrawer = async (key) => {
@@ -59,7 +61,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             width: '12%',
             editable: true,
             ellipsis: true,
-            sorter: true,
+            sorter: (a, b) => a.full_name.localeCompare(b.full_name),
             render(name) {
                 return (
                     <Tooltip title={name}>
@@ -76,6 +78,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             width: '12%',
             editable: true,
             render: (text) => dayjs(text).format('DD-MM-YYYY'),
+            sorter: (a, b) => dayjs(a.date_of_birth).unix() - dayjs(b.date_of_birth).unix(),
 
         },
         {
@@ -85,6 +88,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             width: '14%',
             ellipsis: true,
             editable: true,
+            sorter: (a, b) => a.university.localeCompare(b.university),
             render(university) {
                 return (
                     <Tooltip title={university}>
@@ -101,6 +105,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             width: '12%',
             editable: true,
             ellipsis: true,
+            sorter: (a, b) => a.training_system.localeCompare(b.training_system),
 
         },
         {
@@ -109,6 +114,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             key: 'gpa',
             width: '8%',
             editable: true,
+            sorter: (a, b) => a.gpa - b.gpa,
 
         },
         {
@@ -118,6 +124,7 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
             width: '12%',
             editable: true,
             ellipsis: true,
+            sorter: (a, b) => a.apply_position.localeCompare(b.apply_position),
             render(position) {
                 return (
                     <Tooltip title={position}>
@@ -293,10 +300,10 @@ function CVTable({ dataSource, rowSelection, handleTableChange, onDelete, pagina
                                 cell: EditableCell,
                             },
                         }}
-                        onChange={handleTableChange}
+                        onChange={onChange}
                         scroll={{
                             scrollToFirstRowOnChange: false,
-                            x: 1600, 
+                            x: 1600,
                             // y: 420
                         }}
                         showSorterTooltip={{

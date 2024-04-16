@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { Button, Modal, Radio } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 
 import { modalApplyProps } from '../CommonProps';
 import { myCVListApi } from '~/api';
 import { NOTIFICATION } from '~/configs/constants';
 import handleLogError from '~/utils/HandleError';
+import { cvListSelector, filtersSelector } from '~/redux/selectors';
 
-const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPage, api, filters }) => {
+const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, api }) => {
     const [visible, setVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const cvList = useSelector(cvListSelector);
+    const filters = useSelector(filtersSelector);
     const [selectedStatus, setSelectedStatus] = useState('pass');
 
     const onUpdateMultipleStatus = async (selectedRowKeys, selectedStatus) => {
@@ -21,7 +25,7 @@ const ApplyButton = ({ selectedRowKeys, setSelectedRowKeys, handleCV, currentPag
         await myCVListApi.updateMultipleStatus(obj)
             .then((response) => {
                 if (response.status === 200) {
-                    handleCV(currentPage, filters);
+                    handleCV(cvList.current, filters);
                     setUploading(false);
                     setVisible(false);
                     setSelectedRowKeys([]);

@@ -6,11 +6,9 @@ const cvListSlice = createSlice({
         data: [],
         loading: false,
         editingKey: '',
-        pagination: {
-            current: 1,
-            pageSize: 10,
-            total: 0
-        },
+        current: 1,
+        pageSize: 10,
+        total: 0,
     },
     reducers: {
         fetchDataBegin: (state) => {
@@ -19,18 +17,14 @@ const cvListSlice = createSlice({
         fetchDataSuccess: (state, action) => {
             state.data = action.payload.cvs_list;
             state.loading = false;
-            state.pagination.total = action.payload.total * state.pagination.pageSize;
+            state.total = action.payload.total * state.pageSize;
         },
         setPageSize: (state, action) => {
-            state.pagination.pageSize = action.payload;
+            state.pageSize = action.payload;
         },
-        setPagination: (state, action) => {
-            state.pagination.pageSize = action.payload.pageSize;
-            state.pagination.total = action.payload.total;
+        setCurrentPage: (state, action) => {
+            state.current = action.payload;
         },
-        setPaginationCurrent: (state, action) => {
-            state.pagination.current = action.payload;
-        }
     },
 });
 
