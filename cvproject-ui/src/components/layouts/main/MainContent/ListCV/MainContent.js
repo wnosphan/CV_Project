@@ -16,25 +16,17 @@ import { modalDeleteProps } from './CommonProps';
 import { NOTIFICATION } from '~/configs'
 import { cvListSelector, filtersSelector } from '~/redux/selectors';
 import { ImportButton, DeleteButton, ApplyButton } from './Button';
-
-const paginationProps = {
-    showQuickJumper: true,
-    showSizeChanger: false,
-    // position: ['bottomCenter'],
-}
-
-
+import cvListSlice from '~/redux/slices/cvListSlice';
 
 const MainContent = () => {
     const auth = useAuth();
     const dispatch = useDispatch();
     const cvList = useSelector(cvListSelector);
-    const filters = useSelector(filtersSelector);
+    const filtersList = useSelector(filtersSelector);
     const [api, contextHolder] = useNotification();
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -51,18 +43,25 @@ const MainContent = () => {
     };
 
     const handleCV = useCallback((page, filters) => {
-        dispatch(myCVListApi.getCV(auth.user?.profile.preferred_username, page - 1, cvList.pageSize, filters));
+        const params = {
+            username: auth.user?.profile.preferred_username,
+            page: page - 1,
+            limit: cvList.pageSize,
+            filters: filters,
+        }
+        dispatch(myCVListApi.getCV(params));
     }, [dispatch, auth.user?.profile.preferred_username, cvList.pageSize]);
 
     useEffect(() => {
-        handleCV(currentPage, filters);
-    }, [handleCV, currentPage, filters]);
+        handleCV(cvList.current, filtersList);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [handleCV, cvList.current, filtersList]);
 
-    console.log('filters', filters);
+    console.log('filters', filtersList);
     console.log('tableData', cvList.data);
 
     const handleTableChange = (page) => {
-        setCurrentPage(page);
+        dispatch(cvListSlice.actions.setCurrentPage(page));
         cancel();
     };
 
@@ -100,12 +99,12 @@ const MainContent = () => {
 
     const handleUpdateCV = async (key, record) => {
         await myCVListApi.updateCV(auth.user?.profile.preferred_username, key, record)
-            .then((response) => {
+            .then(async (response) => {
                 console.log('request', record);
                 console.log('response', response);
                 if (response.status === 200) {
                     setEditingKey('');
-                    handleCV(currentPage, filters);
+                    handleCV(cvList.current, filtersList);
                     api.success({
                         message: NOTIFICATION.UPDATE.SUCCESS,
                         duration: 2,
@@ -129,7 +128,7 @@ const MainContent = () => {
                     .then(async (response) => {
                         if (response.status === 200) {
                             await onChangeSelectRow(key);
-                            await handleCV(currentPage, filters);
+                            await handleCV(cvList.current, filtersList);
                             api.success({
                                 message: NOTIFICATION.DELETE.SUCCESS,
                                 duration: 2,
@@ -163,10 +162,10 @@ const MainContent = () => {
                     <Card className='h-20 shadow-lg'>
                         <Flex vertical>
                             <Flex gap="1rem" justify='flex-end' align='center'>
-                                <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
-                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
+                                <DeleteButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} api={api} />
+                                <ApplyButton selectedRowKeys={selectedRowKeys} setSelectedRowKeys={setSelectedRowKeys} handleCV={handleCV} api={api} />
                                 <Link to='/create'><Button icon={<PlusCircleOutlined />} type='primary' size='large'>Create</Button></Link>
-                                <ImportButton handleCV={handleCV} currentPage={currentPage} api={api} filters={filters} />
+                                <ImportButton handleCV={handleCV} api={api} />
                             </Flex>
                         </Flex>
                     </Card>
@@ -175,11 +174,12 @@ const MainContent = () => {
                         rowSelection={rowSelection}
                         onDelete={onDelete}
                         pagination={{
-                            ...paginationProps,
-                            total: cvList.totalPage * cvList.pageSize,
-                            current: currentPage,
+                            showQuickJumper: true,
+                            showSizeChanger: false,
+                            total: cvList.total,
+                            current: cvList.current,
                             pageSize: cvList.pageSize,
-                            onChange: handleTableChange,
+                            onChange: handleTableChange
                         }}
                         loading={cvList.loading}
                         editProps={editProps}

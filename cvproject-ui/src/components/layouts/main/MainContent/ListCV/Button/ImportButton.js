@@ -2,15 +2,19 @@ import { useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { Button, Modal, Upload } from 'antd'
 import { FolderAddOutlined, InboxOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 
 import { modalUploadProps } from '~/components/layouts/main/MainContent/ListCV/CommonProps'
 import { myCVListApi } from '~/api'
 import handleLogError from '~/utils/HandleError'
 import { NOTIFICATION } from '~/configs'
+import { cvListSelector, filtersSelector } from '~/redux/selectors'
 const { Dragger } = Upload;
 
-const ImportButton = ({ handleCV, currentPage, api, filters }) => {
+const ImportButton = ({ handleCV, api }) => {
     const auth = useAuth();
+    const cvList = useSelector(cvListSelector);
+    const filters = useSelector(filtersSelector);
     const [visible, setVisible] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -35,7 +39,7 @@ const ImportButton = ({ handleCV, currentPage, api, filters }) => {
         }).finally(() => {
             setUploading(false);
             setVisible(false);
-            handleCV(currentPage, filters);
+            handleCV(cvList.current, filters);
         });
 
     }

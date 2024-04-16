@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import useFilterData from './FilterService';
 import filtersSlice from '~/redux/slices/filtersSlice';
+import cvListSlice from '~/redux/slices/cvListSlice';
 
 
 const statusItems = [
@@ -35,6 +36,7 @@ const SearchBox = () => {
         dispatch(filtersSlice.actions.nameFilterChange(searchText));
         dispatch(filtersSlice.actions.statusFilterChange(status));
         dispatch(filtersSlice.actions.skillFilterChange(skill));
+        dispatch(cvListSlice.actions.setCurrentPage(1));
     }, [dispatch, searchText, status, skill]);
 
 

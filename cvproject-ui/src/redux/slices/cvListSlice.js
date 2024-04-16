@@ -6,8 +6,9 @@ const cvListSlice = createSlice({
         data: [],
         loading: false,
         editingKey: '',
-        totalPage: 0,
+        current: 1,
         pageSize: 10,
+        total: 0,
     },
     reducers: {
         fetchDataBegin: (state) => {
@@ -16,11 +17,14 @@ const cvListSlice = createSlice({
         fetchDataSuccess: (state, action) => {
             state.data = action.payload.cvs_list;
             state.loading = false;
-            state.totalPage = action.payload.total;
+            state.total = action.payload.total * state.pageSize;
         },
         setPageSize: (state, action) => {
             state.pageSize = action.payload;
-        }
+        },
+        setCurrentPage: (state, action) => {
+            state.current = action.payload;
+        },
     },
 });
 
