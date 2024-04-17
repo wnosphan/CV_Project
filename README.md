@@ -31,6 +31,7 @@
 
 
 <!-- TABLE OF CONTENTS -->
+<!-- 
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -50,6 +51,7 @@
     <li><a href="#contributor">Contributor</a></li>
   </ol>
 </details>
+-->
 
 
 
@@ -151,19 +153,14 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 
       ```
 
-  - Run the `npm` command below to start the application
+  - Run the `npm` command below to start the application if you run without docker
       ```
       npm start
       ```
       
 - **cvproject-server**
+  - Open another terminal and navigate to `CV_Project/cvproject-ui` folder
   - Open application.yml and set up enviroment
-
-      ```
-      .\CV_Projectss\CVProject_Server
-      ```
-   - server:
-
       ```
      port: 8088
      fe:
@@ -178,11 +175,11 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
   - Open CMD in folder
   
       ```
-      .\CV_Projectss\CVProject_Server
+      .\CV_Project\CVProject_Server
       ```
     CMD
      ```
-      docker build --tag spring-boot-docker .
+      docker build --tag spring-boot-docker
       ```
     then
      ```
@@ -196,7 +193,7 @@ The goal of this project is to secure CV_Project using Keycloak. cv-project cons
 | Application       | URL                                   | Credentials                           |
 |-------------------|---------------------------------------|---------------------------------------|
 | cproject-server   | http://localhost:8088                 |                                       |
-| cvproject-ui      | http://localhost:3000                 |                                       |
+| cvproject-ui      | http://localhost:3001                 |                                       |
 | Keycloak          | http://localhost:8080/admin           |                                       |
 
 
