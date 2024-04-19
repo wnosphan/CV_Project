@@ -21,6 +21,7 @@ public class UserService {
             log.warn("Processing: User already exists");
             throw new IllegalArgumentException("User already exists");
         }
+        userRepository.save(user);
         log.info("Processing: User: "+user+" added successfully!");
     }
 }
